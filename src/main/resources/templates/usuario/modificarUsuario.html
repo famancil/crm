@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='usuarios'">
+<head>
+    <title>Modificar datos de usuario</title>
+
+    <!--/*/
+    <th:block layout:fragment="css">
+    <link th:href="@{/css/plugins/datapicker/datepicker3.css}" rel="stylesheet"/>
+    </th:block>
+/*/-->
+
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Modificar datos de usuario</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li>Usuarios</li>
+        <li>
+            <a th:href="@{/usuario/perfil/{id}(id=${usuario.id})}"><span th:switch="${usuario.nombre}">
+                <span th:case="null">Sin Información</span>
+                <span th:case="*" th:text="${usuario.nombre}"></span>
+            </span></a>
+        </li>
+        <li><strong>Modificar datos personales</strong></li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Modificar datos personales
+                    <small>Para guardar presione "Guardar Cambios". Si desea volver sin realizar cambios presione "Cancelar"</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+            <div class="ibox-content">
+
+                <form th:action="@{/usuario/perfil/modificar/}" th:object="${usuario}" method="post">
+
+                    <div class="alert alert-danger" th:if="${#fields.hasErrors('*') or passwordMatchError!=null}">
+                        <strong>Atenci&oacute;n: </strong> debes solucionar los errores marcados en rojo antes de
+                        proceder con la actualizaci&oacute;n del perfil del usuario.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('rut')}? 'has-error'">
+                                <label class="control-label">Rut</label>
+                                <div class="row">
+                                    <div class="col-md-4"><input type="text" size="8" maxlength="8" th:field="*{rut}" class="form-control"/></div>
+                                    <div class="col-md-6 rut-form">
+                                        <input type="text" size="1" maxlength="1" th:field="*{digitoVerificador}" class="form-control"/>
+                                    </div>
+                                </div>
+                                <span class="help-block m-b-none">Sin puntos. El d&iacute;gito verificador debe ir en la
+                                segunda casilla.</span>
+                                <label class="error" th:if="${#fields.hasErrors('rut')}" th:text="${#fields.errors('*{rut}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('pasaporte')}? 'has-error'">
+                                <label class="control-label">Pasaporte</label>
+                                <input type="text" th:field="*{pasaporte}" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('pasaporte')}" th:text="${#fields.errors('*{pasaporte}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('nombres')}? 'has-error'">
+                                <label class="control-label">Nombres</label>
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <select th:field="*{vocativo}" class="form-control">
+                                            <option th:selected="${usuario.vocativo == 'Sr'}" th:value="'Sr'" th:text="'Sr'"></option>
+                                            <option th:selected="${usuario.vocativo == 'Srta'}" th:value="'Srta'"
+                                                    th:text="'Srta.'"></option>
+                                            <option th:selected="${usuario.vocativo == 'Sra'}" th:value="'Sra'" th:text="'Sra'"></option>
+                                            <option th:selected="${usuario.vocativo == 'Padre'}" th:value="'Padre'"
+                                                    th:text="'Padre'"></option>
+                                            <option th:selected="${usuario.vocativo == 'Hermana'}" th:value="'Hermana'"
+                                                    th:text="'Hermana'"></option>
+                                            <option th:selected="${usuario.vocativo == 'Doctor'}" th:value="'Doctor'"
+                                                    th:text="'Doctor'"></option>
+                                            <option th:selected="${usuario.vocativo == 'Doctora'}" th:value="'Doctora'"
+                                                    th:text="'Doctora'"></option>
+                                            <option th:selected="${usuario.vocativo == 'Profesor'}" th:value="'Profesor'"
+                                                    th:text="'Profesor'"></option>
+                                            <option th:selected="${usuario.vocativo == 'Profesora'}" th:value="'Profesora'"
+                                                    th:text="'Profesora'"></option>
+                                            <option th:selected="${usuario.vocativo == 'Reverendo'}" th:value="'Reverendo'"
+                                                    th:text="'Reverendo'"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <input type="text" th:field="*{nombres}" class="form-control"/>
+                                        <label class="error" th:if="${#fields.hasErrors('nombres')}" th:text="${#fields.errors('*{nombres}')}"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('apodo')}? 'has-error'">
+                                <label class="control-label">Apodo</label>
+                                <input type="text" th:field="*{apodo}" placeholder="Apodo" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('apodo')}" th:text="${#fields.errors('*{apodo}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('apellidoPaterno')}? 'has-error'">
+                                <label class="control-label">Apellido paterno</label>
+                                <input type="text" th:field="*{apellidoPaterno}" placeholder="Apellido paterno" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('apellidoPaterno')}" th:text="${#fields.errors('*{apellidoPaterno}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('apellidoMaterno')}? 'has-error'">
+                                <label class="control-label">Apellido materno</label>
+                                <input type="text" th:field="*{apellidoMaterno}" placeholder="Apellido materno" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('apellidoMaterno')}" th:text="${#fields.errors('*{apellidoMaterno}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('fechaNacimiento')}? 'has-error'">
+                                <label class="control-label">Fecha de nacimiento</label>
+                                <input type="text" readonly="readonly" th:field="*{fechaNacimiento}" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('fechaNacimiento')}" th:text="${#fields.errors('*{fechaNacimiento}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('sexo')}? 'has-error'">
+                                <label class="control-label">Sexo</label>
+                                <div class="radio">
+                                    <label class="radio-inline">
+                                        <input type="radio" th:checked="${usuario.sexo == 0}" th:field="*{sexo}" th:value="0"/> Sin Informacion
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" th:checked="${usuario.sexo == 1}" th:field="*{sexo}" th:value="1"/> Masculino
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" th:checked="${usuario.sexo == 2}" th:field="*{sexo}" th:value="2"/> Femenino
+                                    </label>
+                                </div>
+                                <label class="error" th:if="${#fields.hasErrors('sexo')}" th:text="${#fields.errors('*{sexo}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('estadoCivil.codigo')}? 'has-error'">
+                                <label class="control-label">Estado civil</label>
+                                <select th:field="*{estadoCivil.codigo}" class="form-control">
+                                    <option th:each="estado: ${estados}"
+                                            th:selected="${usuario.estadoCivil.nombre == estado.nombre}" th:value="${estado.codigo}"
+                                            th:text="${estado.nombre}"></option>
+                                </select>
+                                <label class="error" th:if="${#fields.hasErrors('estadoCivil.codigo')}" th:text="${#fields.errors('*{estadoCivil.codigo}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('numeroHijos')}? 'has-error'">
+                                <label class="control-label">N&uacute;mero de hijos</label>
+                                <select th:field="*{numeroHijos}" class="form-control">
+                                    <option th:each="i: ${#numbers.sequence(0,20)}" th:selected="${usuario.numeroHijos == i}"
+                                            th:value="${i}" th:text="${i}"></option>
+                                </select>
+                                <label class="error" th:if="${#fields.hasErrors('numeroHijos')}" th:text="${#fields.errors('*{numeroHijos}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group" >
+                                <label class="control-label">Comuna</label>
+                                <select th:field="*{comuna.codigo}" class="form-control">
+                                    <option th:each="com: ${comunas}"
+                                            th:selected="${usuario.comuna.codigo == com.codigo}"
+                                            th:value="${com.codigo}"
+                                            th:text="${com.nombre}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('direccion')}? 'has-error'">
+                                <label class="control-label">Direcci&oacute;n</label>
+                                <input type="text" th:field="*{direccion}" class="form-control"/>
+                                <span class="help-block m-b-none">Agregar localidad si no es chileno</span>
+                                <label class="error" th:if="${#fields.hasErrors('direccion')}" th:text="${#fields.errors('*{direccion}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('codigoPostal')}? 'has-error'">
+                                <label class="control-label">C&oacute;digo postal</label>
+                                <input type="number" th:field="*{codigoPostal}" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('codigoPostal')}" th:text="${#fields.errors('*{codigoPostal}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('fonoParticular')}? 'has-error'">
+                                <label class="control-label">Tel&eacute;fono particular</label>
+                                <input type="text" th:field="*{fonoParticular}" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('fonoParticular')}" th:text="${#fields.errors('*{fonoParticular}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('celular')}? 'has-error'">
+                                <label class="control-label">Tel&eacute;fono celular</label>
+                                <input type="text" th:field="*{celular}" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('celular')}" th:text="${#fields.errors('*{celular}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('fonoOpcional')}? 'has-error'">
+                                <label class="control-label">Tel&eacute;fono opcional</label>
+                                <input type="text" th:field="*{fonoOpcional}" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('fonoOpcional')}" th:text="${#fields.errors('*{fonoOpcional}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('email')}? 'has-error'">
+                                <label class="control-label">Email</label>
+                                <input type="text" th:field="*{email}" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('email')}" th:text="${#fields.errors('*{email}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('emailLaboral')}? 'has-error'">
+                                <label class="control-label">Email laboral</label>
+                                <input type="text" th:field="*{emailLaboral}" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('emailLaboral')}" th:text="${#fields.errors('*{emailLaboral}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('emailOpcional')}? 'has-error'">
+                                <label class="control-label">Email opcional</label>
+                                <input type="text" th:field="*{emailOpcional}" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('emailOpcional')}" th:text="${#fields.errors('*{emailOpcional}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('tipoVigencia.codVigencia')}? 'has-error'">
+                                <label class="control-label">Tipo de Vigencia</label>
+                                <select th:field="*{tipoVigencia.codVigencia}" class="form-control">
+                                    <option th:each="tipoVigencia: ${vigencias}"
+                                            th:selected="${usuario.tipoVigencia.codVigencia == tipoVigencia.codVigencia}"
+                                            th:value="${tipoVigencia.codVigencia}"
+                                            th:text="${tipoVigencia.nomVigencia}"></option>
+                                </select>
+                                <label class="error" th:if="${#fields.hasErrors('tipoVigencia.codVigencia')}" th:text="${#fields.errors('*{tipoVigencia.codVigencia}')}"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('tipoVigencia.codVigencia')}? 'has-error'">
+                                <label class="control-label">Estado del Usuario</label>
+                                <div class="radio">
+                                    <label class="radio-inline">
+                                        <input type="radio" th:checked="${usuario.estado == null}" th:field="*{estado}" th:value="null"/> Sin Información
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" th:checked="${usuario.estado == true}" th:field="*{estado}" th:value="true"/> Vivo
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" th:checked="${usuario.estado == false}" th:field="*{estado}" th:value="false"/> Fallecido
+                                    </label>
+                                </div>
+                                <label class="error" th:if="${#fields.hasErrors('estado')}" th:text="${#fields.errors('*{estado}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--
+                    TODO BORRAR
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group" th:class="${#fields.hasErrors('comoSupoDeRedExalumnos.codigo')}? 'has-error'">
+                        <label class="control-label">&iquest;C&oacute;mo supo el usuario acerca de la Red de Exalumnos?</label>
+                        <select th:field="*{comoSupoDeRedExalumnos.codigo}" class="form-control">
+                            <option th:each="razon: ${razones}"
+                                    th:selected="${usuario.comoSupoDeRedExalumnos.codigo == razon.codigo}"
+                                    th:value="${razon.codigo}" th:text="${razon.titulo}"></option>
+                        </select>
+                        <label class="error" th:if="${#fields.hasErrors('comoSupoDeRedExalumnos.codigo')}" th:text="${#fields.errors('*{comoSupoDeRedExalumnos.codigo}')}"></label>
+                    </div>
+                    -->
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group">
+                        <label class="control-label">Opciones varias</label>
+
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" th:field="*{preferenciaUsuarioUsmempleo.ofertasPorCorreo}"
+                                               th:checked="${usuario.preferenciaUsuarioUsmempleo?.ofertasPorCorreo == true}"/>Recibir ofertas
+                                        laborales por correo.
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" th:field="*{preferenciaUsuarioUsmempleo.mostrarFoto}"
+                                               th:checked="${usuario.preferenciaUsuarioUsmempleo?.mostrarFoto == true}"/>Mostrar foto de
+                                        perfil.
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" th:field="*{preferenciaUsuarioUsmempleo.mostrarExpectativaSalario}"
+                                               th:checked="${usuario.preferenciaUsuarioUsmempleo?.mostrarExpectativaSalario == true}"/>Mostrar
+                                        expectativa salarial.
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" th:field="*{preferenciaUsuarioUsmempleo.estadoCivil}"
+                                               th:checked="${usuario.preferenciaUsuarioUsmempleo?.estadoCivil == true}"/>Mostrar estado
+                                        civil.
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" th:field="*{preferenciaUsuarioUsmempleo.cvVisible}"
+                                               th:checked="${usuario.preferenciaUsuarioUsmempleo?.cvVisible == true}"/>Curriculum vitae
+                                        visible
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" th:field="*{preferenciaUsuarioUsmempleo.habilitadoParaGrabar}"
+                                               th:checked="${usuario.preferenciaUsuarioUsmempleo?.habilitadoParaGrabar == true}"/>Habilitado
+                                        para grabar video curriculo.
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" th:field="*{preferenciaUsuarioUsmempleo.newsletter}"
+                                               th:checked="${usuario.preferenciaUsuarioUsmempleo?.newsletter == true}"/>Suscribirse a Newsletter Sansano
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" th:field="*{preferenciaUsuarioUsmempleo.actualizarDatos}"
+                                               th:checked="${usuario.preferenciaUsuarioUsmempleo?.actualizarDatos == true}"/>Debe actualizar sus datos.
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" >
+                                <label class="control-label">Informaci&oacute;n Personal</label>
+                                <input type="text" class="form-control" th:field="*{preferenciaUsuarioUsmempleo.infoPersonal}" placeholder="Informacion acerca del usuario"/>
+                                <!--<label class="error" th:if="${#fields.hasErrors('email')}" th:text="${#fields.errors('*{email}')}"></label>-->
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" >
+                                <label class="control-label">Encabezado</label>
+                                <input type="text" class="form-control" th:field="*{preferenciaUsuarioUsmempleo.encabezado}" placeholder="Ingresa aqui un encabezado que te represente como profesional."/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group" >
+                                <label class="control-label">Fecha Inicio Permiso para Postular</label>
+                                <input id="fechaInicioPermiso" type="text" class="form-control"  th:field="*{preferenciaUsuarioUsmempleo.inicioPermisoPost}" placeholder="DD/MM/AAAA"/>
+                                <label class="error" th:if="${#fields.hasErrors('preferenciaUsuarioUsmempleo.inicioPermisoPost')}" th:text="${#fields.errors('*{preferenciaUsuarioUsmempleo.inicioPermisoPost}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group" >
+                                <label class="control-label">Fecha Fin Permiso para Postular</label>
+                                <input id="fechaFinPermiso" type="text" class="form-control" th:field="*{preferenciaUsuarioUsmempleo.finPermisoPost}" placeholder="DD/MM/AAAA" />
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group" >
+                                <label class="control-label">Formato Curriculum</label>
+                                <select th:field="*{preferenciaUsuarioUsmempleo.formatoCvUsmempleo.id}" class="form-control">
+                                    <option th:each="formato: ${formatoCv}"
+                                            th:value="${formato.id}"
+                                            th:text="${formato.nombre}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group">
+                        <label class="control-label">Informaci&oacute;n Profesional del Usuario</label>
+
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" th:field="*{informacionProfesional.movilidadPais}" /> Disponibilidad para viajar por el país.
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" th:field="*{informacionProfesional.movilidadRegion}" /> Disponibilidad para viajar por la región.
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" th:field="*{informacionProfesional.licenciaConducir}" /> Posee licencia de conducir.
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" th:field="*{informacionProfesional.vehiculoPropio}" /> Posee vehículo propio.
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" >
+                                <label class="control-label">Expectativa de Sueldo</label>
+                                <input type="number" class="form-control"  th:field="*{informacionProfesional.expectativaSalarial}"/>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" >
+                                <label class="control-label">Años Experiencia Laboral</label>
+                                <input type="number" class="form-control" th:field="*{informacionProfesional.anoExpLaboral}" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" >
+                                <label class="control-label">Objetivo Profesional</label>
+                                <input type="text" class="form-control" th:field="*{informacionProfesional.objetivoProfesional}" />
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" >
+                                <label class="control-label">Distinciones</label>
+                                <input type="text" class="form-control" th:field="*{informacionProfesional.distinciones}" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" >
+                                <label class="control-label">Tipo de Moneda:</label>
+                                <select th:field="*{informacionProfesional.tipoMoneda.codigo}" class="form-control">
+                                    <option th:each="moneda: ${monedas}" th:value="${moneda.codigo}" th:text="${moneda.nombre}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" >
+                                <label class="control-label">Situación Laboral</label>
+                                <select th:field="*{informacionProfesional.situacionLaboral.codigo}" class="form-control">
+                                    <option th:each="sit: ${situacion}" th:value="${sit.codigo}" th:text="${sit.nombre}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" >
+                                <label class="control-label">Disponibilidad</label>
+                                <select th:field="*{informacionProfesional.disponibilidad.codigo}" class="form-control">
+                                    <option th:each="disp: ${disponibilidad}" th:value="${disp.codigo}" th:text="${disp.nombre}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" >
+                                <label class="control-label">Dominio Computacional</label>
+                                <select th:field="*{informacionProfesional.dominioComputacional.codigo}" class="form-control">
+                                    <option th:each="dom: ${dominioComp}" th:value="${dom.codigo}" th:text="${dom.nombre}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row" id="contrasena">
+                        <div class="col-sm-6">
+                            <div class="form-group" th:classappend="${passwordMatchError}? 'has-error'">
+                                <label class="control-label" >Contrase&ntilde;a</label>
+                                <input type="password" th:field="*{credencialesAcceso.password}" name="credencialesAcceso.password" placeholder="Dejar en blanco para no cambiar" class="form-control"/>
+                                <label class="error" th:text="${passwordMatchError}" th:if="${passwordMatchError}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" th:classappend="${passwordMatchError}? 'has-error'">
+                                <label class="control-label">Confirmar contrase&ntilde;a</label>
+                                <input type="password" name="confirmPassword" placeholder="Dejar en blanco para no cambiar" class="form-control"/>
+                                <label class="error" th:text="${passwordMatchError}" th:if="${passwordMatchError}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <input type="hidden" th:name="id" th:value="*{id}"/>
+                        <a th:href="@{/usuario/perfil/{id}(id=${usuario.id})}" class="btn btn-white">Cancelar</a>
+                        <button class="btn btn-primary" type="submit">Guardar cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!--/*/
+<th:block layout:fragment="scripts">
+<script th:src="@{/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
+<script th:inline="javascript">
+    $(function(){
+        $.fn.datepicker.dates['es'] = {
+            days: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+            daysShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
+            daysMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa", "Do"],
+            months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+            monthsShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+            today: "Hoy"
+        };
+        $('#fechaNacimiento').datepicker({
+            format: 'dd/mm/yyyy',
+            todayBtn: "linked",
+            keyboardNavigation: false,
+            forceParse: false,
+            autoclose: true,
+            language: "es"
+        });
+            $('#fechaInicioPermiso').datepicker({
+                format: 'dd/mm/yyyy',
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                language: "es"
+            });
+            $('#fechaFinPermiso').datepicker({
+                format: 'dd/mm/yyyy',
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                language: "es"
+            });
+    });
+</script>
+</th:block>/*/-->
+
+</body>
+</html>

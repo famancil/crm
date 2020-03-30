@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='indices', actualSubTemplate='personas', actualSubSubTemplate='cantidadPersonasConTrabajoPorTramoIngreso'">
+<head>
+    <title>Indice de Personas por Tramo de Ingreso</title>
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Indice de Personas por Tramo de Ingreso</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a href="#">Indices</a></li>
+        <li><a th:href="@{/indices/personas}">Personas</a></li>
+        <li><a th:href="@{/indices/personas/cantidadPersonasConTrabajoPorTramoIngreso}">Indice de Personas por Tramo de Ingreso</a></li>
+    </ol>
+</div>
+
+
+
+<div layout:fragment="content">
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Indice de Personas por Tramo de Ingreso</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content" >
+
+                <form th:action="@{/indices/personas/buscarCantidadPersonasConTrabajoPorTramoIngreso}" method="GET" >
+
+                    <div class="row">
+                        <div class="col-sm-6" >
+                            <div class="form-group" >
+                                <label class="control-label">Pa&iacute;s:</label>
+                                <select id="pais" class="form-control" onchange="mostrarOpcionesInstituciones()">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6" >
+                            <div class="form-group" >
+                                <label class="control-label">Instituci&oacute;n:</label>
+                                <select name="codInstitucion" id="codInstitucion" class="form-control" onchange="mostrarOpcionesCarrerasAsociadasAInstitucion()">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-12" >
+                            <div class="form-group" >
+                                <label   class='control-label'>Carrera:</label>
+                                <select name="codCarrera" id="codCarrera" class="form-control" >
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group text-center">
+                        <button class="btn btn-primary" type="submit">Buscar</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="col-lg-12" th:if="${personasConTrabajoPorTramoIngreso != null}" id="resultados-indice">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>
+                    Resultados del indice
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content">
+                <div class="alert alert-info alert-dismissable" th:if="${personasConTrabajoPorTramoIngreso}">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    Se han encontrado los siguientes resultados para tu b&uacute;squeda
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="control-label">Tabla Cantidad Personas con Trabajo por Tramo Ingreso</label>
+                            <table class="table table-striped table-bordered table-hover" th:if="${personasConTrabajoPorTramoIngreso}">
+                                <thead>
+                                <tr>
+                                    <th>TRAMO</th>
+                                    <th>CANTIDAD</th>
+                                    <th>PORCENTAJE</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr >
+                                    <td> 0 - 172.000 </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[0]}"> </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[1]}"> </td>
+                                </tr>
+                                <tr >
+                                    <td> 172.000 - 300.000 </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[2]}"> </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[3]}"> </td>
+                                </tr>
+                                <tr >
+                                    <td> 300.000 - 600.000 </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[4]}"> </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[5]}"> </td>
+                                </tr>
+                                <tr >
+                                    <td> 600.000 - 900.000 </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[6]}"> </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[7]}"> </td>
+                                </tr>
+                                <tr >
+                                    <td> 900.000 - 1.200.000 </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[8]}"> </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[9]}"> </td>
+                                </tr>
+                                <tr >
+                                    <td> 1.200.000 - 1.500.000 </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[10]}"> </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[11]}"> </td>
+                                </tr>
+                                <tr >
+                                    <td> 1.500.000 - 1.800.000 </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[12]}"> </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[13]}"> </td>
+                                </tr>
+                                <tr >
+                                    <td> 1.800.000 - 2.100.000 </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[14]}"> </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[15]}"> </td>
+                                </tr>
+                                <tr >
+                                    <td> 2.100.000 &oacute; m&aacute;s </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[16]}"> </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[17]}"> </td>
+                                </tr>
+                                <tr >
+                                    <td> Sin Informaci&oacute;n </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[18]}"> </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[19]}"> </td>
+                                </tr>
+                                <tr >
+                                    <td> Total </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[20]}"> </td>
+                                    <td th:text="${personasConTrabajoPorTramoIngreso[21]}"> </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="control-label">Grafico Cantidad Personas con Trabajo por Tramo Ingreso</label>
+                            <canvas class="center-block" id="incomeTramosIngreso" width="500" height="400"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<th:block layout:fragment="scripts">
+
+    <script th:src="@{/js/jquery-ui-1.10.4.min.js}"></script>
+
+    <!-- ChartJS-->
+    <script th:src="@{/js/plugins/chartJs/Chart.min.js}"></script>
+
+    <script th:inline="javascript">
+        $(document).ready(function() {
+            mostrarOpcionesPaises();
+
+            $('html, body').animate({
+                scrollTop: $("#resultados-indice").offset().top
+            }, 1000);
+
+            mostrarGrafico();
+
+        });
+
+        function mostrarOpcionesPaises() {
+            $.ajax({
+                type: "GET",
+                url: '/geo/paises',
+                success: function (response) {
+                    $.each(response, function(index, value){
+                        if (value.id == 56 ) {
+                            $('#pais').append($("<option></option>").attr("value", value.id).attr("selected", "selected").text(value.nombre));
+                        }
+                        else {
+                            $('#pais').append($("<option></option>").attr("value", value.id).text(value.nombre));
+                        }
+                    });
+
+                    mostrarOpcionesInstituciones();
+                }
+            });
+        }
+
+        function mostrarOpcionesInstituciones() {
+            $.ajax({
+                type: "GET",
+                url: '/opciones/pais/'+$('#pais').val()+'/instituciones',
+                success: function (response) {
+                    $('#codInstitucion').empty();
+
+                    $.each(response, function(index, value){
+                        if (value.codInstitucion == 25 ) {
+                            $('#codInstitucion').append($("<option></option>").attr("value", value.codInstitucion).attr("selected", "selected").text(value.nomInstitucion));
+                        }
+                        else {
+                            $('#codInstitucion').append($("<option></option>").attr("value", value.codInstitucion).text(value.nomInstitucion));
+                        }
+                    });
+
+                    mostrarOpcionesCarrerasAsociadasAInstitucion();
+                }
+            });
+        }
+
+        function mostrarOpcionesCarrerasAsociadasAInstitucion() {
+            $.ajax({
+                type: "GET",
+                url: '/opciones/institucion/'+$('#codInstitucion').val()+'/carreras',
+                success: function (response) {
+                    $('#codCarrera').empty();
+
+                    $('#codCarrera').append($("<option></option>").attr("value", 0).text("Todas"));
+
+                    $.each(response, function(index, value){
+                        $('#codCarrera').append($("<option></option>").attr("value", value.carrera.codCarrera).text(value.carrera.nombreCarrera));
+                    });
+                }
+            });
+        }
+
+        function mostrarGrafico() {
+            tramos = ["0-172.000", "172.000-300.000", "300.000-600.000", "600.000-900.000", "900.000-1.200.000", "1.200.000-1.500.000", "1.500.000-1.800.000", "1.800.000-2.100.000", "2.100.000 ó Más", "S/I"];
+
+            datosTramosIngreso = [[${personasConTrabajoPorTramoIngresoJSON}]];
+            datosTramosIngreso = JSON.parse(datosTramosIngreso);
+            datosTramosIngreso.pop();
+
+            // line chart data
+            var dataTramosIngreso = {
+                labels: tramos,
+                datasets: [
+                    {
+                        fillColor: "rgba(151,187,205,0.2)",
+                        strokeColor: "rgba(151,187,205,0.6)",
+                        highlightFill: "rgba(151,187,205,.8)",
+                        highlightStroke: "rgba(151,187,205,1)",
+                        data: datosTramosIngreso
+                    }
+                ]
+            };
+
+            // get line chart canvas
+            var incomeTramosIngreso = document.getElementById("incomeTramosIngreso").getContext("2d");
+
+            // draw line chart
+            new Chart(incomeTramosIngreso).Bar(dataTramosIngreso);
+        }
+
+    </script>
+
+</th:block>
+
+
+</body>
+</html>
+

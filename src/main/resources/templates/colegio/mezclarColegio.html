@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='colegios', actualSubTemplate='mezclarColegio'">
+<head>
+    <title>Busqueda Mezclar Colegio</title>
+
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Busqueda Mezclar Colegio</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a th:href="@{/colegio}">Colegio</a></li>
+        <li><a th:href="@{/colegio/buscarMezcladorColegio}">Busqueda Mezclar Colegio</a></li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Busqueda Mezclar Colegio
+                    <small>Puede realizar una b&uacute;squeda por el nombre de Colegio que se desea mezclar</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content" style="padding-bottom: 5px;">
+
+                <form th:action="@{/colegio/buscarMezcladorColegio}" method="POST" class="form-horizontal">
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Nombre Colegio</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="nombreOficialBuscar" id="nombreOficialBuscar" class="form-control" th:value="${nombreOficialBuscar}"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group text-center">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button class="btn btn-primary" type="submit">Buscar</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <div class="col-lg-12" th:if="${colegios != null}" id="resultados_busqueda">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content">
+
+                <div th:if="${colegios.size() == 0}" class="alert alert-info alert-dismissable">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    No se han encontrado resultados para tu b&uacute;squeda
+                </div>
+
+                <div th:if="${colegios.size() != 0}">
+                    <div class="ibox-title">
+                        <h5>
+                            Seleccion de Colegios a Mezclar
+                        </h5>
+                    </div>
+
+                    <form th:action="@{/colegio/mezclar}" th:object="${colegio}" method="POST" >
+
+                        <div class="alert alert-danger" th:if="${#fields.hasErrors('*') or errorNombreOficial!=null or errorCheckbox!= null}">
+                            <strong>Atenci&oacute;n: </strong> Debes solucionar los errores marcados en rojo antes de proceder con el registro del Colegio.
+                        </div>
+
+                        <label class="error" th:if="${errorCheckbox}" th:text="${errorCheckbox}"></label>
+
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>NOMBRE COLEGIO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="colegio: ${colegios}" >
+                                    <td>
+                                        <input type="checkbox" name="idsColegiosMezclar" th:value="${colegio.codigo}"/>
+                                    </td>
+                                    <td th:text="${colegio.nombreOficial}">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="ibox-title">
+                            <h5>
+                                Datos del nuevo Colegio
+                            </h5>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <div class="form-group" th:class="${#fields.hasErrors('nombreOficial')}? 'has-error'">
+                                    <label class="control-label">Nombre</label>
+                                    <input type="text" th:field="*{nombreOficial}" class="form-control" placeholder="Si ya se encuentra registrada aparecer&aacute; en el listado"/>
+                                    <label class="error" th:if="${#fields.hasErrors('nombreOficial')}" th:text="${#fields.errors('*{nombreOficial}')}"></label>
+                                    <label class="error" th:if="${errorNombreOficial}" th:text="${errorNombreOficial}"></label>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="control-label">Código RBD</label>
+                                    <input type="number" th:field="*{rbd}" class="form-control"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="control-label">Direcci&oacute;n</label>
+                                    <input type="text" th:field="*{direccion}" class="form-control"/>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-3">
+                                <div class="form-group" >
+                                    <label class="control-label">Pais</label>
+                                    <select th:field="*{pais.id}" id="idPais" class="form-control" onchange="mostrarOpcionesComunas();">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-3" id="divComuna">
+                                <div class="form-group">
+                                    <label class="control-label">Comuna</label>
+                                    <select th:field="*{comuna.codigo}" id="idComuna" class="form-control">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="control-label">Tel&eacute;fono principal</label>
+                                    <input type="text" th:field="*{fonoPrincipal}" class="form-control"/>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div class="form-group" th:class="${#fields.hasErrors('email')}? 'has-error'">
+                                    <label class="control-label">Email</label>
+                                    <input type="email" th:field="*{email}" class="form-control"/>
+                                    <label class="error" th:if="${#fields.hasErrors('email')}" th:text="${#fields.errors('*{email}')}"></label>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="control-label">Vigencia</label>
+                                    <select th:field="*{vigencia.codVigencia}" class="form-control">
+                                        <option th:each="vig : ${tiposVigencia}" th:value="${vig.codVigencia}" th:text="${vig.nomVigencia}" ></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <input type="hidden" th:name="codigo" th:value="*{codigo}"/>
+                        <input type="hidden" name="nombreOficialBuscar" id="nombreOficialBuscar" th:value="${nombreOficialBuscar}"/>
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group text-center">
+                            <button class="btn btn-primary" type="submit">Mezclar</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<th:block layout:fragment="scripts">
+
+    <script th:inline="javascript">
+
+        function mostrarOpcionesPaises() {
+            $.ajax({
+                type: "GET",
+                url: '/geo/paises',
+                success: function (response) {
+
+                    // 0 valor por defecto en el caso que no exista idPais
+                    var idPais = /*[[ ${colegio.pais?.id}  ]]*/ 0;
+
+                    if (idPais==null) {
+                        idPais= '56';
+                    }
+
+                    $.each(response, function (index, value) {
+                        if (value.id == idPais) {
+                            $('#idPais').append($("<option></option>").attr("value", value.id).attr("selected", "selected").text(value.nombre));
+                        }
+                        else {
+                            $('#idPais').append($("<option></option>").attr("value", value.id).text(value.nombre));
+                        }
+                    });
+                    mostrarOpcionesComunas();
+                }
+            });
+        }
+
+        function mostrarOpcionesComunas() {
+            if ($('#idPais').val() == '56' ) {
+
+                $('#divComuna').show();
+
+                $.ajax({
+                    type: "GET",
+                    url: '/geo/comunas',
+                    success: function (response) {
+
+                        $.each(response, function (index, value) {
+                            if (value.codigo == 1) {
+                                $('#idComuna').append($("<option></option>").attr("value", value.codigo).attr("selected", "selected").text(value.nombre));
+                            }else {
+                                $('#idComuna').append($("<option></option>").attr("value", value.codigo).text(value.nombre));
+                            }
+                        });
+                    }
+                });
+            }
+            else {
+                $('#divComuna').hide();
+            }
+        }
+
+        $(function() {
+            $("#nombreOficial").autocomplete({
+                minLength:3,
+                source: function (request, response) {
+                    $.getJSON("/opciones/colegios", {
+                                term: encodeURI(request.term)
+                            },
+                            response);
+                }
+            });
+        });
+
+        $(document).ready(function() {
+            $('html, body').animate({
+                scrollTop: $("#resultados_busqueda").offset().top
+            }, 1000);
+
+
+            // no mostrar valor por defecto
+            var mostrar = /*[[ ${mostrar}  ]]*/ 'no-mostrar';
+            if (mostrar == 'mostrar') {
+                mostrarOpcionesPaises();
+            }
+
+        });
+
+    </script>
+
+</th:block>
+
+</body>
+</html>
+

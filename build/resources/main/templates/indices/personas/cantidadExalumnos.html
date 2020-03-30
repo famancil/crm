@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='indices',actualSubTemplate='personas',actualSubSubTemplate='cantidadExalumnos'">
+<head>
+    <title>Indice de Exalumnos</title>
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Indice de Cantidad de Exalumnos por Filtro de A&ntilde;os</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li>Indices</li>
+        <li>Indice de Cantidad de Exalumnos por Filtro de A&ntilde;os</li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Indice de Cantidad de Exalumnos por Filtro de A&ntilde;os <small>Puede filtrar por un rango de a&ntilde;os o por a&ntilde;os ingreso, egreso y/o titulaci&oacute;n.</small></h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+            <div class="ibox-content">
+
+                <form th:action="@{/indices/personas/buscar-cantidad-exalumnos#resultados}" method="GET">
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="control-label">Pa&iacute;s</label>
+                            <select name="pais" id="pais" class="form-control paises"> <!-- onchange="mostrarOpcionesInstituciones(this);" >
+                                <option th:each="p: ${paises}" th:text="${p.nombre}" th:value="${p.id}" th:selected="${p.id==par['idPais']}"></option>-->
+                            </select>
+                        </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div th:fragment="resultsListInstitucion" id="opcionesInstitucion" >
+                                <div class="form-group">
+                                    <label class="control-label">Institucion</label>
+                                    <select name="cod_institucion" id="codInstitucion" class="form-control instituciones"> <!--onchange="mostrarOpcionesCarrerasInstitucion(this);"  th:if="${instituciones != null and instituciones.size()!=0}">
+                                        <option th:each="i: ${instituciones}" th:text="${i.nomInstitucion}" th:value="${i.codInstitucion}" th:selected="${i.codInstitucion==par['codInstitucion']}"></option>
+                                    </select>
+                                    <select name="cod_institucion" id="codInstitucion" class="form-control" onchange=""  th:if="${instituciones == null or instituciones.size()==0}">
+                                        <option value='-1' selected="selected">Sin informacion</option>-->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                        <div th:fragment="resultsListCarreraInstitucion" id="opcionesCarreraInstitucion" >
+                            <div class="form-group">
+                                <label class="control-label">Carrera</label>
+                                <select name="cod_carrera" id="codCarrera" class="form-control carreras"> <!-- onchange=""  th:if="${carrerasInstitucion != null and carrerasInstitucion.size()!=0}">
+                                    <option value='-1' selected="selected">Todas</option>
+                                    <option th:each="c: ${carrerasInstitucion}" th:text="${c.carrera.nombreCarrera}" th:value="${c.carrera.codCarrera}" th:selected="${c.codCarrera==par['codCarrera']}"></option>
+                                </select>
+
+                                <select name="cod_carrera" id="codCarrera"  class="form-control" onchange=""  th:if="${carrerasInstitucion == null or carrerasInstitucion.size()==0}">
+                                    <option value='-1' selected="selected">Todas</option>-->
+                                </select>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label">Filtro</label>
+                                <select name="criterio" id="criterio" class="form-control">
+                                    <option value="rangoAnios" th:selected="${crit}=='rangoAnios'">Rango de años</option>
+                                    <option value="anioEvento" th:selected="${crit}=='anioEvento'">Año espec&iacute;fico</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="row">
+                        <div id="rango">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="control-label">Año Inicio</label>
+                                    <select name="anioInicio" id="anioInicio" class="form-control">
+                                        <option value='0' >&lt;Seleccione Año Inicio&gt;</option>
+                                        <option th:each="i: ${#numbers.sequence(1930,#dates.year(#dates.createNow()))}"
+                                                th:value="${i}" th:text="${i}" th:selected="${i==par['anioInicio']}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="control-label">Año Fin</label>
+                                    <select name="anioFin" id="anioFin"  class="form-control">
+                                        <option value='0' >&lt;Seleccione Año Fin&gt;</option>
+                                        <option th:each="i: ${#numbers.sequence(1930,#dates.year(#dates.createNow()))}"
+                                                th:value="${i}" th:text="${i}" th:selected="${i==par['anioFin']}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="especifico">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="control-label">Año Ingreso</label>
+                                    <select name="anioIngreso" id="anioIngreso" class="form-control">
+                                        <option value='0' >&lt;Seleccione Año Ingreso&gt;</option>
+                                        <option th:each="i: ${#numbers.sequence(1930,#dates.year(#dates.createNow()))}"
+                                                th:value="${i}" th:text="${i}" th:selected="${i==par['anioIngreso']}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="control-label">Año Egreso</label>
+                                    <select name="anioEgreso" id="anioEgreso" class="form-control">
+                                        <option value='0' >&lt;Seleccione Año Egreso&gt;</option>
+                                        <option th:each="i: ${#numbers.sequence(1930,#dates.year(#dates.createNow()))}"
+                                                th:value="${i}" th:text="${i}" th:selected="${i==par['anioEgreso']}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="control-label">Año Titulacion</label>
+                                    <select name="anioTitulacion" id="anioTitulacion" class="form-control">
+                                        <option value='0' >&lt;Seleccione Año Titulacion&gt;</option>
+                                        <option th:each="i: ${#numbers.sequence(1930,#dates.year(#dates.createNow()))}"
+                                                th:value="${i}" th:text="${i}" th:selected="${i==par['anioTitulacion']}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group text-center">
+                        <button class="btn btn-primary" onClick="mostrarResultados()" type="submit">Buscar</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="resultados" class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>
+                    Resultados del indice
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content">
+
+                <div class="alert alert-info alert-dismissable">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    Se han encontrado los siguientes resultados para tu busqueda por <strong th:if="${crit == 'rangoAnios'}" th:text="${'rango de años entre los años '+ par['anioInicio'] + ' y ' + par['anioFin']}"></strong><strong th:if="${crit == 'anioEvento'}">años en especifico</strong>
+                    <strong th:if="${crit == 'anioEvento' and par['anioIngreso'] != 0 and par['anioEgreso'] == 0 and par['anioTitulacion'] == 0}" th:text="${'de exalumnos que ingresaron el ' + par['anioIngreso']}"></strong>
+                    <strong th:if="${crit == 'anioEvento' and par['anioIngreso'] == 0 and par['anioEgreso'] != 0 and par['anioTitulacion'] == 0}" th:text="${'de exalumnos que egresaron el ' + par['anioEgreso']}"></strong>
+                    <strong th:if="${crit == 'anioEvento' and par['anioIngreso'] == 0 and par['anioEgreso'] == 0 and par['anioTitulacion'] != 0}" th:text="${'de exalumnos que se titularon en el ' + par['anioTitulacion']}"></strong>
+                    <strong th:if="${crit == 'anioEvento' and par['anioIngreso'] != 0 and par['anioEgreso'] != 0 and par['anioTitulacion'] == 0}" th:text="${'de exalumnos que ingresaron el ' + par['anioIngreso'] + ' y egresaron el ' + par['anioEgreso']}"></strong>
+                    <strong th:if="${crit == 'anioEvento' and par['anioIngreso'] != 0 and par['anioEgreso'] == 0 and par['anioTitulacion'] != 0}" th:text="${'de exalumnos que ingresaron el ' + par['anioIngreso'] + ' y se titularon en el ' + par['anioTitulacion']}"></strong>
+                    <strong th:if="${crit == 'anioEvento' and par['anioIngreso'] == 0 and par['anioEgreso'] != 0 and par['anioTitulacion'] != 0}" th:text="${'de exalumnos que egresaron el ' + par['anioEgreso'] + ' y se titularon en el ' + par['anioTitulacion']}"></strong>
+                    <strong th:if="${crit == 'anioEvento' and par['anioIngreso'] != 0 and par['anioEgreso'] != 0 and par['anioTitulacion'] != 0}" th:text="${'de exalumnos que ingresaron el ' + par['anioIngreso'] + ', egresaron el ' + par['anioEgreso'] + ' y se titularon en el ' + par['anioTitulacion']}"></strong>
+                </div>
+                <canvas th:if="${par['anioIngreso'] == 0 and par['anioEgreso'] == 0 and par['anioTitulacion'] == 0}" class="center-block" id="income" width="700" height="400"></canvas>
+                <canvas th:if="${par['anioInicio'] == 0 and par['anioFin'] == 0}" class="center-block" id="income" width="300" height="400"></canvas>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<th:block layout:fragment="scripts">
+            <script th:src="@{/js/jquery-ui-1.10.4.min.js}"></script>
+    <script th:inline="javascript">
+        $(document).ready(function() {
+            mostrarGrafico();
+            //mostrarOpcionesPaises();
+            cambiarEstadoTextBox([[${crit}]]);
+
+            $('html, body').animate({
+                scrollTop: $("#resultados").offset().top
+            }, 1000);
+
+            $('#criterio').change(function(){
+                resetSelects();
+                cambiarEstadoTextBox($(this).val());
+            });
+
+            $.ajax({
+                type: "GET",
+                url: '/edu/paises',
+                success: function (response) {
+                    $.each(response, function(index, value) {
+                        if(value.id == [[${par['idPais']}]]){
+                            $('.paises').append($("<option></option>").attr("value", value.id).text(value.nombre).attr("selected",true));
+                        }else{
+                        $('.paises').append($("<option></option>").attr("value", value.id).text(value.nombre));
+                    }
+                    });
+                }
+            });
+
+            $.ajax({
+                type: "GET",
+                url: '/edu/pais/'+[[${par['idPais']}]]+'/instituciones',
+                success: function (response) {
+                    $('.instituciones').empty();
+                    $.each(response, function(index, value){
+                        if(value.codInstitucion == [[${par['codInstitucion']}]]){
+                            $('.instituciones').append($("<option></option>").attr("value", value.codInstitucion).text(value.nomInstitucion).attr("selected",true))
+                                    .trigger("change");
+                        }else {
+                            $('.instituciones').append($("<option></option>").attr("value", value.codInstitucion).text(value.nomInstitucion))
+                                    .trigger("change");
+                        }
+                    });
+                }
+            });
+
+            var carreras = [];
+            $.ajax({
+                type: "GET",
+                url: '/edu/pais/institucion/'+[[${par['codInstitucion']}]]+'/carreras',
+                success: function (response) {
+                    carreras = response;
+                    $('.carreras').empty();
+                    if([[${par['codCarrera']}]] == -1){
+                        $('.carreras').append($("<option></option>").attr("value", -1).text('Todas').attr("selected",true))
+                    }else{
+                        $('.carreras').append($("<option></option>").attr("value", -1).text('Todas'))
+                    }
+                    $.each(response, function(index, value){
+                        if([[${par['codCarrera']}]] == -1){
+                            $('.carreras').append($("<option></option>").attr("value", value.codCarrera).text(value.nombreCarrera))
+                                    .trigger("change");
+                        }else {
+                            $('.carreras').append($("<option></option>").attr("value", value.codCarrera).text(value.nombreCarrera).attr("selected",true))
+                                    .trigger("change");
+                        }
+                    });
+                }
+            });
+
+            $(".paises").change(function(){
+                $.ajax({
+                    type: "GET",
+                    url: '/edu/pais/'+$(this).val()+'/instituciones',
+                    success: function (response) {
+                        $('.instituciones').empty();
+                        $.each(response, function(index, value){
+                            $('.instituciones').append($("<option></option>").attr("value", value.codInstitucion).text(value.nomInstitucion))
+                                    .trigger("change");
+                        });
+                    }
+                });
+            });
+
+            var carreras = [];
+            $(".instituciones").change(function(){
+                $.ajax({
+                    type: "GET",
+                    url: '/edu/pais/institucion/'+$(this).val()+'/carreras',
+                    success: function (response) {
+                        carreras = response;
+                        $('.carreras').empty();
+                        $('.carreras').append($("<option></option>").attr("value", -1).text('Todas'))
+                        $.each(response, function(index, value){
+                            $('.carreras').append($("<option></option>").attr("value", value.codCarrera).text(value.nombreCarrera))
+                                    .trigger("change");
+                        });
+                    }
+                });
+            });
+        });
+
+        function resetSelects() {
+            $('#anioInicio').val(0);
+            $('#anioFin').val(0);
+            $('#anioIngreso').val(0);
+            $('#anioEgreso').val(0);
+            $('#anioTitulacion').val(0);
+        }
+
+        function hideAll() {
+            $('#rango').hide();
+            $('#especifico').hide();
+        }
+
+        function cambiarEstadoTextBox(criterioBusqueda) {
+            hideAll();
+            if (criterioBusqueda == "rangoAnios") {
+                $('#rango').show();
+                $('#criterio').val('rangoAnios');
+            }
+            else if (criterioBusqueda == "anioEvento") {
+                $('#especifico').show();
+                $('#criterio').val('anioEvento');
+            }
+        }
+
+        function mostrarGrafico() {
+            anios = [[${anios}]];
+            valores = [[${cantidadExalumnos}]];
+            anios = JSON.parse(anios)
+            valores = JSON.parse(valores)
+            if(anios){
+                // bar chart data
+                var barData = {
+                    labels: anios,
+                    datasets: [
+                        {
+                            fillColor: "rgba(151,187,205,0.2)",
+                            strokeColor: "rgba(151,187,205,0.6)",
+                            highlightFill: "rgba(151,187,205,.8)",
+                            highlightStroke: "rgba(151,187,205,1)",
+                            data: valores
+                        }
+                    ]
+                }
+
+                // get bar chart canvas
+                var income = document.getElementById("income").getContext("2d");
+
+                // draw bar chart
+                new Chart(income).Bar(barData);
+            }
+        }
+    </script>
+
+    <!-- ChartJS-->
+    <script th:src="@{/js/plugins/chartJs/Chart.min.js}"></script>
+</th:block>
+</body>
+</html>

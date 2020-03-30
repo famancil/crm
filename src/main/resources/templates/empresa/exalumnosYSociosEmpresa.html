@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='empresas'">
+<head>
+    <title>Exalumnos y Socios de la Empresa</title>
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Exalumnos y Socios la Empresa</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li>Empresas</li>
+        <li class="active">
+            <a th:href="@{/empresa/perfil/{id}(id=${empresa.id})}">
+            <span th:switch="${empresa.razonSocial}">
+                <strong th:case="null">Sin Información</strong>
+                <strong th:case="*" th:text="${empresa.razonSocial}"></strong>
+            </span></a>
+        </li>
+        <li>Exalumnos Y Socios</li>
+    </ol>
+</div>
+
+
+<div layout:fragment="content">
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        <div class="row">
+
+                            <div class="m-b-md">
+                                <a th:href="@{/empresa/{id}/modificar(id=${empresa.id})}"
+                                   class="btn btn-white btn-xs pull-right">
+                                    Editar informaci&oacute;n de empresa
+                                </a>
+                                <h2 th:switch="${empresa.razonSocial}">
+                                    <span th:case="null">Sin Información</span>
+                                    <span th:case="*" th:text="${empresa.razonSocial}"></span>
+                                </h2>
+                            </div>
+
+                            <div class="col-lg-2">
+                                <p class="text-center">
+                                    <a th:if="${empresa.logo==true}">
+                                        <img th:src="'http://empleos.sansanos.cl/data/empresas/logos/'+*{empresa.id}+'_100.jpg'" height="100" width="100"/>
+                                    </a>
+                                    <a th:if="${empresa.logo==false}">
+                                        <img th:src="'http://empleos.sansanos.cl/resources/images/NoImagen.jpg'" height="100" width="100"/>
+                                    </a>
+                                </p>
+                            </div>
+
+                            <div class="col-lg-5">
+
+                                <dl class="dl-horizontal">
+
+                                    <dt>Empresa:</dt>
+                                    <dd th:switch="${empresa.nombreFantasiaEmpresa}">
+                                        <span th:case="null">Sin Información</span>
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="*" th:text="${empresa.nombreFantasiaEmpresa}"></span>
+                                    </dd>
+                                    <dt>Razon Social:</dt>
+                                    <dd th:switch="${empresa.razonSocial}">
+                                        <span th:case="null">Sin Información</span>
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="*" th:text="${empresa.razonSocial}"></span>
+                                    </dd>
+                                    <dt th:if="${empresa.rutEmpresa!=null}">Rut:</dt>
+                                    <dd th:if="${empresa.rutEmpresa!=null}" th:switch="${empresa.rutEmpresa}">
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="*" th:text="${empresa.rutEmpresa}"></span>
+                                    </dd>
+                                    <dt th:if="${empresa.idEmpresaExtranjera!=null}">ID:</dt>
+                                    <dd th:if="${empresa.idEmpresaExtranjera!=null}" th:switch="${empresa.idEmpresaExtranjera}">
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="*" th:text="${empresa.idEmpresaExtranjera}"></span>
+                                    </dd>
+                                    <dt>Giro:</dt>
+                                    <dd th:switch="${empresa.giroEmpresa}">
+                                        <span th:case="null">Sin Información</span>
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="*" th:text="${empresa.giroEmpresa}"></span>
+                                    </dd>
+                                    <dt>Sector:</dt>
+                                    <dd th:switch="${empresa.sector.nombre}">
+                                        <span th:case="null">Sin Información</span>
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="*" th:text="${empresa.sector.nombre}"></span>
+                                    </dd>
+                                </dl>
+                            </div>
+
+                            <div class="col-lg-5">
+                                <dl class="dl-horizontal">
+                                    <dt>Headhunter</dt>
+                                    <dd th:switch="${empresa.headHunter}">
+                                        <span th:case="null">Sin Información</span>
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="true">SI</span>
+                                        <span th:case="false">NO</span>
+                                    </dd>
+                                    <dt>Nacionalidad:</dt>
+                                    <dd th:switch="${empresa.pais.nombreNacionalidad}">
+                                        <span th:case="null">Sin Información</span>
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="*" th:text="${empresa.pais.nombreNacionalidad}"></span>
+                                    </dd>
+                                    <dt>Nivel de Facturaci&oacute;n:</dt>
+                                    <dd th:switch="${empresa.sector.nombre}">
+                                        <span th:case="null">Sin Información</span>
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="*" th:text="${empresa.nivelFacturacion.nomNivelFacturacion}"></span>
+                                    </dd>
+                                    <dt># Trabajadores</dt>
+                                    <dd th:switch="${empresa.numEmpleados}">
+                                        <span th:case="null">Sin Información</span>
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="*" th:text="${empresa.numEmpleados}"></span>
+                                    </dd>
+                                    <dt># Ofertas Publicadas</dt>
+                                    <dd th:switch="${nOfertas}">
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="*" th:text="${nOfertas}"></span>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="row">
+                            <div id="exalYSocios">
+                                <div class="hr-line-dashed"></div>
+                                <div class="col-lg-12">
+                                    <label class="control-label">EXALUMNOS Y SOCIOS:</label>
+                                    <table class="table table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <td>NOMBRE</td>
+                                            <td>CARGO</td>
+                                            <td>COMPROMISOS VIGENTES</td>
+                                            <td>SUCURSAL/DEPARTAMENTO</td>
+                                            <td>DESDE</td>
+                                            <td>HASTA</td>
+                                        </tr>
+                                        </thead>
+                                        <tr th:if="${exalumnosYSocios.size()!=0}" th:each="exalYSoc : ${exalumnosYSocios}">
+                                            <td th:switch="${exalYSoc.usuario.nombres}">
+                                                <span th:case="null">Sin Información</span>
+                                                <span th:case="*" th:text="${exalYSoc.usuario.nombres+' '+exalYSoc.usuario.apellidoPaterno}"></span>
+                                            </td>
+                                            <td th:switch="${exalYSoc.cargo}">
+                                                <span th:case="null">Sin Información</span>
+                                                <span th:case="*" th:text="${exalYSoc.cargo}"></span>
+                                            </td>
+                                            <td th:switch="${exalYSoc.cantidadCompromisos}">
+                                                <span th:case="null">0</span>
+                                                <span th:case="*" th:text="${exalYSoc.cantidadCompromisos}"></span>
+                                            </td>
+                                            <td th:switch="${exalYSoc.sucursalEmpresa.sucSucursal}">
+                                                <span th:case="null">Sin Información</span>
+                                                <span th:case="*" th:text="${exalYSoc.sucursalEmpresa.sucSucursal}"></span>
+                                                <span th:if="${exalYSoc.departamento != ' ' and exalYSoc.departamento!=null and exalYSoc.sucursalEmpresa.sucSucursal!=null}" th:text="${' / '+exalYSoc.departamento}"></span>
+                                            </td>
+                                            <td th:switch="${exalYSoc.fechaIngreso}">
+                                                <span th:case="null">Sin Información</span>
+                                                <span th:case="*" th:text="${#calendars.format(exalYSoc.fechaIngreso, 'dd/MM/yyyy')}"></span>
+                                            </td>
+                                            <td th:switch="${exalYSoc.fechaEgreso}">
+                                                <span th:case="null">Sin Información</span>
+                                                <span th:case="*" th:text="${#calendars.format(exalYSoc.fechaEgreso, 'dd/MM/yyyy')}"></span>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${exalumnosYSocios.size()==0}">
+                                            <td colspan="6" style="color:red" align="center">NO HAY INFORMACION AL RESPECTO</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

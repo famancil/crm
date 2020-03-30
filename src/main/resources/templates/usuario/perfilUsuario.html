@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='usuarios'">
+<head>
+    <title>Perfil del Usuario</title>
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Perfil de usuario</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li>Usuarios</li>
+        <li class="active">
+            <a th:href="@{/usuario/perfil/{id}(id=${perfil.id})}">
+            <span th:switch="${nombre}">
+                <strong th:case="null">Sin Información</strong>
+                <strong th:case="*" th:text="${nombre}"></strong>
+            </span>
+            </a>
+        </li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+
+    <div class="col-lg-9">
+
+        <div class="ibox">
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="m-b-md">
+                            <a sec:authorize="hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN_INSTITUCION','ROLE_AYUDANTE_INSTITUCION','ROLE_ADMIN_CARRERA')" th:href="@{/usuario/perfil/{id}/modificar(id=${perfil.id})}"
+                               class="btn btn-primary btn-xs pull-right">
+                                <i class="fa fa-pencil-square-o"></i> Editar informaci&oacute;n de usuario
+                            </a>
+
+                            <span style="color:white" class="pull-right" th:text="${'-'}"></span>
+
+                            <form action="#" th:action="@{/usuario/perfil/{id}/eliminar(id=${perfil.id})}" method="post" >
+                                <input type="hidden" name="id" th:value="${perfil.id}" />
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <button sec:authorize="hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN_INSTITUCION','ROLE_ADMIN_CARRERA')" class="btn btn-danger btn-xs pull-right" type="submit" onClick="return confirm('¿Está seguro de que desea eliminar este usuario?')"><i class="fa fa-trash-o"></i> Eliminar usuario</button>
+                            </form>
+
+                            <h2 th:switch="${nombre}">
+                                <span th:case="null">Sin Información</span>
+                                <span th:case="*" th:text="${nombre}"></span>
+                            </h2>
+                        </div>
+
+                        <!--
+                        TODO BORRAR
+                            <dl class="dl-horizontal">
+                                <dt>Estado:</dt>
+                                <dd><span class="label label-primary" th:text="${perfil.tipoUsuario.nombre}">Activo</span>
+                                </dd>
+                            </dl>
+                        -->
+
+                        <div class="row">
+
+                            <div class="col-lg-5">
+
+                                <dl class="dl-horizontal">
+
+                                    <dt>Rut:</dt>
+                                    <dd th:switch="${perfil.rut}">
+                                        <span th:case="null">Sin Información</span>
+                                        <span th:case="*"
+                                              th:text="${perfil.rut}+'-'+${perfil.digitoVerificador}"></span>
+                                    </dd>
+                                    <dt>Sexo:</dt>
+                                    <dd th:switch="${perfil.sexo}">
+                                        <span th:case="1">Masculino</span>
+                                        <span th:case="2">Femenino</span>
+                                        <span th:case="*">Sin Informaci&oacute;n</span>
+                                    </dd>
+                                    <dt>Comuna:</dt>
+                                    <dd th:switch="${perfil.comuna.nombre}">
+                                        <span th:case="null">Sin Información</span>
+                                        <span th:case="*" th:text="${perfil.comuna.nombre}"></span>
+                                    </dd>
+                                </dl>
+                            </div>
+
+                            <div class="col-lg-7">
+                                <dl class="dl-horizontal">
+                                    <dt>Fecha de nacimiento:</dt>
+                                    <dd th:switch="${perfil.fechaNacimiento}">
+                                        <span th:case="null">Sin Información</span>
+                                        <span th:case="*"
+                                              th:text="${#calendars.day(perfil.fechaNacimiento)} + ' de ' + ${#calendars.monthName(perfil.fechaNacimiento)} + ' de ' + ${#calendars.year(perfil.fechaNacimiento)}"></span>
+                                    </dd>
+                                    <dt>Edad:</dt>
+                                    <dd th:switch="${edad}">
+                                        <span th:case="null">Sin Información</span>
+                                        <span th:case="*"><span th:text="${edad}"></span> años.</span>
+                                    </dd>
+                                    <dt>Direcci&oacute;n:</dt>
+                                    <dd th:switch="${perfil.direccion}">
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="*" th:text="${perfil.direccion}"></span>
+                                    </dd>
+                                </dl>
+                            </div>
+
+                            <div class="col-lg-12">
+                                <div class="ibox float-e-margins">
+                                    <div class="ibox-title">
+                                        <h5>Informaci&oacute;n de contacto</h5>
+
+                                        <div class="ibox-tools">
+                                            <a class="collapse-link">
+                                                <i class="fa fa-chevron-up"></i>
+                                            </a>
+                                        </div>
+
+                                        <a sec:authorize="hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN_INSTITUCION','ROLE_AYUDANTE_INSTITUCION','ROLE_ADMIN_CARRERA')" data-toggle="modal" class="btn btn-primary btn-xs pull-right" href="#editorFiltroOfertasLaborales" onclick="$('#selectorFiltro1').click();">
+                                            <i class="fa fa-pencil-square-o"></i> Editar ofertas por correo a recibir
+                                        </a>
+                                        <div id="editorFiltroOfertasLaborales" class="modal fade" aria-hidden="true">
+                                            <div class="modal-dialog" style="width: 1000px">
+                                                <div class="modal-content">
+                                                    <div class="modal-body">
+
+                                                        <form id="formEditarFiltroOfertaLaboral" th:action="@{/usuario/{id}/filtroOfertaLaboral(id=${perfil.id})}" method="POST">
+
+                                                            <div class="row">
+                                                                <div class="col-sm-3 b-r">
+                                                                    <h3 class="m-t-none m-b">Seleccion del Filtro</h3>
+
+                                                                    <div class="row">
+                                                                        <div class="col-md-1">
+                                                                            <input onclick="" id="selectorFiltro1" name="selectorFiltro" value="nuevo" type="radio" onchange="cambioEstadoRadio(this.value)" />
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                                                                            <label class="control-label">Nuevo Filtro</label>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="hr-line-dashed"></div>
+
+                                                                    <div class="row">
+                                                                        <div class="col-md-1">
+                                                                            <input onclick="" id="selectorFiltro2" name="selectorFiltro" value="existente" type="radio" onchange="cambioEstadoRadio(this.value)"/>
+                                                                        </div>
+                                                                        <div class="col-md-4">
+                                                                            <label class="control-label">Filtro Existente</label>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <select id="selectFiltroOfertaLaboral" class="form-control" onchange="editarFiltroOfertaLaboral(this.value);" disabled="disabled">
+                                                                                <option th:each="filtro: ${perfil.filtroOfertaLaboralList}"
+                                                                                        th:value="${filtro.id}"
+                                                                                        th:text="${filtro.nombre}"></option>
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-sm-9">
+                                                                    <h3>Filtro Oferta Laboral</h3>
+
+                                                                    <div class="row">
+                                                                        <div class="col-sm-4">
+                                                                            <div class="form-group">
+                                                                                <label class="control-label">Nombre del Filtro</label>
+                                                                                <input id="nombreFiltro" name="nombreFiltro" class="form-control"/>
+                                                                                <label class="error" id="errorNombreFiltro" name="errorNombreFiltro">Ingresar nombre del filtro.</label>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-sm-4">
+                                                                            <div class="form-group">
+                                                                                <label class="control-label">Region</label>
+                                                                                <select name="region" id="region" class="form-control">
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="control-label">Tipo Cargo</label>
+                                                                                <select name="tipoCargo" id="tipoCargo" class="form-control">
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="control-label">Area de la Organizacion</label>
+                                                                                <select name="tipoArea" id="tipoArea" class="form-control">
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-sm-8">
+                                                                            <div class="form-group">
+                                                                                <label class="control-label">Carrera</label>
+                                                                                <select name="carrera" id="carrera" class="form-control">
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-sm-4">
+                                                                            <div class="form-group">
+                                                                                <label class="control-label">Estudios Minimos</label>
+                                                                                <select name="tipoEstudio" id="tipoEstudio" class="form-control">
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="row">
+                                                                        <div class="col-sm-12">
+                                                                            <div class="form-group">
+                                                                                <label class="control-label">Remuneracion entre</label>
+                                                                                <div class="row">
+                                                                                    <div class="col-sm-3">
+                                                                                        <select name="tipoMoneda" id="tipoMoneda" class="form-control">
+                                                                                        </select>
+                                                                                    </div>
+                                                                                    <div class="col-sm-4">
+                                                                                        <input id="salarioLimiteInferior" name="salarioLimiteInferior" class="form-control" type="number"/>
+                                                                                    </div>
+                                                                                    <div class="col-sm-1">
+                                                                                        y
+                                                                                    </div>
+                                                                                    <div class="col-sm-4">
+                                                                                        <input id="salarioLimiteSuperior" name="salarioLimiteSuperior" class="form-control" type="number"/>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <label class="error" id="errorLimiteSalario" name="errorLimiteSalario">Debe ingresar ambos rango para limite de remuneracion.</label>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="row">
+                                                                        <div class="col-sm-9">
+                                                                            <div class="form-group">
+                                                                                <label class="control-label">Experiencia</label>
+                                                                                <div class="row">
+                                                                                    <div class="col-sm-6">
+                                                                                        <select name="rangoAniosExperiencia" id="rangoAniosExperiencia" class="form-control">
+                                                                                        </select>
+                                                                                    </div>
+                                                                                    <div class="col-sm-6">
+                                                                                        <input id="aniosExperiencia" name="aniosExperiencia" type="number" class="form-control"/>
+                                                                                        <label class="error" id="errorAniosExperiencia" name="errorAniosExperiencia">Debe ingresar un numero.</label>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-sm-3">
+                                                                            <div class="form-group">
+                                                                                <label class="control-label">Enviar Email</label>
+                                                                                <div class="checkbox">
+                                                                                    <input id="enviarEmail" name="enviarEmail" type="checkbox" class="form-control"/>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="row">
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="control-label">Dia de Envio</label>
+                                                                                <select name="diaEnvio" id="diaEnvio" class="form-control">
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="control-label">Momento de Envio</label>
+                                                                                <select name="momentoEnvio" id="momentoEnvio" class="form-control">
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="form-group text-center">
+                                                                        <input id="idFiltroOfertaLaboral" name="idFiltroOfertaLaboral" type="hidden" />
+                                                                        <input id="idUsuario" name="idUsuario" type="hidden" th:value="${perfil.id}"/>
+                                                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                                                                        <a data-toggle="modal" class="btn btn-danger" id="botonEliminar" onclick="eliminarFiltro();">
+                                                                            <i class="fa fa-trash-o"></i> Eliminar
+                                                                        </a>
+
+                                                                        <a data-toggle="modal" class="btn btn-primary" onclick="guardarFiltro();">
+                                                                            <i class="fa fa-save"></i> Guardar
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ibox-content" style="padding-left: 0;">
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <dl class="dl-horizontal">
+
+                                                    <dt>Correo electrónico:</dt>
+                                                    <dd th:switch="${perfil.email}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${perfil.email}"></span>
+                                                    </dd>
+                                                    <dt>Teléfono celular:</dt>
+                                                    <dd th:switch="${perfil.celular}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${perfil.celular}"></span>
+                                                    </dd>
+                                                </dl>
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <dl class="dl-horizontal">
+
+                                                    <dt>Teléfono particular:</dt>
+                                                    <dd th:switch="${perfil.fonoParticular}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${perfil.fonoParticular}"></span>
+                                                    </dd>
+                                                    <dt>Teléfono opcional:</dt>
+                                                    <dd th:switch="${perfil.fonoOpcional}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${perfil.fonoOpcional}"></span>
+                                                    </dd>
+                                                </dl>
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <dl class="dl-horizontal">
+
+                                                    <dt>Estado de la persona:</dt>
+                                                    <dd th:switch="${perfil.estado}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="true">Vivo</span>
+                                                        <span th:case="false">Fallecido</span>
+                                                    </dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12" id="informacionPersonal">
+                                <div class="ibox float-e-margins">
+                                    <div class="ibox-title">
+                                        <h5>Informaci&oacute;n personal</h5>
+
+                                        <div class="ibox-tools">
+                                            <a class="collapse-link">
+                                                <i class="fa fa-chevron-up"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <p th:switch="${perfil.preferenciaUsuarioUsmempleo?.infoPersonal}">
+                                                    <span th:case="null">Sin Información</span>
+                                                    <span th:case="*" th:text="${perfil.preferenciaUsuarioUsmempleo.infoPersonal}"></span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12">
+                                <dl class="dl-horizontal">
+                                    <div class="col-lg-10">
+                                        <dt>Trayectoria perfil:</dt>
+                                        <dd>
+                                            <div class="progress active m-b-sm">
+                                                <div th:style="|width: ${perfil.trayectoriaCompleta}%;|" class="progress-bar progress-bar-success"></div>
+                                            </div>
+                                            <small>Trayectoria completada en un <strong><span th:text="${perfil.trayectoriaCompleta}"></span>%</strong>. Indica completitud de datos de su curr&iacute;culum.</small>
+                                            <p></p>
+                                        </dd>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <a sec:authorize="hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN_INSTITUCION','ROLE_AYUDANTE_INSTITUCION','ROLE_ADMIN_CARRERA')" th:href="@{/usuario/{id}/actualizarTrayectoria(id=${perfil.id})}" class="btn btn-primary btn-xs pull-right">
+                                            <i class="fa fa-refresh"> Actualizar</i>
+                                        </a>
+                                    </div>
+                                </dl>
+                            </div>
+
+                            <div class="col-lg-12">
+                                <div class="ibox float-e-margins">
+                                    <div class="ibox-title">
+                                        <a sec:authorize="hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN_INSTITUCION','ROLE_AYUDANTE_INSTITUCION','ROLE_ADMIN_CARRERA')" th:href="@{/antecedente-educacional/perfil/{id}/educacion-superior(id=${perfil.id})}" class="btn btn-primary btn-xs pull-right">
+                                            <i class="fa fa-pencil-square-o"></i> Editar Antecedentes de Educación Superior
+                                        </a>
+                                        <h3>
+                                            Antecedentes de Educacion Superior
+                                        </h3>
+                                    </div>
+                                    <div class="ibox-title">
+                                        <h5>Carreras en la Universidad Técnica Federico Santa María</h5>
+
+                                        <div class="ibox-tools">
+                                            <a class="collapse-link">
+                                                <i class="fa fa-chevron-up"></i>
+                                            </a>
+                                        </div>
+
+                                    </div>
+                                    <div class="ibox-content" style="padding-left: 0;">
+                                        <div th:if="${antecedentesUsm.size()==0}"  class="row">
+                                            <div class="col-lg-12"  style="text-align:center">
+                                                <span>EL USUARIO NO TIENE ANTECEDENTES DE EDUCACION SUPERIOR ASOCIADOS A LA UTFSM</span>
+                                            </div>
+                                        </div>
+
+                                        <div th:each="antecedente : ${antecedentesUsm}"  class="row">
+                                            <div class="col-lg-6">
+                                                <dl class="dl-horizontal">
+
+                                                    <dt>Carrera:</dt>
+                                                    <dd th:switch="${antecedente.carrera.nombreCarrera}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${antecedente.carrera.nombreCarrera}"></span>
+                                                    </dd>
+                                                    <dt>Tipo:</dt>
+                                                    <dd th:switch="${antecedente.carrera.tipoGrado.nomGrado}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${antecedente.carrera.tipoGrado.nomGrado}"></span>
+                                                    </dd>
+                                                </dl>
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <dl class="dl-horizontal">
+                                                    <dt>Año de Ingreso:</dt>
+                                                    <dd th:switch="${antecedente.anioIngreso}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${antecedente.anioIngreso}"></span>
+                                                    </dd>
+                                                    <dt>Año Egreso:</dt>
+                                                    <dd th:switch="${antecedente.anioEgreso}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${antecedente.anioEgreso}"></span>
+                                                    </dd>
+                                                    <dt>Año Título:</dt>
+                                                    <dd th:switch="${antecedente.anioTitulo}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${antecedente.anioTitulo}"></span>
+                                                    </dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12">
+                                <div class="ibox float-e-margins">
+                                    <div class="ibox-title">
+                                        <h5>Estudios en otras Instituciones</h5>
+
+                                        <div class="ibox-tools">
+                                            <a class="collapse-link">
+                                                <i class="fa fa-chevron-up"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="ibox-content" style="padding-left: 0;">
+                                        <div th:if="${antecedentes.size()==0}"  class="row">
+                                            <div class="col-lg-12"  style="text-align:center">
+                                                <span>EL USUARIO NO TIENE ANTECEDENTES DE EDUCACION SUPERIOR ASOCIADOS A OTRAS INSTITUCIONES</span>
+                                            </div>
+                                        </div>
+
+                                        <div th:each="antecedente : ${antecedentes}"  class="row">
+                                            <div class="col-lg-6">
+                                                <dl class="dl-horizontal">
+
+                                                    <dt>Carrera:</dt>
+                                                    <dd th:switch="${antecedente.carrera.nombreCarrera}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${antecedente.carrera.nombreCarrera}"></span>
+                                                    </dd>
+                                                    <dt>Tipo:</dt>
+                                                    <dd th:switch="${antecedente.carrera.tipoGrado.nomGrado}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${antecedente.carrera.tipoGrado.nomGrado}"></span>
+                                                    </dd>
+                                                </dl>
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <dl class="dl-horizontal">
+                                                    <dt>Año de Ingreso:</dt>
+                                                    <dd th:switch="${antecedente.anioIngreso}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${antecedente.anioIngreso}"></span>
+                                                    </dd>
+                                                    <dt>Año Egreso:</dt>
+                                                    <dd th:switch="${antecedente.anioEgreso}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${antecedente.anioEgreso}"></span>
+                                                    </dd>
+                                                    <dt>Año Título:</dt>
+                                                    <dd th:switch="${antecedente.anioTitulo}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${antecedente.anioTitulo}"></span>
+                                                    </dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12">
+                                <div class="ibox float-e-margins">
+                                    <div class="ibox-title">
+                                        <a sec:authorize="hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN_INSTITUCION','ROLE_AYUDANTE_INSTITUCION','ROLE_ADMIN_CARRERA')" th:href="@{/antecedente-educacional/perfil/{id}/educacion-escolar(id=${perfil.id})}" class="btn btn-primary btn-xs pull-right">
+                                            <i class="fa fa-pencil-square-o"></i> Editar Antecedentes De Educación Escolar
+                                        </a>
+                                        <h3>
+                                            Antecedentes de Educación Escolar
+                                        </h3>
+                                    </div>
+                                    <div class="ibox-title">
+                                        <h5>Estudios Escolares</h5>
+
+                                        <div class="ibox-tools">
+                                            <a class="collapse-link">
+                                                <i class="fa fa-chevron-up pull-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="ibox-content" style="padding-left: 0;">
+                                        <div th:if="${colegios.size()==0}"  class="row">
+                                            <div class="col-lg-12"  style="text-align:center">
+                                                <span>EL USUARIO NO TIENE ANTECEDENTES DE EDUCACION ESCOLAR ASOCIADOS</span>
+                                            </div>
+                                        </div>
+
+                                        <div th:each="colegio : ${colegios}"  class="row">
+                                            <div class="col-lg-6">
+                                                <dl class="dl-horizontal">
+
+                                                    <dt>Nombre Colegio:</dt>
+                                                    <dd th:switch="${colegio.colegio.nombreOficial}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${colegio.colegio.nombreOficial}"></span>
+                                                    </dd>
+                                                    <dt>Tipo:</dt>
+                                                    <dd th:switch="${colegio.tipoEstudio.nomEstudio}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${colegio.tipoEstudio.nomEstudio}"></span>
+                                                    </dd>
+                                                </dl>
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <dl class="dl-horizontal">
+                                                    <dt>Año de Ingreso:</dt>
+                                                    <dd th:switch="${colegio.anoIngreso}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${colegio.anoIngreso}"></span>
+                                                    </dd>
+                                                    <dt>Año Egreso:</dt>
+                                                    <dd th:switch="${colegio.anoEgreso}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${colegio.anoEgreso}"></span>
+                                                    </dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12">
+                                <div class="ibox float-e-margins">
+                                    <div class="ibox-title">
+                                        <a sec:authorize="hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN_INSTITUCION','ROLE_AYUDANTE_INSTITUCION','ROLE_ADMIN_CARRERA')" th:href="@{/antecedenteLaboral/perfil/{id}(id=${perfil.id})}" class="btn btn-primary btn-xs pull-right">
+                                            <i class="fa fa-pencil-square-o"></i> Editar Antecedentes Profesionales
+                                        </a>
+                                        <h3>
+                                            Antecedentes Profesionales
+                                        </h3>
+                                    </div>
+                                    <div class="ibox-title">
+                                        <h5>Actividades Desarrolladas</h5>
+
+                                        <div class="ibox-tools">
+                                            <a class="collapse-link">
+                                                <i class="fa fa-chevron-up"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="ibox-content" style="padding-left: 0;">
+                                        <div th:if="${actividades.size()==0}"  class="row">
+                                            <div class="col-lg-12"  style="text-align:center">
+                                                <span>EL USUARIO NO TIENE ANTECEDENTES PROFESIONALES ASOCIADOS</span>
+                                            </div>
+                                        </div>
+                                        <div th:each="actividad : ${actividades}"  class="row">
+                                            <div class="col-lg-6">
+                                                <dl class="dl-horizontal">
+
+                                                    <span th:if="${actividad.empresa!=null}">
+                                                    <dt>Nombre Empresa:</dt>
+                                                    <dd th:switch="${actividad.empresa.nombreFantasiaEmpresa}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${actividad.empresa.nombreFantasiaEmpresa}"></span>
+                                                    </dd>
+                                                    </span>
+                                                    <span th:if="${actividad.sucursalEmpresa!=null}">
+                                                    <dt>Nombre Sucursal:</dt>
+                                                    <dd th:switch="${actividad.sucursalEmpresa.sucSucursal}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${actividad.sucursalEmpresa.sucSucursal}"></span>
+                                                    </dd>
+                                                    </span>
+                                                    <dt>Departamento:</dt>
+                                                    <dd th:switch="${actividad.departamento}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${actividad.departamento}"></span>
+                                                    </dd>
+                                                    <dt>Cargo:</dt>
+                                                    <dd th:switch="${actividad.cargo}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${actividad.cargo}"></span>
+                                                    </dd>
+                                                    <dt>Tipo Cargo:</dt>
+                                                    <dd th:switch="${actividad.tipoCargo.nomCargo}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${actividad.tipoCargo.nomCargo}"></span>
+                                                    </dd>
+                                                </dl>
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <dl class="dl-horizontal">
+
+                                                    <dt>Tipo Actividad:</dt>
+                                                    <dd th:switch="${actividad.tipoActividadExalumno.nomActividadExalumno}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${actividad.tipoActividadExalumno.nomActividadExalumno}"></span>
+                                                    </dd>
+                                                    <dt>Fecha Ingreso:</dt>
+                                                    <dd th:switch="${actividad.fechaIngreso}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${#calendars.format(actividad.fechaIngreso, 'dd/MM/yyyy')}"></span>
+                                                    </dd>
+                                                    <dt>Fecha Egreso:</dt>
+                                                    <dd th:switch="${actividad.fechaEgreso}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${#calendars.format(actividad.fechaEgreso, 'dd/MM/yyyy')}"></span>
+                                                    </dd>
+                                                    <dt>Remuneración Líquida:</dt>
+                                                    <dd th:switch="${actividad.remuneracion}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${actividad.remuneracion}"></span>
+                                                    <span th:switch="${actividad.tipoMoneda.nombre}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${actividad.tipoMoneda.nombre}"></span>
+                                                    </span>
+                                                    </dd>
+                                                    <dt>Descripción Remuneración:</dt>
+                                                    <dd th:switch="${actividad.descripcionRemuneracion}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${actividad.descripcionRemuneracion}"></span>
+                                                    </dd>
+                                                </dl>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <dl class="dl-horizontal">
+                                                    <dt>Descripción:</dt>
+                                                    <dd th:switch="${actividad.descripcion}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${actividad.descripcion}"></span>
+                                                    </dd>
+                                                </dl>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <dl class="dl-horizontal">
+
+                                                    <dt>Nota Remuneración:</dt>
+                                                    <dd th:switch="${actividad.notaRemuneracion}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${actividad.notaRemuneracion}"></span>
+                                                    </dd>
+                                                    <dt>Nota Estabilidad:</dt>
+                                                    <dd th:switch="${actividad.notaEstabilidad}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${actividad.notaEstabilidad}"></span>
+                                                    </dd>
+                                                    <dt>Nota Ingreso:</dt>
+                                                    <dd th:switch="${actividad.notaIngreso}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${actividad.notaIngreso}"></span>
+                                                    </dd>
+                                                </dl>
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <dl class="dl-horizontal">
+
+                                                    <dt>Nota Ambiente:</dt>
+                                                    <dd th:switch="${actividad.notaAmbiente}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${actividad.notaAmbiente}"></span>
+                                                    </dd>
+                                                    <dt>Nota Felicidad:</dt>
+                                                    <dd th:switch="${actividad.notaFelicidad}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${actividad.notaFelicidad}"></span>
+                                                    </dd>
+                                                    <dt>Nota Empresa:</dt>
+                                                    <dd th:switch="${actividad.notaEmpresa}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${actividad.notaEmpresa}"></span>
+                                                    </dd>
+                                                </dl>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-lg-3">
+
+        <div class="wrapper wrapper-content project-manager">
+
+            <p th:switch="${perfil.urlFoto}" class="text-center">
+                <img th:case="null"
+                     src="/img/generic_avatar.png"
+                     class="img-circle circle-border m-b-md img-perfil-usuario"/>
+                <img th:case="*" th:src="'http://perfil.sansanos.cl/data'+${perfil.urlFoto}"
+                     class="img-circle circle-border m-b-md img-perfil-usuario"/>
+            </p>
+
+            <div class="widget yellow-bg p-lg text-center"><i class="fa fa-thumbs-up fa-4x"></i>
+
+                <h3 class="font-bold no-margins">Cumplea&ntilde;os</h3>
+                <small>Faltan</small>
+                <h1 class="m-xs" th:switch="${dias}">
+                    <span th:case="null">--</span>
+                    <span th:case="*" th:text="${dias}"></span>
+                </h1>
+                <small>d&iacute;as.</small>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<th:block layout:fragment="scripts">
+
+    <script th:src="@{/js/jquery-ui-1.10.4.min.js}"></script>
+
+    <script th:inline="javascript" type="text/javascript">
+        /*<![CDATA[*/
+
+        var filtroOfertaLaboral = {};
+
+        function setearValoresDefectoFiltroOfertaLaboral() {
+            filtroOfertaLaboral.nombre = "";
+            filtroOfertaLaboral.regionId = null;
+            filtroOfertaLaboral.tipoCargoId = null;
+            filtroOfertaLaboral.carreraId = 0;
+            filtroOfertaLaboral.tipoAreaId = null;
+            filtroOfertaLaboral.tipoEstudioId = null;
+            filtroOfertaLaboral.aniosExperiencia = null;
+            filtroOfertaLaboral.rangoAniosExperiencia = 0;
+            filtroOfertaLaboral.tipoMonedaId = 0;
+            filtroOfertaLaboral.salarioLimiteInferior = null;
+            filtroOfertaLaboral.salarioLimiteSuperior = null;
+            filtroOfertaLaboral.enviarEmail = false;
+            filtroOfertaLaboral.diaEnvio = 0;
+            filtroOfertaLaboral.momentoEnvio = 0;
+        }
+
+        function editarFiltroOfertaLaboral(id) {
+            filtroOfertaLaboral.id = id;
+            $('#idFiltroOfertaLaboral').attr('value', id);
+
+            $.ajax({
+                type: "GET",
+                url: "/filtroOfertaLaboral/"+id,
+                success: function (response) {
+                    filtroOfertaLaboral.nombre = response.nombre;
+                    $('#nombreFiltro').attr('value', response.nombre);
+
+                    if (response.region) {
+                        filtroOfertaLaboral.regionId = response.region.id;
+                    }
+                    else {
+                        filtroOfertaLaboral.regionId = null;
+                    }
+
+                    if (response.tipoCargo) {
+                        filtroOfertaLaboral.tipoCargoId = response.tipoCargo.codCargo;
+                    }
+                    else {
+                        filtroOfertaLaboral.tipoCargoId = null;
+                    }
+
+                    if (response.carrera) {
+                        filtroOfertaLaboral.carreraId = response.carrera.codCarrera;
+                    }
+                    else {
+                        filtroOfertaLaboral.carreraId = 0;
+                    }
+
+                    if (response.tipoArea) {
+                        filtroOfertaLaboral.tipoAreaId = response.tipoArea.codigo;
+                    }
+                    else {
+                        filtroOfertaLaboral.tipoAreaId = null;
+                    }
+
+                    if (response.tipoEstudio) {
+                        filtroOfertaLaboral.tipoEstudioId = response.tipoEstudio.codEstudio;
+                    }
+                    else {
+                        filtroOfertaLaboral.tipoEstudioId = null;
+                    }
+
+                    if (response.rangoAniosExperiencia) {
+                        filtroOfertaLaboral.rangoAniosExperiencia = response.rangoAniosExperiencia;
+                    }
+                    else {
+                        filtroOfertaLaboral.rangoAniosExperiencia = null;
+                    }
+
+                    if (response.aniosExperiencia) {
+                        filtroOfertaLaboral.aniosExperiencia = response.aniosExperiencia;
+                        $('#aniosExperiencia').attr('value', response.aniosExperiencia);
+                    }
+
+                    else {
+                        filtroOfertaLaboral.aniosExperiencia = null;
+                        $('#aniosExperiencia').attr('value', "");
+                    }
+
+
+                    if (response.tipoMoneda) {
+                        filtroOfertaLaboral.tipoMonedaId = response.tipoMoneda.codigo;
+                    }
+                    else {
+                        filtroOfertaLaboral.tipoMonedaId = 0;
+                    }
+
+                    if (response.salarioLimiteInferior) {
+                        filtroOfertaLaboral.salarioLimiteInferior = response.salarioLimiteInferior;
+                        $('#salarioLimiteInferior').attr('value', response.salarioLimiteInferior);
+                    }
+                    else {
+                        filtroOfertaLaboral.salarioLimiteInferior = null;
+                        $('#salarioLimiteInferior').attr('value', "");
+                    }
+
+                    if (response.salarioLimiteSuperior) {
+                        filtroOfertaLaboral.salarioLimiteSuperior = response.salarioLimiteSuperior;
+                        $('#salarioLimiteSuperior').attr('value', response.salarioLimiteSuperior);
+                    }
+                    else {
+                        filtroOfertaLaboral.salarioLimiteSuperior = null;
+                        $('#salarioLimiteSuperior').attr('value', "");
+                    }
+
+                    if (response.enviarEmail) {
+                        filtroOfertaLaboral.enviarEmail = response.enviarEmail;
+                        $('#enviarEmail').prop('checked', 'true');
+                    }
+                    else {
+                        filtroOfertaLaboral.enviarEmail = false;
+                        $('#enviarEmail').removeAttr('checked');
+                    }
+
+                    if (response.diaEnvio) {
+                        filtroOfertaLaboral.diaEnvio = response.diaEnvio;
+                    }
+                    else {
+                        filtroOfertaLaboral.diaEnvio = 0;
+                    }
+
+                    if (response.momentoEnvio) {
+                        filtroOfertaLaboral.momentoEnvio = response.momentoEnvio;
+                    }
+                    else {
+                        filtroOfertaLaboral.momentoEnvio = 0;
+                    }
+
+                    mostrarOpcionesRegiones();
+                    mostrarOpcionesTipoCargo();
+                    mostrarOpcionesCarrera();
+                    mostrarOpcionesTipoArea();
+                    mostrarOpcionesTipoEstudio();
+                    mostrarOpcionesRangoAniosExperiencia();
+                    mostrarOpcionesTipoMoneda();
+                    mostrarOpcionesDiaEnvio();
+                    mostrarOpcionesMomentoEnvio();
+                }
+            })
+        }
+
+        function mostrarOpcionesRegiones() {
+            var selectRegiones = $('#region');
+            selectRegiones.empty();
+
+            $.ajax({
+                type: 'GET',
+                url: '/geo/regiones',
+                success: function (response) {
+                    var optionRegion = $('<option></option>').attr('value', null).text("Todas");
+                    if (filtroOfertaLaboral.regionId == null) {
+                        optionRegion.attr('selected', 'selected');
+                    }
+                    selectRegiones.append(optionRegion);
+
+                    $.each(response, function (index, value) {
+                        var optionRegion = $('<option></option>').attr('value', value.id).text(value.nombre);
+                        if (filtroOfertaLaboral.regionId == value.id) {
+                            optionRegion.attr('selected', 'selected');
+                        }
+                        selectRegiones.append(optionRegion);
+                    });
+                }
+            });
+        }
+
+        function mostrarOpcionesTipoCargo() {
+            var selectTipoCargo = $('#tipoCargo');
+            selectTipoCargo.empty();
+
+            $.ajax({
+                type: 'GET',
+                url: '/tipo/cargo',
+                success: function (response) {
+                    var optionTipoCargo = $('<option></option>').attr('value', null).text("Todas");
+                    if (filtroOfertaLaboral.tipoCargoId == null) {
+                        optionTipoCargo.attr('selected', 'selected');
+                    }
+                    selectTipoCargo.append(optionTipoCargo);
+
+                    $.each(response, function (index, value) {
+                        var optionTipoCargo = $('<option></option>').attr('value', value.codCargo).text(value.nomCargo);
+                        if (filtroOfertaLaboral.tipoCargoId == value.codCargo) {
+                            optionTipoCargo.attr('selected', 'selected');
+                        }
+                        selectTipoCargo.append(optionTipoCargo);
+                    });
+                }
+            });
+        }
+
+        function mostrarOpcionesCarrera() {
+            var selectCarrera = $('#carrera');
+            selectCarrera.empty();
+
+            $.ajax({
+                type: 'GET',
+                url: '/edu/carrera',
+                success: function (response) {
+                    $.each(response, function (index, value) {
+                        var optionCarrera = $('<option></option>').attr('value', value.codCarrera).text(value.nombreCarrera);
+                        if (filtroOfertaLaboral.carreraId == value.codCarrera) {
+                            optionCarrera.attr('selected', 'selected');
+                        }
+                        selectCarrera.append(optionCarrera);
+                    });
+                }
+            });
+        }
+
+        function mostrarOpcionesTipoArea() {
+            var selectTipoArea = $('#tipoArea');
+            selectTipoArea.empty();
+
+            $.ajax({
+                type: 'GET',
+                url: '/tipo/area',
+                success: function (response) {
+                    var optionTipoArea = $('<option></option>').attr('value', null).text("Todas");
+                    if (filtroOfertaLaboral.tipoAreaId == null) {
+                        optionTipoArea.attr('selected', 'selected');
+                    }
+                    selectTipoArea.append(optionTipoArea);
+
+                    $.each(response, function (index, value) {
+                        var optionTipoArea = $('<option></option>').attr('value', value.codigo).text(value.nombre);
+                        if (filtroOfertaLaboral.tipoAreaId == value.codigo) {
+                            optionTipoArea.attr('selected', 'selected');
+                        }
+                        selectTipoArea.append(optionTipoArea);
+                    });
+                }
+            });
+        }
+
+        function mostrarOpcionesTipoEstudio() {
+            var selectTipoEstudio = $('#tipoEstudio');
+            selectTipoEstudio.empty();
+
+            $.ajax({
+                type: 'GET',
+                url: '/tipo/estudio/universitarioFiltroOfertaLaboral',
+                success: function (response) {
+                    var optionTipoEstudio = $('<option></option>').attr('value', null).text("Todas");
+                    if (filtroOfertaLaboral.tipoEstudioId == null) {
+                        optionTipoEstudio.attr('selected', 'selected');
+                    }
+                    selectTipoEstudio.append(optionTipoEstudio);
+
+                    $.each(response, function (index, value) {
+                        var optionTipoEstudio = $('<option></option>').attr('value', value.codEstudio).text(value.nomEstudio);
+                        if (filtroOfertaLaboral.tipoEstudioId == value.codEstudio) {
+                            optionTipoEstudio.attr('selected', 'selected');
+                        }
+                        selectTipoEstudio.append(optionTipoEstudio);
+                    });
+                }
+            });
+        }
+
+        function mostrarOpcionesRangoAniosExperiencia() {
+            var selectRangoAniosExperiencia = $('#rangoAniosExperiencia');
+            selectRangoAniosExperiencia.empty();
+            var optionRangoAniosExperiencia = $('<option></option>').attr('value', "indiferente").text("Indiferente");
+            if ("indiferente" === filtroOfertaLaboral.rangoAniosExperiencia) {
+                optionRangoAniosExperiencia.attr('selected', 'selected');
+            }
+            selectRangoAniosExperiencia.append(optionRangoAniosExperiencia);
+
+            var optionRangoAniosExperiencia = $('<option></option>').attr('value', "igual a").text("Igual a");
+            if ("igual a" === filtroOfertaLaboral.rangoAniosExperiencia) {
+                optionRangoAniosExperiencia.attr('selected', 'selected');
+            }
+            selectRangoAniosExperiencia.append(optionRangoAniosExperiencia);
+
+            var optionRangoAniosExperiencia = $('<option></option>').attr('value', "menor que").text("Menor que");
+            if ("menor que" === filtroOfertaLaboral.rangoAniosExperiencia) {
+                optionRangoAniosExperiencia.attr('selected', 'selected');
+            }
+            selectRangoAniosExperiencia.append(optionRangoAniosExperiencia);
+
+            var optionRangoAniosExperiencia = $('<option></option>').attr('value', "mayor que").text("Mayor que");
+            if ("mayor que" === filtroOfertaLaboral.rangoAniosExperiencia) {
+                optionRangoAniosExperiencia.attr('selected', 'selected');
+            }
+            selectRangoAniosExperiencia.append(optionRangoAniosExperiencia);
+        }
+
+        function mostrarOpcionesTipoMoneda() {
+            var selectTipoMoneda = $('#tipoMoneda');
+            selectTipoMoneda.empty();
+
+            $.ajax({
+                type: 'GET',
+                url: '/tipo/moneda',
+                success: function (response) {
+                    var optionTipoMoneda = $('<option></option>').attr('value', null).text("Todas");
+                    selectTipoMoneda.append(optionTipoMoneda);
+
+                    $.each(response, function (index, value) {
+                        var optionTipoMoneda = $('<option></option>').attr('value', value.codigo).text(value.nombre);
+                        if (value.codigo == filtroOfertaLaboral.tipoMonedaId) {
+                            optionTipoMoneda.attr('selected', 'selected');
+                        }
+                        selectTipoMoneda.append(optionTipoMoneda);
+                    });
+                }
+            });
+        }
+
+        function mostrarOpcionesDiaEnvio() {
+            var selectDiaEnvio = $('#diaEnvio');
+            selectDiaEnvio.empty();
+
+            var optionDiaEnvio = $('<option></option>').attr('value', 0).text("Lunes");
+            if (filtroOfertaLaboral.diaEnvio == 0) {
+                optionDiaEnvio.attr('selected', 'selected');
+            }
+            selectDiaEnvio.append(optionDiaEnvio);
+
+            var optionDiaEnvio = $('<option></option>').attr('value', 1).text("Martes");
+            if (filtroOfertaLaboral.diaEnvio == 1) {
+                optionDiaEnvio.attr('selected', 'selected');
+            }
+            selectDiaEnvio.append(optionDiaEnvio);
+
+            var optionDiaEnvio = $('<option></option>').attr('value', 2).text("Miercoles");
+            if (filtroOfertaLaboral.diaEnvio == 2) {
+                optionDiaEnvio.attr('selected', 'selected');
+            }
+            selectDiaEnvio.append(optionDiaEnvio);
+
+            var optionDiaEnvio = $('<option></option>').attr('value', 3).text("Jueves");
+            if (filtroOfertaLaboral.diaEnvio == 3) {
+                optionDiaEnvio.attr('selected', 'selected');
+            }
+            selectDiaEnvio.append(optionDiaEnvio);
+
+            var optionDiaEnvio = $('<option></option>').attr('value', 4).text("Viernes");
+            if (filtroOfertaLaboral.diaEnvio == 4) {
+                optionDiaEnvio.attr('selected', 'selected');
+            }
+            selectDiaEnvio.append(optionDiaEnvio);
+
+            var optionDiaEnvio = $('<option></option>').attr('value', 5).text("Sabado");
+            if (filtroOfertaLaboral.diaEnvio == 5) {
+                optionDiaEnvio.attr('selected', 'selected');
+            }
+            selectDiaEnvio.append(optionDiaEnvio);
+
+            var optionDiaEnvio = $('<option></option>').attr('value', 6).text("Domingo");
+            if (filtroOfertaLaboral.diaEnvio == 6) {
+                optionDiaEnvio.attr('selected', 'selected');
+            }
+            selectDiaEnvio.append(optionDiaEnvio);
+        }
+
+        function mostrarOpcionesMomentoEnvio() {
+            var selectMomentoEnvio = $('#momentoEnvio');
+            selectMomentoEnvio.empty();
+
+            var optionMomentoEnvio = $('<option></option>').attr('value', 0).text("Durante la mañana");
+            if (filtroOfertaLaboral.momentoEnvio == 0) {
+                optionMomentoEnvio.attr('selected', 'selected');
+            }
+            selectMomentoEnvio.append(optionMomentoEnvio);
+
+            var optionMomentoEnvio = $('<option></option>').attr('value', 1).text("Al medio dia");
+            if (filtroOfertaLaboral.momentoEnvio == 1) {
+                optionMomentoEnvio.attr('selected', 'selected');
+            }
+            selectMomentoEnvio.append(optionMomentoEnvio);
+
+            var optionMomentoEnvio = $('<option></option>').attr('value', 2).text("Durante la tarde");
+            if (filtroOfertaLaboral.momentoEnvio == 2) {
+                optionMomentoEnvio.attr('selected', 'selected');
+            }
+            selectMomentoEnvio.append(optionMomentoEnvio);
+
+            var optionMomentoEnvio = $('<option></option>').attr('value', 3).text("Durante la noche");
+            if (filtroOfertaLaboral.momentoEnvio == 3) {
+                optionMomentoEnvio.attr('selected', 'selected');
+            }
+            selectMomentoEnvio.append(optionMomentoEnvio);
+
+            var optionMomentoEnvio = $('<option></option>').attr('value', 4).text("En la madrugada");
+            if (filtroOfertaLaboral.momentoEnvio == 4) {
+                optionMomentoEnvio.attr('selected', 'selected');
+            }
+            selectMomentoEnvio.append(optionMomentoEnvio);
+        }
+
+        function limpiar() {
+            $('#idFiltroOfertaLaboral').attr('value', '');
+            $('#nombreFiltro').attr('value', '');
+            $('#salarioLimiteInferior').attr('value', '');
+            $('#salarioLimiteSuperior').attr('value', '');
+            $('#aniosExperiencia').attr('value', '');
+            $('#region').empty();
+            $('#tipoCargo').empty();
+            $('#tipoArea').empty();
+            $('#carrera').empty();
+            $('#tipoEstudio').empty();
+            $('#tipoMoneda').empty();
+            $('#rangoAniosExperiencia').empty();
+            $('#enviarEmail').removeAttr('checked');
+            $('#diaEnvio').empty();
+            $('#momentoEnvio').empty();
+        }
+
+        function cambioEstadoRadio(value) {
+
+            limpiar();
+
+            if (value == "nuevo"){
+                setearValoresDefectoFiltroOfertaLaboral();
+                $('#selectFiltroOfertaLaboral').attr('disabled', 'disabled');
+                $('#botonEliminar').hide();
+
+                mostrarOpcionesRegiones();
+                mostrarOpcionesTipoCargo();
+                mostrarOpcionesCarrera();
+                mostrarOpcionesTipoArea();
+                mostrarOpcionesTipoEstudio();
+                mostrarOpcionesRangoAniosExperiencia();
+                mostrarOpcionesTipoMoneda();
+                mostrarOpcionesDiaEnvio();
+                mostrarOpcionesMomentoEnvio();
+            }
+            else {
+                $('#selectFiltroOfertaLaboral').removeAttr("disabled");
+                $('#botonEliminar').show();
+                editarFiltroOfertaLaboral($('#selectFiltroOfertaLaboral').val());
+            }
+        }
+
+        function guardarFiltro() {
+
+            var error = false;
+
+
+            if($('#nombreFiltro').val().length == 0) {
+                $('#errorNombreFiltro').show();
+                $('#divNombreFiltro').addClass("error");
+                error = true;
+            }
+            else{
+                $('#errorNombreFiltro').hide();
+            }
+
+            if ($('#rangoAniosExperiencia').val() != "indiferente" ) {
+                if ($('#aniosExperiencia').val().length == 0) {
+                    $('#errorAniosExperiencia').show();
+                    $('#divAniosExperiencia').addClass("error");
+                    error = true;
+                }
+                else {
+                    $('#errorAniosExperiencia').hide();
+                }
+            }
+            else {
+                $('#aniosExperiencia').attr('value', '');
+                $('#errorAniosExperiencia').hide();
+            }
+
+
+
+            if( ($('#salarioLimiteSuperior').val().length == 0  && $('#salarioLimiteInferior').val().length != 0) || ($('#salarioLimiteInferior').val().length == 0  && $('#salarioLimiteSuperior').val().length != 0) || ( $.isNumeric($('#salarioLimiteInferior').val()) == false && $('#salarioLimiteInferior').val().length != 0) || ( $.isNumeric($('#salarioLimiteSuperior').val()) == false && $('#salarioLimiteSuperior').val().length != 0) ) {
+                $('#errorLimiteSalario').show();
+                $('#divErrorLimiteSalario').addClass("error");
+                error = true;
+            }
+            else{
+                $('#errorLimiteSalario').hide();
+            }
+
+            if (!error){
+                $("#formEditarFiltroOfertaLaboral").submit();
+            }
+        }
+
+        function eliminarFiltro(){
+            if (confirm('¿Está seguro de que desea eliminar este filtro?')) {
+                var idFiltroOfertaLaboral = $("#idFiltroOfertaLaboral").val();
+                var idUsuario = $("#idUsuario").val();
+
+                var form= document.createElement('form');
+                form.method= 'GET';
+                form.action= '/usuario/'+idUsuario+'/filtroOfertaLaboral/'+idFiltroOfertaLaboral+'/eliminar';
+                document.body.appendChild(form);
+                form.submit();
+
+
+            }
+
+        }
+
+        $(document).ready(function() {
+            setearValoresDefectoFiltroOfertaLaboral();
+
+            $('#errorNombreFiltro').hide();
+            $('#errorAniosExperiencia').hide();
+            $('#errorLimiteSalario').hide();
+            $('#botonEliminar').hide();
+
+            var cantidadFiltros = [[ ${perfil.getFiltroOfertaLaboralList().size()} ]] || '0';
+
+            if (cantidadFiltros == 0) {
+                $('#selectorFiltro2').attr('disabled', 'disabled');
+            }
+
+        });
+
+
+        /*]]>*/
+    </script>
+</th:block>
+
+
+
+</body>
+</html>

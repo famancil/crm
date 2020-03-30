@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      th:with="actualTemplate='usuarios',actualSubTemplate='buscarUsuarios'">
+<head>
+    <title>Busqueda de Usuarios</title>
+
+    <!--/*/
+    <th:block layout:fragment="css">
+        <link th:href="@{/css/jQueryUI/jquery-ui-1.10.4.custom.min.css}" rel="stylesheet"/>
+    </th:block>
+    /*/-->
+
+</head>
+<body>
+
+<div layout:fragment="title">
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li>Usuarios</li>
+        <li>Usuarios</li>
+    </ol>
+</div>
+
+<div layout:fragment="title">
+    <h2>Buscar usuarios</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a href="#">Usuarios</a></li>
+        <li><a th:href="@{/busquedas/usuarios}">Buscar Usuarios</a></li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>B&uacute;squeda de usuarios
+                    <small>Puede seleccionar el criterio de b&uacute;squeda mediante la casilla "Criterio".</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+            <div class="ibox-content" style="padding-bottom: 5px;">
+
+                <form id="formBusqueda" th:action="@{/busquedas/usuarios/resultados}" method="GET" class="form-horizontal">
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Criterio</label>
+                        <div class="col-sm-8">
+                            <select name="criterio" id="criterio" class="form-control">
+                                <option value="nombres" th:selected="${criterio}=='nombres'">Nombres</option>
+                                <option value="apellidos" th:selected="${criterio}=='apellidos'">Apellidos</option>
+                                <option value="rut" th:selected="${criterio}=='rut'">Rut</option>
+                                <option value="email" th:selected="${criterio}=='email'">Email</option>
+                                <option value="nombre-y-apellido" th:selected="${criterio}=='nombre-y-apellido'">Nombre y Apellido</option>
+                                <option value="carreras" th:selected="${criterio}=='carreras'">Carreras</option>
+                                <option value="empresas" th:selected="${criterio}=='empresas'">Empresas</option>
+                                <option value="pais" th:selected="${criterio}=='pais'">País</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group" id="nombre">
+                        <label class="col-sm-2 control-label">Nombres</label>
+                        <div class="col-sm-8">
+                            <input type="text" id="nombres" name="nombres" class="form-control" th:value="${par['nombres']}"/>
+                        </div>
+                    </div>
+
+                    <div id="apellidos">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Apellido Paterno</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="apellido-paterno" name="apellido-paterno" class="form-control" th:value="${par['apellido-paterno']}"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Apellido Materno</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="apellido-materno" name="apellido-materno" class="form-control" th:value="${par['apellido-materno']}"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="rut">
+                        <label class="col-sm-2 control-label">Rut</label>
+                        <div class="col-sm-8">
+                            <input type="number" name="rut" id="rutInput" placeholder="Sin d&iacute;gito verificador ni puntos" class="form-control" th:value="${par['rut']}"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="email">
+                        <label class="col-sm-2 control-label">Email</label>
+                        <div class="col-sm-8">
+                            <input type="email" name="email" id="emailInput" class="form-control" th:value="${par['email']}" placeholder="ejemplo@ejemplo.cl"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="opcionesEmpresa">
+                        <label class="col-sm-2 control-label">Nombre empresa</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="empresa" id="empresa" class="form-control" th:value="${par['empresa']}"/>
+                        </div>
+                    </div>
+                    <div class="form-group" id="opcionesPaises">
+                        <label class="col-sm-2 control-label">País</label>
+                        <div class="col-sm-8">
+                            <select name="pais" id="pais" class="form-control"
+                                    onchange="crm.setGeoSearchAsDirty(); mostrarOpcionesRegiones(); mostrarOpcionesProvincias(); mostrarOpcionesComunas()">
+                            </select>
+                        </div>
+                    </div>
+                    <div id="opcionesRegiones" class="form-group">
+                        <label class="col-sm-2 control-label">Región</label>
+                        <div class="col-sm-8">
+                            <select name="region" id="region" class="form-control"
+                                    onchange="crm.setGeoSearchAsDirty(); mostrarOpcionesProvincias(); mostrarOpcionesComunas()"></select>
+                        </div>
+                    </div>
+                    <div id="opcionesProvincias" class="form-group">
+                        <label class="col-sm-2 control-label">Provincia</label>
+                        <div class="col-sm-8">
+                            <select name="provincia" id="provincia" class="form-control"
+                                    onchange="crm.setGeoSearchAsDirty(); mostrarOpcionesComunas()"></select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="opcionesComunas">
+                        <label class="col-sm-2 control-label">Comuna</label>
+                        <div class="col-sm-8">
+                            <select name="comuna" id="comuna" class="form-control"></select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="opcionesPais">
+                        <label class="col-sm-2 control-label">Pa&iacute;s</label>
+                        <div class="col-sm-8">
+                        <select name="paises" id="paises" class="form-control" onchange="mostrarOpcionesInstituciones();" ></select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="opcionesInstitucion" >
+                        <label class="col-sm-2 control-label">Instituci&oacute;n</label>
+                        <div class="col-sm-8">
+                            <select name="institucion" id="institucion" class="form-control" onchange="mostrarOpcionesCarrerasInstitucion()" ></select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="opcionesCarreraInstitucion" >
+                        <label class="col-sm-2 control-label">Carrera</label>
+                        <div class="col-sm-8">
+                            <select name="carrera" id="carrera" class="form-control" onchange=""></select>
+                        </div>
+                    </div>
+                        <div class="form-group" id="ano-ingresoBlock">
+                            <label class="col-sm-2 control-label">A&ntilde;o ingreso</label>
+                            <div class="col-sm-8">
+                                <select name="ano_ingreso" id="ano-ingreso" class="form-control">
+                                    <option value='0' > Todos</option>
+                                    <option th:each="i: ${#numbers.sequence(#dates.year(#dates.createNow()),1930)}"
+                                            th:value="${i}" th:text="${i}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" id="ano-egresoBlock">
+                            <label class="col-sm-2 control-label">A&ntilde;o egreso</label>
+                            <div class="col-sm-8">
+                                <select name="ano_egreso" id="ano-egreso"  class="form-control">
+                                    <option value='0' > Todos</option>
+                                    <option th:each="i: ${#numbers.sequence(#dates.year(#dates.createNow()),1930)}"
+                                            th:value="${i}" th:text="${i}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" id="ano-tituloBlock">
+                            <label class="col-sm-2 control-label">A&ntilde;o t&iacute;tulo</label>
+                            <div class="col-sm-8">
+                                <select name="ano_titulo" id="ano-titulo"  class="form-control">
+                                    <option value='0' > Todos</option>
+                                    <option th:each="i: ${#numbers.sequence(#dates.year(#dates.createNow()),1930)}"
+                                            th:value="${i}" th:text="${i}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group text-center">
+                        <input type="hidden" th:name="pagina" th:value="1"/>
+
+                        <button onclick="submitFormBusqueda()" class="btn btn-primary" type="button">Buscar</button>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-12" th:if="${usuarios != null}" id="resultados_busqueda">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>
+                    Resultados de la b&uacute;squeda
+                    <small>Para ver la ficha de un usuario haz click sobre su fila en cualquier dato de este.</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content">
+
+                <div class="alert alert-info alert-dismissable">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    Se han encontrado <strong th:text="${usuarios.getTotalElements()}">0</strong> resultados para tu
+                    b&uacute;squeda por <strong th:text="${criterio}"></strong>.
+                </div>
+
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Rut</th>
+                            <th>Nombres</th>
+                            <th>Apellidos</th>
+                            <th>Email</th>
+                            <th>Celular</th>
+                            <th>Fono particular</th>
+                            <th>Estado</th>
+                            <th>Perfil</th>
+                            <th sec:authorize="hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN_INSTITUCION','ROLE_AYUDANTE_INSTITUCION','ROLE_ADMIN_CARRERA')">Cambiar Clave</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="usuario : ${usuarios}">
+                            <td>
+                                <a th:text="|${usuario.rut} - ${usuario.digitoVerificador}|" th:if="${usuario.rut!=null}"
+                                   th:href="@{/usuario/perfil/{id}(id=${usuario.id})}"></a>
+                            </td>
+
+                            <td>
+                                <a th:text="${usuario.nombres}" th:if="${usuario.nombres!=null}"
+                                   th:href="@{/usuario/perfil/{id}(id=${usuario.id})}"></a>
+                            </td>
+
+                            <td>
+                                <a th:text="|${usuario.apellidoPaterno}  ${usuario.apellidoMaterno}|"
+                                   th:if="${usuario.apellidoPaterno!=null} and ${usuario.apellidoMaterno!=null}"
+                                   th:href="@{/usuario/perfil/{id}(id=${usuario.id})}"></a>
+                            </td>
+
+                            <td>
+                                <a th:text="${usuario.email}" th:if="${usuario.email!=null}"
+                                   th:href="@{/usuario/perfil/{id}(id=${usuario.id})}"></a>
+                            </td>
+
+                            <td>
+                                <a th:text="${usuario.celular}" th:if="${usuario.celular!=null}"
+                                   th:href="@{/usuario/perfil/{id}(id=${usuario.id})}"></a>
+                            </td>
+
+                            <td>
+                                <a th:text="${usuario.fonoParticular}" th:if="${usuario.fonoParticular!=null}"
+                                   th:href="@{/usuario/perfil/{id}(id=${usuario.id})}"></a>
+                            </td>
+
+                            <td>
+                                <a th:if="${usuario.estado==null}"
+                                   th:href="@{/usuario/perfil/{id}(id=${usuario.id})}">Sin Información</a>
+                                <a th:if="${usuario.estado==true}"
+                                   th:href="@{/usuario/perfil/{id}(id=${usuario.id})}">Vivo</a>
+                                <a th:if="${usuario.estado==false}"
+                                   th:href="@{/usuario/perfil/{id}(id=${usuario.id})}">Fallecido</a>
+                            </td>
+
+                            <td>
+                                <a class="btn btn-info btn-xs" th:href="@{'/usuario/perfil/'+${usuario.id}}">
+                                    <i class="fa fa-search"></i> Ver </a>
+                            </td>
+
+                            <td sec:authorize="hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN_INSTITUCION','ROLE_AYUDANTE_INSTITUCION','ROLE_ADMIN_CARRERA')">
+                                <a class="btn btn-primary btn-xs" th:href="@{'/usuario/perfil/'+${usuario.id}}+'/modificar#contrasena'">
+                                    <i class="fa fa-edit"></i> Cambio Clave</a>
+                            </td>
+
+                        </tr>
+                        <tr th:if="${usuarios.getTotalElements()==0}"><td colspan="9" style="color:gray" align="center">NO SE HAN ENCONTRADO RESULTADOS</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="row">
+                    <div class="col-md-6 text-left">
+                        <p th:text="|Total encontrados: ${usuarios.getTotalElements()}|"></p>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <p th:if="${usuarios.getTotalPages()!=0}" th:text="|P&aacute;gina ${usuarios.getNumber() + 1} de ${usuarios.getTotalPages()}|"></p>
+                        <p th:if="${usuarios.getTotalPages()==0}" th:text="|P&aacute;gina 1 de 1|"></p>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <ul class="pagination">
+                        <li class="disabled" th:if="${currentIndex == 1}"><a href="#">&lt;&lt;</a></li>
+                        <li class="disabled" th:if="${currentIndex == 1}"><a href="#">&lt;</a></li>
+                        <li th:if="${currentIndex != 1}">
+                            <a th:href="@{/busquedas/usuarios/resultados(criterio=${criterio},nombres=${par['nombres']},apellido-paterno=${par['apellido-paterno']},apellido-materno=${par['apellido-materno']},rut=${par['rut']},email=${par['email']},institucion=${par['institucion']},carrera=${par['carrera']},ano_ingreso=${par['ano-ingreso']},ano_egreso=${par['ano-egreso']},ano_titulo=${par['ano-titulo']},empresa=${par['empresa']},pais=${par['pais']},region=${par['region']},provincia=${par['provincia']},comuna=${par['comuna']},pagina=1)}">&lt;&lt;</a>
+                        </li>
+                        <li th:if="${currentIndex != 1}">
+                            <a th:href="@{/busquedas/usuarios/resultados(criterio=${criterio},nombres=${par['nombres']},apellido-paterno=${par['apellido-paterno']},apellido-materno=${par['apellido-materno']},rut=${par['rut']},email=${par['email']},institucion=${par['institucion']},carrera=${par['carrera']},ano_ingreso=${par['ano-ingreso']},ano_egreso=${par['ano-egreso']},ano_titulo=${par['ano-titulo']},empresa=${par['empresa']},pais=${par['pais']},region=${par['region']},provincia=${par['provincia']},comuna=${par['comuna']},pagina=${currentIndex-1})}">&lt;</a>
+                        </li>
+                        <li th:each="i : ${#numbers.sequence( beginIndex, endIndex)}" th:class="${i == currentIndex}? 'active'">
+                            <a th:if="${i!=0}" th:text="${i}" th:href="@{/busquedas/usuarios/resultados(criterio=${criterio},nombres=${par['nombres']},apellido-paterno=${par['apellido-paterno']},apellido-materno=${par['apellido-materno']},rut=${par['rut']},email=${par['email']},institucion=${par['institucion']},carrera=${par['carrera']},ano_ingreso=${par['ano-ingreso']},ano_egreso=${par['ano-egreso']},ano_titulo=${par['ano-titulo']},empresa=${par['empresa']},pais=${par['pais']},region=${par['region']},provincia=${par['provincia']},comuna=${par['comuna']},pagina=${i})}"></a>
+                        </li>
+                        <li class="disabled" th:if="${currentIndex == usuarios.getTotalPages() || usuarios.getTotalPages() == 0}"><a href="#">&gt;</a></li>
+                        <li class="disabled" th:if="${currentIndex == usuarios.getTotalPages() || usuarios.getTotalPages() == 0}"><a href="#">&gt;&gt;</a></li>
+                        <li><a th:href="@{/busquedas/usuarios/resultados(criterio=${criterio},nombres=${par['nombres']},apellido-paterno=${par['apellido-paterno']},apellido-materno=${par['apellido-materno']},rut=${par['rut']},email=${par['email']},institucion=${par['institucion']},carrera=${par['carrera']},ano_ingreso=${par['ano-ingreso']},ano_egreso=${par['anoIgreso']},ano_titulo=${par['ano-titulo']},empresa=${par['empresa']},pais=${par['pais']},region=${par['region']},provincia=${par['provincia']},comuna=${par['comuna']},pagina=${currentIndex+1})}" th:if="${currentIndex != usuarios.totalPages and usuarios.getTotalPages() != 0}">&gt;</a></li>
+                        <li><a th:href="@{/busquedas/usuarios/resultados(criterio=${criterio},nombres=${par['nombres']},apellido-paterno=${par['apellido-paterno']},apellido-materno=${par['apellido-materno']},rut=${par['rut']},email=${par['email']},institucion=${par['institucion']},carrera=${par['carrera']},ano_ingreso=${par['ano-ingreso']},ano_egreso=${par['anoIgreso']},ano_titulo=${par['ano-titulo']},empresa=${par['empresa']},pais=${par['pais']},region=${par['region']},provincia=${par['provincia']},comuna=${par['comuna']},pagina=${usuarios.getTotalPages()})}" th:if="${currentIndex != usuarios.totalPages and usuarios.getTotalPages() != 0}">&gt;&gt;</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<th:block layout:fragment="scripts">
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        var crm = {};
+        crm.paisId = parseInt([[ ${par['pais']} ]]) || 56;
+        crm.regionId = parseInt([[ ${par['region']} ]]) || 0;
+        crm.provinciaId = parseInt([[ ${par['provincia']} ]]) || 0;
+        crm.comunaId = parseInt([[ ${par['comuna']} ]]) || 0;
+        crm.geoSearchIsDirty = false;
+        crm.setGeoSearchAsDirty = function() {
+            this.geoSearchIsDirty = true;
+        }
+
+        /*]]>*/
+    </script>
+
+    <script th:src="@{/js/jquery-ui-1.10.4.min.js}"></script>
+
+    <script th:inline="javascript">
+        // <![CDATA[
+        $(document).ready(function() {
+            cambiarEstadoTextBox();
+            $('#criterio').change(function(){
+               cambiarEstadoTextBox();
+            });
+        });
+
+        function hideAll() {
+            $('#opcionesPais').hide();
+            $('#opcionesInstitucion').hide();
+            $('#opcionesCarreraInstitucion').hide();
+            $('#ano-ingresoBlock').hide();
+            $('#ano-egresoBlock').hide();
+            $('#ano-tituloBlock').hide();
+            $('#apellidos').hide();
+            $('#rut').hide();
+            $('#email').hide();
+            $('#nombre').hide();
+            $('#opcionesEmpresa').hide();
+            $('#opcionesPaises').hide();
+            $('#opcionesRegiones').hide();
+            $('#opcionesProvincias').hide();
+            $('#opcionesComunas').hide();
+        }
+
+        function clearAll(){
+            $('#nombres').val('');
+            $('#apellido-paterno').val('');
+            $('#apellido-materno').val('');
+            $('#rutInput').val('');
+            $('#emailInput').val('');
+            $('#empresa').val('');
+            $('#carrera').empty();
+            $('#paises').empty();
+            $('#institucion').empty();
+            $('#ano-ingreso option').filter('[value="0"]').attr('selected', true);
+            $('#ano-egreso option').filter('[value="0"]').attr('selected', true);
+            $('#ano-titulo option').filter('[value="0"]').attr('selected', true);
+        }
+
+        function cambiarEstadoTextBox() {
+            hideAll();
+            clearAll();
+            var criterioBusqueda = $('#criterio').val();
+
+            $('#institucion').append($("<option></option>").attr("value", ""));
+            $('#carrera').append($("<option></option>").attr("value", ""));
+
+            if (criterioBusqueda == "nombres") {
+                $('#nombre').show();
+            }
+            else if (criterioBusqueda == "apellidos") {
+                $('#apellidos').show();
+            }
+            else if (criterioBusqueda == "email") {
+                $('#email').show();
+            }
+            else if (criterioBusqueda == "rut") {
+                $('#rut').show();
+            }
+            else if (criterioBusqueda == "nombre-y-apellido") {
+                $('#nombre').show();
+                $('#apellidos').show();
+            }
+            else if (criterioBusqueda == "carreras") {
+                $('#opcionesPais').show();
+                $('#opcionesInstitucion').show();
+                $('#opcionesCarreraInstitucion').show();
+                $('#ano-ingresoBlock').show();
+                $('#ano-egresoBlock').show();
+                $('#ano-tituloBlock').show();
+
+                $('#carrera').empty();
+                $('#institucion').empty();
+                mostrarOpcionesPaises('#paises', true);
+                if([[ ${par['ano-ingreso']} ]] != "%") $('#ano-ingreso option').filter('[value="'+[[ ${par['ano-ingreso']} ]]+'"]').attr('selected', true);
+                if([[ ${par['ano-egreso']} ]] != "%")$('#ano-egreso option').filter('[value="'+[[ ${par['ano-egreso']} ]]+'"]').attr('selected', true);
+                if([[ ${par['ano-titulo']} ]] != "%")$('#ano-titulo option').filter('[value="'+[[ ${par['ano-titulo']} ]]+'"]').attr('selected', true);
+            }
+            else if (criterioBusqueda == "empresas") {
+                $('#opcionesEmpresa').show();
+            }
+            else if (criterioBusqueda == "pais") {
+                mostrarOpcionesPaises('#pais', false);
+                $('#opcionesPaises').show();
+            }
+        }
+
+        function mostrarOpcionesPaises(element, showInstituciones) {
+            $(element).empty();
+            $.ajax({
+                type: "GET",
+                url: '/geo/paises',
+                success: function (response) {
+                    $.each(response, function (index, value) {
+                        var optPais = $('<option></option>').attr('value', value.id).text(value.nombre);
+                        if (value.id == crm.paisId) {
+                            optPais.attr('selected', 'selected');
+                        }
+                        $(element).append(optPais);
+                    });
+                    if (showInstituciones) {
+                        mostrarOpcionesInstituciones();
+                    }
+                    else {
+                        mostrarOpcionesRegiones();
+                        mostrarOpcionesProvincias();
+                        mostrarOpcionesComunas();
+                    }
+                }
+            });
+        }
+
+        function mostrarOpcionesRegiones() {
+            var busquedaRegiones = $('#opcionesRegiones');
+            var selectRegiones = $('#region');
+            var codPais = $('#opcionesPaises option:selected').val();
+            selectRegiones.empty();
+            if (codPais == 56) {
+                selectRegiones.append($('<option></option>').attr('value', 0).text('Todas'));
+                busquedaRegiones.show();
+                $.ajax({
+                    type: 'GET',
+                    url: '/geo/regiones',
+                    success: function(response) {
+                        $.each(response, function (index, value) {
+                            var optRegion = $('<option></option>').attr('value', value.id).text(value.nombre);
+                            if(crm.regionId && value.id == crm.regionId) {
+                                optRegion.attr('selected', 'selected');
+                            }
+                            selectRegiones.append(optRegion);
+                        });
+                    }
+                });
+            }
+            else {
+                busquedaRegiones.hide();
+            }
+        }
+
+        function mostrarOpcionesProvincias() {
+            var busquedaProvincias = $('#opcionesProvincias');
+            var selectProvincias = $('#provincia');
+            var codPais = $('#opcionesPaises option:selected').val();
+            selectProvincias.empty();
+            if (codPais == 56) {
+                selectProvincias.append($('<option></option>').attr('value', 0).text('Todas'));
+                busquedaProvincias.show();
+                var geoUrl = '/geo/pais/' + codPais + '/provincias';
+                var currentRegion = $('#region option:selected').val();
+                if(!crm.geoSearchIsDirty && crm.regionId != 0) {
+                    geoUrl = '/geo/region/' + crm.regionId + '/provincias';
+                }
+                if(currentRegion != 0) {
+                    geoUrl = '/geo/region/' + currentRegion + '/provincias';
+                }
+                $.ajax({
+                    method: 'GET',
+                    url: geoUrl,
+                    success: function(response) {
+                        $.each(response, function (index, value) {
+                            var optProvincia = $('<option></option>').attr('value', value.id).text(value.nombre);
+                            if(!crm.geoSearchIsDirty && crm.provinciaId != 0 && value.id == crm.provinciaId) {
+                                optProvincia.attr('selected', 'selected');
+                            }
+                            selectProvincias.append(optProvincia);
+                        });
+                    }
+                });
+            }
+            else {
+                busquedaProvincias.hide();
+            }
+        }
+
+        function mostrarOpcionesComunas() {
+            var busquedaComunas = $('#opcionesComunas');
+            var selectComunas = $('#comuna');
+            var codPais = $('#opcionesPaises option:selected').val();
+            selectComunas.empty();
+            if (codPais == 56) {
+                var geoUrl = '/geo/pais/' + codPais + '/comunas';
+                var currentRegion = $('#region option:selected').val();
+                var currentProvincia = $('#provincia option:selected').val();
+                if(!crm.geoSearchIsDirty && crm.regionId != 0) {
+                    geoUrl = '/geo/region/' + crm.regionId + '/comunas';
+                }
+                if(currentRegion != 0) {
+                    geoUrl = '/geo/region/' + currentRegion + '/comunas';
+                }
+                if(!crm.geoSearchIsDirty && crm.provinciaId != 0) {
+                    geoUrl = '/geo/provincia/' + crm.provinciaId + '/comunas';
+                }
+                if(currentProvincia != 0) {
+                    geoUrl = '/geo/provincia/' + currentProvincia + '/comunas';
+                }
+                selectComunas.append($('<option></option>').attr('value', 0).text('Todas'));
+                busquedaComunas.show();
+                $.ajax({
+                    type: 'GET',
+                    url: geoUrl,
+                    success: function(response) {
+                        $.each(response, function (index, value) {
+                            var optComuna = $('<option></option>').attr('value', value.codigo).text(value.nombre);
+                            if(!crm.geoSearchIsDirty && crm.comunaId && value.codigo == crm.comunaId) {
+                                optComuna.attr('selected', 'selected');
+                            }
+                            selectComunas.append(optComuna);
+                        });
+                    }
+                })
+            }
+            else {
+                busquedaComunas.hide();
+            }
+        }
+
+        function mostrarOpcionesInstituciones() {
+            $.ajax({
+                type: "GET",
+                url: '/edu/pais/'+$('#paises').val()+'/instituciones',
+                success: function (response) {
+                    $('#institucion').empty();
+
+                    $.each(response, function(index, value){
+                        if (value.codInstitucion == 25 ) {
+                            $('#institucion').append($("<option></option>").attr("value", value.codInstitucion).attr("selected", "selected").text(value.nomInstitucion));
+                        }
+                        else {
+                            $('#institucion').append($("<option></option>").attr("value", value.codInstitucion).text(value.nomInstitucion));
+                        }
+                    });
+                    mostrarOpcionesCarrerasInstitucion();
+                }
+            });
+        }
+
+        function mostrarOpcionesCarrerasInstitucion() {
+            $.ajax({
+                type: "GET",
+                url: '/edu/pais/institucion/'+$('#institucion').val()+'/carreras',
+                success: function (response) {
+                    $('#carrera').empty();
+
+                    // 0 valor por defecto en el caso que no exista carrera
+                    var codCarrera = /*[[ ${par['carrera']}  ]]*/ 0;
+
+                    $('#carrera').append($("<option></option>").attr("value", 0).attr("selected", "selected").text("Todas"));
+
+                    $.each(response, function(index, value){
+                        if ( codCarrera == value.codCarrera ) {
+                            //console.log(value.codCarrera + ' ' + value.nombreCarrera);
+                            $('#carrera').append($("<option></option>").attr("value", value.codCarrera).attr("selected", "selected").text(value.nombreCarrera));
+                        }
+                        else {
+                            $('#carrera').append($("<option></option>").attr("value", value.codCarrera).text(value.nombreCarrera));
+                        }
+                    });
+                }
+            });
+        }
+
+        $(function() {
+            $("#empresa").autocomplete({
+                minLength:3,
+                source: function (request, response) {
+                    $.getJSON("/opciones/empresasActividadExalumno", {
+                                term: request.term
+                            },
+                            response);
+                }
+            });
+        });
+
+        $(document).keypress(function(e) {
+            if(e.which == 13) {
+                submitFormBusqueda();
+            }
+        });
+
+        function submitFormBusqueda(){
+            var nombres = $("#nombres").val();
+            var apPaterno = $("#apellido-paterno").val();
+            var apMaterno = $("#apellido-materno").val();
+            var empresa = $("#empresa").val();
+            $("#nombres").val(encodeURI($("#nombres").val()));
+            $("#apellido-paterno").val(encodeURI($("#apellido-paterno").val()));
+            $("#apellido-materno").val(encodeURI($("#apellido-materno").val()));
+            $("#empresa").val(encodeURI($("#empresa").val()));
+            $("#formBusqueda").submit();
+            $("#nombres").val(nombres);
+            $("#apellido-paterno").val(apPaterno);
+            $("#apellido-materno").val(apMaterno);
+            $("#empresa").val(empresa);
+        }
+        // ]]>
+
+        $(document).ready(function() {
+            $('html, body').animate({
+                scrollTop: $("#resultados_busqueda").offset().top
+            }, 1000);
+        });
+    </script>
+
+</th:block>
+
+</body>
+</html>

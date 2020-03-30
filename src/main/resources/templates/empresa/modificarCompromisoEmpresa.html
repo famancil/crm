@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='empresas',actualSubTemplate='modificarCompromisoEmpresa'">
+<head>
+    <title>Modificar Compromiso de Empresa</title>
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Modificar Compromiso de Empresa</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a th:href="@{#}">Empresas</a></li>
+        <li><a th:href="@{/empresa/{id}/modificar-compromiso/{idComp}(id=${idEmpresa},idComp=${idCompromiso})}">Modificar Compromiso</a></li>
+    </ol>
+</div>
+<div layout:fragment="content">
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Modificar Compromiso de la Empresa
+                    <small>Para guardar presione "Guardar Cambios". Si desea volver sin realizar cambios presione "Cancelar".</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+
+            <div class="ibox-content" >
+
+                <form th:action="@{/empresas/modificarCompromiso}" th:object="${compromiso}" method="post" >
+
+                    <div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
+                        <strong>Atenci&oacute;n: </strong> debes solucionar los errores marcados en rojo antes de
+                        proceder con la modificación del compromiso de la empresa.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label">Operador a Cargo</label>
+                                <input type="text" id="nombreOperador" name="nombreOperador" placeholder="Nombre Operador" th:value="${nombreOperador}" class="form-control"/>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-5">
+                            <div id="selectSucursalesDiv" class="form-group" >
+                                <label class="control-label">Sucursal</label>
+                                <select id="selectSucursales" name="codSucursal" th:field="*{sucursalEmpresa.sucursalCodigo}"  class="form-control">
+                                    <option th:each="tfp: ${sucursalEmpresas}" th:value="${tfp.sucursalCodigo}" th:text="${tfp.sucSucursal}" ></option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('tipoCompromiso.codCompromiso')}? 'has-error'">
+                                <label class="control-label">Causa del Compromiso (*)</label>
+                                <select th:field="*{tipoCompromiso.codCompromiso}" class="form-control">
+                                    <option th:each="to: ${tipoCompromisos}"
+                                            th:selected="${compromiso.tipoCompromiso.codCompromiso == to}" th:value="${to.codCompromiso}"
+                                            th:text="${to.nomCompromiso}"></option>
+                                </select>
+                                <label class="error" th:if="${#fields.hasErrors('tipoCompromiso.codCompromiso')}" th:text="${#fields.errors('*{tipoCompromiso.codCompromiso}')}"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label">Forma de Pago (*) </label>
+                                <select id="codFormaPago" name="codFormaPago" class="form-control" th:field="*{tipoFormaPago.codFormaPago}">
+                                    <option th:each="tfp: ${tipoFormaPagos}" th:value="${tfp.codFormaPago}" th:text="${tfp.nomFormaPago}" ></option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+
+                        <div class="col-sm-3">
+                            <div class="form-group" th:class="${#fields.hasErrors('fechaInicio')}? 'has-error'">
+                                <label class="control-label">Fecha Inicio (*)</label>
+                                <input type="text" id="fechaInicio" th:field="*{fechaInicio}" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('fechaInicio')}" th:text="${#fields.errors('*{fechaInicio}')}"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4 col-sm-offset-1">
+                            <div class="form-group" th:class="${#fields.hasErrors('fechaTermino')}? 'has-error'">
+                                <label class="control-label">Fecha Termino (*)</label>
+                                <input type="text" id="fechaTermino"  th:field="*{fechaTermino}" class="form-control" placeholder="DD/MM/AAAA"/>
+                                <input type="checkbox" id="noAgendo" th:value="${noAgendo}" class="checkboxes"/>No Agendo &nbsp;
+                                <input type="checkbox" id="indefinido" th:value="${indefinido}" class="checkboxes"/>Indefinido
+                                <label class="error" th:if="${#fields.hasErrors('fechaTermino')}" th:text="${#fields.errors('*{fechaTermino}')}"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <div class="form-group" th:class="${#fields.hasErrors('fechaSiguienteCompromiso')}? 'has-error'">
+                                <label class="control-label">Fecha Siguiente Compromiso (*)</label>
+                                <input type="text" id="fechaSgteCompromiso" class="form-control" th:field="*{fechaSiguienteCompromiso}" placeholder="DD/MM/AAAA"/>
+                                <input type="checkbox" id="noAgendoSgte" name="noAgendoSgte" th:value="${noAgendoSgte}" class="checkboxes" />No Agendo &nbsp;
+                                <label class="error" th:if="${#fields.hasErrors('fechaSiguienteCompromiso')}" th:text="${#fields.errors('*{fechaSiguienteCompromiso}')}"></label>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('montoComprometido')}? 'has-error'">
+                                <label class="control-label">Monto Compromiso (*)</label>
+                                <input type="text" id="montoCompromiso"  th:field="*{montoComprometido}" class="form-control" />
+                                <!--<input type="checkbox" id="clp" class="checkboxes"/>CLP &nbsp;
+                                <input type="checkbox" id="uf" class="checkboxes"/>UF &nbsp;
+                                <input type="checkbox" id="dolar" class="checkboxes"/>Dolar &nbsp;-->
+                                <label class="error" th:if="${#fields.hasErrors('montoComprometido')}" th:text="${#fields.errors('*{montoComprometido}')}"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('tipoVigencia.codVigencia')}? 'has-error'">
+                                <label class="control-label">Vigencia </label>
+                                <select th:field="*{tipoVigencia.codVigencia}" class="form-control">
+                                    <option th:each="v: ${tipoVigencias}"
+                                            th:selected="${compromiso.tipoVigencia.codVigencia == v}" th:value="${v.codVigencia}"
+                                            th:text="${v.nomVigencia}"></option>
+                                </select>
+                                <label class="error" th:if="${#fields.hasErrors('tipoVigencia.codVigencia')}" th:text="${#fields.errors('*{tipoVigencia.codVigencia}')}"></label>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+
+                        <div class="col-sm-7">
+                            <div class="form-group" th:class="${#fields.hasErrors('comentario')}? 'has-error'">
+                                <label class="col-sm-2 control-label">Acuerdos (*)</label>
+                                <div class="col-sm-10">
+                                    <textarea id="acuerdos" name="acuerdos" th:field="*{comentario}" rows="4" cols="80" class="form-control"></textarea>
+                                    <label class="error" th:if="${#fields.hasErrors('comentario')}" th:text="${#fields.errors('*{comentario}')}"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group">
+                        <input id="checkNoAgendoInicio" type="hidden" name="checkNoAgendoInicio" />
+                        <input id="checkIndefinido" type="hidden" name="checkIndefinido" />
+                        <input id="checkNoAgendoSgte" type="hidden" name="checkNoAgendoSgte" />
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <input type="hidden" th:name="id" th:value="*{id}"/>
+                        <input type="hidden" th:name="idEmpresa" th:value="${idEmpresa}"/>
+                        <a th:href="@{/empresa/{id}(id=${idEmpresa})}" class="btn btn-white">Cancelar</a>
+                        <input type="submit" class="btn btn-primary"  value="Guardar Cambios"/>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+    <script th:src="@{/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
+    <script th:inline="javascript">
+        $(function(){
+            $(document).ready(function() {
+                $('#checkIndefinido').val($('#indefinido').val());
+                $('#checkNoAgendoInicio').val($('#noAgendo').val());
+                $('#checkNoAgendoSgte').val($('#noAgendoSgte').val());
+                if($('#noAgendo').val()=="true") $("#noAgendo").prop('checked', true);
+                else $("#noAgendo").prop('checked', false);
+                if($('#indefinido').val()=="true") $("#indefinido").prop('checked', true);
+                else $("#indefinido").prop('checked', false);
+                if($('#noAgendoSgte').val()=="true") $("#noAgendoSgte").prop('checked', true);
+                else $("#noAgendoSgte").prop('checked', false);
+
+
+                $('#noAgendo').change(function () {
+                    if($('#checkNoAgendoInicio').val()=="true") $('#checkNoAgendoInicio').val(false)
+                    else $('#checkNoAgendoInicio').val(true)
+                    $("#indefinido").prop('checked', false);
+                    $('#fechaTermino').val("");
+                });
+                $('#indefinido').change(function () {
+                    if($('#checkIndefinido').val()=="true"){
+                        $('#checkIndefinido').val(false);
+                        $('#checkNoAgendoInicio').val(true);
+                    }
+                    else{
+                        $('#checkIndefinido').val(true);
+                        $('#checkNoAgendoInicio').val(false);
+                    }
+                    $("#noAgendo").prop('checked', false);
+                    $('#fechaTermino').val("");
+                });
+                $('#noAgendoSgte').change(function () {
+                    if($('#checkNoAgendoSgte').val()=="true") $('#checkNoAgendoSgte').val(false);
+                    else $('#checkNoAgendoSgte').val(true);
+                    $('#fechaSgteCompromiso').val("");
+                });
+
+                $('#fechaSgteCompromiso').change(function () {
+                    $("#noAgendoSgte").prop('checked', false);
+                    $('#checkNoAgendoSgte').val(false);
+                });
+                $('#fechaTermino').change(function () {
+                    $("#noAgendo").prop('checked', false);
+                    $("#indefinido").prop('checked', false);
+                    $('#checkNoAgendoInicio').val(false)
+                    $('#checkIndefinido').val(false);
+                });
+
+
+            });
+
+            $.fn.datepicker.dates['es'] = {
+                days: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+                daysShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
+                daysMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa", "Do"],
+                months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+                monthsShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+                today: "Hoy"
+            };
+            $('#fechaInicio').datepicker({
+                format: 'dd/mm/yyyy',
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                language: "es"
+            });
+            $('#fechaTermino').datepicker({
+                format: 'dd/mm/yyyy',
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                language: "es"
+            });
+            $('#fechaSgteCompromiso').datepicker({
+                format: 'dd/mm/yyyy',
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                language: "es"
+            });
+        });
+        $(function() {
+            $("#nombreOperador").autocomplete({
+                minLength:3,
+                source: function (request, response) {
+                    $.getJSON("/opciones/usuarios", {
+                                term: request.term
+                            },
+                            response);
+                }
+            });
+        });
+
+    </script>
+</th:block>
+
+
+</body>
+</html>

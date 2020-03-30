@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main">
+<head>
+    <meta charset="utf-8"/>
+    <title>Perfil Carrera</title>
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Perfil de Carrera</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a th:href="@{/carrera}">Carrera</a></li>
+        <li class="active">
+            <a th:href="@{/carrera/perfil/{id}(id=${carrera.codCarrera})}">
+            <span th:switch="${carrera.nombreCarrera}">
+                <strong th:case="null">Sin Información</strong>
+                <strong th:case="*" th:text="${carrera.nombreCarrera}"></strong>
+            </span></a>
+        </li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h2 th:switch="${carrera.nombreCarrera}">
+                    <strong><span th:case="null">Sin Información</span></strong>
+                    <strong><span th:case="*" th:text="${carrera.nombreCarrera}"></span></strong>
+                </h2>
+            </div>
+
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <dl class="dl-horizontal">
+                            <dt>Nombre Carrera:</dt>
+                            <dd th:switch="${carrera.nombreCarrera}">
+                                <span th:case="empty">Sin Información</span>
+                                <span th:case="' '">Sin Información</span>
+                                <span th:case="null">Sin Información</span>
+                                <span th:case="*" th:text="${carrera.nombreCarrera}"></span>
+                            </dd>
+
+                            <dt>Abreviacion:</dt>
+                            <dd th:switch="${carrera.abreviacion}">
+                                <span th:case="empty">Sin Información</span>
+                                <span th:case="' '">Sin Información</span>
+                                <span th:case="null">Sin Información</span>
+                                <span th:case="*" th:text="${carrera.abreviacion}"></span>
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>Grado:</dt>
+                            <dd th:switch="${carrera.tipoGrado.nomGrado}">
+                                <span th:case="empty">Sin Información</span>
+                                <span th:case="' '">Sin Información</span>
+                                <span th:case="null">Sin Información</span>
+                                <span th:case="*" th:text="${carrera.tipoGrado.nomGrado}"></span>
+                            </dd>
+
+                            <dt>Mencion:</dt>
+                            <dd th:switch="${carrera.mencion}">
+                                <span th:case="empty">Sin Información</span>
+                                <span th:case="' '">Sin Información</span>
+                                <span th:case="null">Sin Información</span>
+                                <span th:case="*" th:text="${carrera.mencion}"></span>
+                            </dd>
+
+                            <dt>Titulo:</dt>
+                            <dd th:switch="${carrera.titulo}">
+                                <span th:case="empty">Sin Información</span>
+                                <span th:case="' '">Sin Información</span>
+                                <span th:case="null">Sin Información</span>
+                                <span th:case="*" th:text="${carrera.titulo}"></span>
+                            </dd>
+
+                            <dt>Duracion:</dt>
+                            <dd th:switch="${carrera.duracion}">
+                                <span th:case="empty">Sin Información</span>
+                                <span th:case="' '">Sin Información</span>
+                                <span th:case="null">Sin Información</span>
+                                <span th:case="*" th:text="${carrera.duracion}"></span>
+                            </dd>
+                        </dl>
+
+                        <dl class="dl-horizontal">
+                            <dt>Estado:</dt>
+                            <dd th:switch="${carrera.tipoVigencia.nomVigencia}">
+                                <span th:case="empty">Sin Información</span>
+                                <span th:case="' '">Sin Información</span>
+                                <span th:case="null">Sin Información</span>
+                                <span th:case="*" th:text="${carrera.tipoVigencia.nomVigencia}"></span>
+                            </dd>
+                        </dl>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <dl class="dl-horizontal">
+                            <dt>Instituciones:</dt>
+                            <dd th:text="${numeroInstitucionesAsociadas}"></dd>
+
+                            <dt>Ant. Educacionales:</dt>
+                            <dd th:text="${numeroAntecedentesAsociados}"></dd>
+                        </dl>
+
+                        <dl class="dl-horizontal">
+                            <a class="btn btn-primary btn-sm" th:href="@{'/carrera/modificar/'+${carrera.codCarrera}}">
+                                <i class="fa fa-edit"></i> Modificar Carrera</a>
+                        </dl>
+
+                        <dl class="dl-horizontal">
+                            <a class="btn btn-success btn-sm" th:href="@{'/carreraInstitucion/registrar/0/'+${carrera.codCarrera}}">
+                                <i class="fa fa-link"></i> Asignar Carrera a una Institucion</a>
+                        </dl>
+
+                        <dl class="dl-horizontal">
+                            <a class="btn btn-danger btn-sm" href="#" onClick="return confirm('¿Está seguro que desea eliminar la Carrera?')">
+                                <i class="fa fa-trash"></i> Eliminar Carrera</a>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h4>Instituciones Asociadas
+                    <small>Instituciones que poseen registrada la Carrera.</small>
+                </h4>
+            </div>
+
+            <div class="ibox-content">
+                <div class="alert alert-info alert-dismissable" th:if="${carrerasInstitucion.size()} != 0">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    Se han encontrado <strong th:text="${carrerasInstitucion.size()}"></strong> Instituciones asociadas
+                </div>
+                <div class="alert alert-info alert-dismissable" th:if="${carrerasInstitucion.size()} == 0">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    No se encontraron Institutuciones asociadas
+                </div>
+
+                <table th:if="${carrerasInstitucion.size()} != 0" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>NOMBRE INSTITUCIÓN</th>
+                            <th>PAÍS</th>
+                            <th>TELEFONO</th>
+                            <th>VIGENCIA</th>
+                            <th>MODIFICAR</th>
+                            <th>ELIMINAR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="carreraInstitucion: ${carrerasInstitucion}" >
+                            <td th:text="${carreraInstitucion.institucion.nomInstitucion}">
+                            </td>
+
+                            <td th:text="${carreraInstitucion.institucion.pais.nombre}">
+                            </td>
+
+                            <td th:text="${carreraInstitucion.institucion.telefono}">
+                            </td>
+
+                            <td th:text="${carreraInstitucion.institucion.vigencia.nomVigencia}">
+                            </td>
+
+                            <td>
+                                <a class="btn btn-primary btn-xs" th:href="@{'/carreraInstitucion/modificar/'+${carreraInstitucion.codInstitucion}+'/'+${carreraInstitucion.codCarrera} }">
+                                    <i class="fa fa-paste"></i> Modificar de la Institucion</a>
+                            </td>
+
+                            <td>
+                                <a class="btn btn-danger btn-xs"  th:if="${carreraInstitucion.tipoVigencia.codVigencia!=3}" th:href="@{'/carreraInstitucion/eliminar/'+${carreraInstitucion.codInstitucion}+'/'+${carreraInstitucion.codCarrera}}" onClick="return confirm('¿Está seguro que desea eliminar la Carrera de la Institucion?')">
+                                    <i class="fa fa-trash"></i> Eliminar de la Institucion</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

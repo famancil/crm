@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='indices', actualSubTemplate='empleo', actualSubSubTemplate='cantidadPostulacionesOfertasEmpleoPorTipoOferta'">
+<head>
+    <title>Indice de Ofertas Empleo Por Tipo de Oferta</title>
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Indice de Ofertas Empleo Por Tipo de Oferta</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a href="#">Indices</a></li>
+        <li><a th:href="@{/indices/empleos}">Empleos</a></li>
+        <li><a th:href="@{/indices/empleos/cantidadPostulacionesOfertasEmpleoPorTipoOferta}">Indice de Ofertas Empleo Por Tipo de Oferta</a></li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+
+
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Indice de Ofertas Empleo Por Tipo de Oferta
+                    <small>Puede seleccionar el A&ntilde;o y Tipo de Vigencia para el indice .</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content" >
+
+                <form th:action="@{/indices/empleos/buscarCantidadPostulacionesOfertasEmpleoPorTipoOferta}" method="GET" >
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label">Vigencia de la Oferta Laboral</label>
+                                <select name="tipoVigencia" id="tipoVigencia" class="form-control" >
+                                    <option value="0" th:selected="${tipoVigencia}==0">Todos</option>
+                                    <option value="1" th:selected="${tipoVigencia}==1">Vigente</option>
+                                    <option value="2" th:selected="${tipoVigencia}==2">No Vigente</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label">A&ntilde;o de la Oferta Laboral</label>
+                                <select name="anio" id="anio"  class="form-control">
+                                    <option th:each="i: ${#numbers.sequence(#dates.year(#dates.createNow()),2000)}"
+                                            th:value="${i}" th:text="${i}" th:selected="${i} == ${anio}"></option>
+                                </select></div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group text-center">
+                        <button class="btn btn-primary" type="submit">Buscar</button>
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="col-lg-12" th:if="${postulacionesOfertasYVacantesEmpleoPorTipoOferta != null}" id="resultados-indice">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>
+                    Resultados del indice
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content">
+                <div class="alert alert-info alert-dismissable" th:if="${postulacionesOfertasYVacantesEmpleoPorTipoOferta.size()} != 0">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    Se han encontrado los siguientes resultados para tu b&uacute;squeda para el A&ntilde;o <strong th:text="${anio}"></strong> y Ofertas
+                    <strong th:if="${tipoVigencia}==0" >Vigente y No Vigente</strong>
+                    <strong th:if="${tipoVigencia}==1" >Vigente</strong>
+                    <strong th:if="${tipoVigencia}==2" >No Vigente</strong>
+                </div>
+                <div class="alert alert-info alert-dismissable" th:if="${postulacionesOfertasYVacantesEmpleoPorTipoOferta.size()} == 0">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    No se encontraron resultados para tu busqueda
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label class="control-label">Tabla Cantidad Postulaciones Ofertas por Tipo Oferta</label>
+                        <table class="table table-striped table-bordered table-hover" th:if="${postulacionesOfertasYVacantesEmpleoPorTipoOferta.size()} != 0">
+                            <thead>
+                            <tr>
+                                <th>TIPO OFERTA</th>
+                                <th>CANTIDAD DE POSTULACIONES</th>
+                                <th>CANTIDAD DE OFERTAS</th>
+                                <th>CANTIDAD VACANTES</th>
+                                <th>POSTULANTES/CANTIDAD OFERTAS</th>
+                                <th>POSTULANTES/CANTIDAD VACANTES</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="tipoOferta: ${postulacionesOfertasYVacantesEmpleoPorTipoOferta}">
+
+                                <td th:text="${tipoOferta[0]}"></td>
+
+                                <td th:text="${tipoOferta[1]}"></td>
+
+                                <td th:text="${tipoOferta[2]}"></td>
+
+                                <td th:text="${tipoOferta[3]}"></td>
+
+                                <td th:text="${tipoOferta[4]}"></td>
+
+                                <td th:text="${tipoOferta[5]}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label">Grafico Cantidad Postulaciones a Ofertas</label>
+                            <canvas class="center-block" id="incomePostulaciones" width="350" height="400"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label">Grafico Cantidad de Ofertas</label>
+                            <canvas class="center-block" id="incomeOfertas" width="350" height="400"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label">Grafico Cantidad Vacantes de Ofertas</label>
+                            <canvas class="center-block" id="incomeVacantes" width="350" height="400"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<th:block layout:fragment="scripts">
+
+    <script th:src="@{/js/jquery-ui-1.10.4.min.js}"></script>
+
+    <!-- ChartJS-->
+    <script th:src="@{/js/plugins/chartJs/Chart.min.js}"></script>
+
+    <script th:inline="javascript">
+        $(document).ready(function() {
+
+            $('html, body').animate({
+                scrollTop: $("#resultados-indice").offset().top
+            }, 1000);
+
+            mostrarGrafico();
+        });
+
+        function mostrarGrafico() {
+            datos = [[${postulacionesOfertasYVacantesEmpleoPorTipoOfertaJSON}]];
+            datos = JSON.parse(datos);
+
+            tiposOfertas = [];
+            cantidadesPostulaciones = [];
+            cantidadesOfertas = [];
+            cantidadesVacantes = [];
+
+            $.each(datos, function(indice, dato) {
+                if (indice + 1 != datos.length) {
+                    tiposOfertas.push(dato[0]);
+                    cantidadesPostulaciones.push(parseInt(dato[1]));
+                    cantidadesOfertas.push(parseInt(dato[2]));
+                    cantidadesVacantes.push(parseInt(dato[3]));
+                }
+            });
+
+            // bar chart data
+            var barDataPostulaciones = {
+                labels: tiposOfertas,
+                datasets: [
+                    {
+                        fillColor: "rgba(151,187,205,0.2)",
+                        strokeColor: "rgba(151,187,205,0.6)",
+                        highlightFill: "rgba(151,187,205,.8)",
+                        highlightStroke: "rgba(151,187,205,1)",
+                        data: cantidadesPostulaciones
+                    }
+                ]
+            }
+
+            // bar chart data
+            var barDataOfertas = {
+                labels: tiposOfertas,
+                datasets: [
+                    {
+                        fillColor: "rgba(151,187,205,0.2)",
+                        strokeColor: "rgba(151,187,205,0.6)",
+                        highlightFill: "rgba(151,187,205,.8)",
+                        highlightStroke: "rgba(151,187,205,1)",
+                        data: cantidadesOfertas
+                    }
+                ]
+            }
+
+            // bar chart data
+            var barDataVacantes = {
+                labels: tiposOfertas,
+                datasets: [
+                    {
+                        fillColor: "rgba(151,187,205,0.2)",
+                        strokeColor: "rgba(151,187,205,0.6)",
+                        highlightFill: "rgba(151,187,205,.8)",
+                        highlightStroke: "rgba(151,187,205,1)",
+                        data: cantidadesVacantes
+                    }
+                ]
+            }
+
+            // get bar chart canvas
+            var incomePostulaciones = document.getElementById("incomePostulaciones").getContext("2d");
+            var incomeOfertas = document.getElementById("incomeOfertas").getContext("2d");
+            var incomeVacantes = document.getElementById("incomeVacantes").getContext("2d");
+
+            // draw bar chart
+            new Chart(incomePostulaciones).Line(barDataPostulaciones);
+            new Chart(incomeOfertas).Line(barDataOfertas);
+            new Chart(incomeVacantes).Line(barDataVacantes);
+        }
+    </script>
+
+</th:block>
+
+</body>
+</html>
+

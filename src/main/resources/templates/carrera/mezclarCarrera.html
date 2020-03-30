@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='carreras', actualSubTemplate='mezclarCarrera'">
+<head>
+    <title>Busqueda Mezclar Carreras</title>
+
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Busqueda Mezclar Carreras</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a th:href="@{/carrera}">Carrera</a></li>
+        <li><a th:href="@{/carrera/buscarMezcladorCarrera}">Busqueda Mezclar Carreras</a></li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Busqueda Mezclar Carreras
+                    <small>Puede realizar una b&uacute;squeda por el nombre que tienen las Carreras a mezclar</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content" style="padding-bottom: 5px;">
+
+                <form th:action="@{/carrera/buscarMezcladorCarrera}" method="POST" class="form-horizontal">
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Nombre Carrera</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="nombreCarreraBuscar" id="nombreCarreraBuscar" class="form-control" th:value="${nombreCarreraBuscar}"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group text-center">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button class="btn btn-primary" type="submit">Buscar</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <div class="col-lg-12" th:if="${carreras != null}" id="resultados_busqueda">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content">
+
+                <div th:if="${carreras.size() == 0}" class="alert alert-info alert-dismissable">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    No se han encontrado resultados para tu b&uacute;squeda
+                </div>
+
+                <div th:if="${carreras.size() != 0}">
+                    <div class="ibox-title">
+                        <h5>
+                            Seleccion de Carreras a Mezclar
+                        </h5>
+                    </div>
+
+                    <form th:action="@{/carrera/mezclar}" th:object="${carrera}" method="POST" >
+
+                        <div class="alert alert-danger" th:if="${#fields.hasErrors('*') or errorNombreCarrera!=null or errorCheckbox!=null}">
+                            <strong>Atenci&oacute;n: </strong> Debes solucionar los errores marcados en rojo antes de proceder con el registro de la carrera.
+                        </div>
+
+                        <label class="error" th:if="${errorCheckbox}" th:text="${errorCheckbox}"></label>
+
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>NOMBRE CARRERA</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="carrera: ${carreras}" >
+                                    <td>
+                                        <input type="checkbox" name="idsCarrerasMezclar" th:value="${carrera.codCarrera}"/>
+                                    </td>
+                                    <td th:text="${carrera.nombreCarrera}">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="ibox-title">
+                            <h5>
+                                Datos de la nueva Carrera
+                            </h5>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group" th:class="${#fields.hasErrors('nombreCarrera')}? 'has-error'">
+                                    <label class="control-label">Nombre Carrera:</label>
+                                    <input type="text" id="nombreCarrera" th:field="*{nombreCarrera}" class="form-control" placeholder="Si ya se encuentra registrada aparecer&aacute; en el listado" />
+                                    <label class="error" th:if="${#fields.hasErrors('nombreCarrera')}" th:text="${#fields.errors('*{nombreCarrera}')}"></label>
+                                    <label class="error" th:if="${errorNombreCarrera}" th:text="${errorNombreCarrera}"></label>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group" th:class="${#fields.hasErrors('abreviacion')}? 'has-error'">
+                                    <label class="control-label">Abreviaci&oacute;n:</label>
+                                    <input type="text" th:field="*{abreviacion}" class="form-control"/>
+                                    <label class="error" th:if="${#fields.hasErrors('abreviacion')}" th:text="${#fields.errors('*{abreviacion}')}"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group" th:class="${#fields.hasErrors('titulo')}? 'has-error'">
+                                    <label class="control-label">Titulo:</label>
+                                    <input type="text" th:field="*{titulo}" class="form-control"/>
+                                    <label class="error" th:if="${#fields.hasErrors('titulo')}" th:text="${#fields.errors('*{titulo}')}"></label>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group" th:class="${#fields.hasErrors('mencion')}? 'has-error'">
+                                    <label class="control-label">Menci&oacute;n:</label>
+                                    <input type="text" th:field="*{mencion}" class="form-control"/>
+                                    <label class="error" th:if="${#fields.hasErrors('mencion')}" th:text="${#fields.errors('*{mencion}')}"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group" th:class="${#fields.hasErrors('duracion')}? 'has-error'">
+                                    <label class="control-label">Duraci&oacute;n</label>
+                                    <input type="number" th:field="*{duracion}" class="form-control"/>
+                                    <label class="error" th:if="${#fields.hasErrors('duracion')}" th:text="${#fields.errors('*{duracion}')}"></label>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="control-label">Tipo Grado:</label>
+                                    <select th:field="*{tipoGrado.codGrado}" class="form-control">
+                                        <option th:each="tg: ${tiposGrados}" th:value="${tg.codGrado}" th:text="${tg.nomGrado}" th:selected="${tg.codGrado == carrera.tipoGrado.codGrado}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="control-label">Tipo Vigencia:</label>
+                                    <select th:field="*{tipoVigencia.codVigencia}" class="form-control">
+                                        <option th:each="tv: ${tiposVigencia}" th:value="${tv.codVigencia}" th:text="${tv.nomVigencia}" th:selected="${tv.codVigencia == carrera.tipoVigencia.codVigencia}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <input type="hidden" th:name="codCarrera" th:value="*{codCarrera}"/>
+                        <input type="hidden" name="nombreCarreraBuscar" id="nombreCarreraBuscar" th:value="${nombreCarreraBuscar}"/>
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group text-center">
+                            <button class="btn btn-primary" type="submit">Mezclar</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<th:block layout:fragment="scripts">
+
+    <script th:inline="javascript">
+
+        $(document).ready(function() {
+            $('html, body').animate({
+                scrollTop: $("#resultados_busqueda").offset().top
+            }, 1000);
+
+        });
+
+        $(function() {
+            $("#nombreCarrera").autocomplete({
+                minLength:3,
+                source: function (request, response) {
+                    $.getJSON("/opciones/carreras", {
+                                term: encodeURI(request.term)
+                            },
+                            response);
+                }
+            });
+        });
+
+    </script>
+
+</th:block>
+
+</body>
+</html>
+

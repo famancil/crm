@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='instituciones',actualSubTemplate='buscarInstituciones'">
+<head>
+    <meta charset="utf-8"/>
+    <title>Buscar Instituciones</title>
+
+    <!--/*/
+    <th:block layout:fragment="css">
+        <link th:href="@{/css/jQueryUI/jquery-ui-1.10.4.custom.min.css}" rel="stylesheet"/>
+    </th:block>
+    /*/-->
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Buscar Instituciones</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a th:href="@{/institucion}">Instituciones</a></li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>B&uacute;squeda de Instituciones
+                    <small>Puede realizar una b&uacute;squeda por el nombre, pais y vigencia de la Carrera.</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content" >
+                <form id="formBusqueda" th:action="@{/institucion/buscar}" method="GET" class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="control-label">Nombre de Institucion</label>
+                            <input type="text" name="nombreInstitucion" id="nombreInstitucion" th:value="${nombreInstitucion}" class="form-control" placeholder="Ingrese nombre de Institucion. Puede dejar en blanco para buscar todas"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <label class="control-label">Vigencia</label>
+                            <select name="tipoVigencia" id="tipoVigencia" class="form-control">
+                                <option value="0">Todas</option>
+                                <option th:each="vig :${vigencias}" th:value="${vig.codVigencia}" th:text="${vig.nomVigencia}"></option>
+                            </select>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="control-label">Pa&iacute;s:</label>
+                            <select name="idPais" id="idPais" class="form-control">
+                                <option value="0">Todas</option>
+                                <option th:each="pais: ${paises}" th:text="${pais.nombre}" th:value="${pais.id}"></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group text-center">
+                        <input type="hidden" name="pagina" value="1"/>
+
+                        <button onclick="submitFormBusqueda()" class="btn btn-primary" type="button">Buscar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-12" th:if="${instituciones != null}" id="resultados_busqueda">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>
+                    Resultados de la busqueda
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content">
+                <div class="alert alert-info alert-dismissable" th:if="${instituciones.getTotalElements()} != 0">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    Se han encontrado <strong th:text="${instituciones.getTotalElements()}"></strong> resultados para tu b&uacute;squeda
+                </div>
+                <div class="alert alert-info alert-dismissable" th:if="${instituciones.getTotalElements()} == 0">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    No se encontraron resultados para tu busqueda
+                </div>
+
+                <table th:if="${instituciones.getTotalElements()} != 0" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>NOMBRE INSTITUCIÓN</th>
+                            <th>PAÍS</th>
+                            <th>DIRECCIÓN</th>
+                            <th>TELEFONO</th>
+                            <th>VIGENCIA</th>
+                            <th>VER</th>
+                            <th>MODIFICAR</th>
+                            <th>ASIGNAR CARRERA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="institucion : ${instituciones}">
+                            <td th:text="${institucion.nomInstitucion}">
+                            </td>
+
+                            <td th:text="${institucion.pais.nombre}">
+                            </td>
+
+                            <td th:text="${institucion.direccion}">
+                            </td>
+
+                            <td th:text="${institucion.telefono}">
+                            </td>
+
+                            <td th:text="${institucion.vigencia.nomVigencia}">
+                            </td>
+
+                            <td>
+                                <a class="btn btn-info btn-xs" th:href="@{'/institucion/perfil/'+${institucion.codInstitucion}}">
+                                    <i class="fa fa-search"></i> Ver </a>
+                            </td>
+
+                            <td>
+                                <a class="btn btn-primary btn-xs" th:href="@{'/institucion/modificar/'+${institucion.codInstitucion}}">
+                                    <i class="fa fa-edit"></i> Modificar</a>
+                            </td>
+
+                            <td>
+                                <a class="btn btn-success btn-xs" th:href="@{'/carreraInstitucion/registrar/'+${institucion.codInstitucion}+'/0'}">
+                                    <i class="fa fa-link"></i> Asignar Carrera</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="row">
+                    <div class="col-md-6 text-left">
+                        <p th:text="|Total encontrados: ${instituciones.getTotalElements()}|"></p>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <p th:if="${instituciones.getTotalPages() != 0}" th:text="|P&aacute;gina ${instituciones.getNumber() + 1} de ${instituciones.getTotalPages()}|"></p>
+                        <p th:if="${instituciones.getTotalPages() == 0}" th:text="|P&aacute;gina 1 de 1|"></p>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <ul class="pagination">
+                        <li class="disabled" th:if="${currentIndex == 1}"><a href="#">&lt;&lt;</a></li>
+                        <li class="disabled" th:if="${currentIndex == 1}"><a href="#">&lt;</a></li>
+                        <li th:if="${currentIndex != 1}">
+                            <a th:href="@{/institucion/buscar(tipoVigencia=${tipoVigencia},nombreInstitucion=${nombreInstitucion},idPais=${idPais},pagina=1)}">&lt;&lt;</a>
+                        </li>
+                        <li th:if="${currentIndex != 1}">
+                            <a th:href="@{/institucion/buscar(tipoVigencia=${tipoVigencia},nombreInstitucion=${nombreInstitucion},idPais=${idPais},pagina=${currentIndex-1})}">&lt;</a>
+                        </li>
+                        <li th:each="i : ${#numbers.sequence( beginIndex, endIndex)}" th:class="${i == currentIndex}? 'active'">
+                            <a th:if="${i!=0}" th:text="${i}" th:href="@{/institucion/buscar(tipoVigencia=${tipoVigencia},nombreInstitucion=${nombreInstitucion},idPais=${idPais},pagina=${i})}"></a>
+                        </li>
+                        <li class="disabled" th:if="${currentIndex == instituciones.getTotalPages() || instituciones.getTotalPages() == 0}"><a href="#">&gt;</a></li>
+                        <li class="disabled" th:if="${currentIndex == instituciones.getTotalPages() || instituciones.getTotalPages() == 0}"><a href="#">&gt;&gt;</a></li>
+                        <li><a th:href="@{/institucion/buscar(tipoVigencia=${tipoVigencia},nombreInstitucion=${nombreInstitucion},idPais=${idPais},pagina=${currentIndex+1})}" th:if="${currentIndex != instituciones.totalPages and instituciones.getTotalPages() != 0}">&gt;</a></li>
+                        <li><a th:href="@{/institucion/buscar(tipoVigencia=${tipoVigencia},nombreInstitucion=${nombreInstitucion},idPais=${idPais},pagina=${instituciones.getTotalPages()})}" th:if="${currentIndex != instituciones.totalPages and instituciones.getTotalPages() != 0}">&gt;&gt;</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+
+    <script th:src="@{/js/jquery-ui-1.10.4.min.js}"></script>
+
+    <script th:inline="javascript" type="text/javascript">
+
+        $(function() {
+            $("#nombreInstitucion").autocomplete({
+                minLength:3,
+                source: function (request, response) {
+                    $.getJSON("/opciones/instituciones", {
+                                term: encodeURI(request.term)
+                            },
+                            response);
+                }
+            });
+        });
+
+        $(document).keypress(function(e) {
+            if(e.which == 13) {
+                submitFormBusqueda();
+            }
+        });
+
+        function submitFormBusqueda(){
+            var nombre = $("#nombreInstitucion").val();
+            $("#nombreInstitucion").val(encodeURI($("#nombreInstitucion").val()));
+            $("#formBusqueda").submit();
+            $("#nombreInstitucion").val(nombre);
+        }
+
+        $(document).ready(function() {
+            $('html, body').animate({
+                scrollTop: $("#resultados_busqueda").offset().top
+            }, 1000);
+        });
+    </script>
+</th:block>
+
+</body>
+</html>

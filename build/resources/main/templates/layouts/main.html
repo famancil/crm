@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <title layout:title-pattern="$DECORATOR_TITLE - $CONTENT_TITLE">
+        CRM Red de Exalumnos
+    </title>
+    <link th:href="@{/css/jQueryUI/jquery-ui-1.10.4.custom.min.css}" rel="stylesheet"/>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/font-awesome/css/font-awesome.css}" rel="stylesheet"/>
+
+    <link th:href="@{/css/toastr/toastr.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/animate.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/theme-style.css}" rel="stylesheet" type="text/css"/>
+
+    <link th:href="@{/css/crm.css}" rel="stylesheet" type="text/css"/>
+
+    <!--/*/
+    <th:block layout:fragment="css">
+    </th:block>
+    /*/-->
+
+</head>
+
+<body>
+
+<div id="wrapper">
+
+    <nav class="navbar-default navbar-static-side" role="navigation">
+        <div class="sidebar-collapse">
+            <ul class="nav" id="side-menu">
+                <li class="nav-header">
+                    <div class="dropdown profile-element">
+                        <span th:switch="${#authentication.principal.urlFoto}">
+                            <img th:case="null" src="http://digitalinstitute.ncl.ac.uk/wp-content/themes/digital-institute/assets/images/missing-staff.jpg"
+                                 class="img-circle img-user"/>
+                            <img th:case="*" th:src="'http://perfil.sansanos.cl/data'+${#authentication.principal.urlFoto}" class="img-circle img-user"/>
+                        </span>
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            <span class="clear">
+                                <span class="block m-t-xs">
+                                    <strong class="font-bold" sec:authentication="principal.nombre"></strong>
+                                </span>
+                                <span class="text-muted text-xs block">
+                                    <span th:if="${#authentication.principal.rolPrincipal!=null}" sec:authentication="principal.rolPrincipal.nombrePresentacion"></span>
+                                    <span th:if="${#authentication.principal.rolPrincipal==null}" th:text="${'Invitado'}"></span>
+                                    <b class="caret"></b>
+                                </span>
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                            <li><a th:href="@{/logout}">Cerrar Sesi&oacute;n</a></li>
+                        </ul>
+                    </div>
+                    <div class="logo-element">
+                        CRM
+                    </div>
+                </li>
+                <li th:class="${actualTemplate == 'dashboard'} ? 'active'">
+                    <a th:href="@{/}"><i class="fa fa-th-large"></i> <span class="nav-label">Dashboard</span></a>
+                </li>
+                <li th:class="${actualTemplate == 'usuarios'} ? 'active'">
+                    <a href="#">
+                        <i class="fa fa-user"></i>
+                        <span class="nav-label">Usuarios</span>
+                        <span class="fa arrow"></span>
+                    </a>
+                    <ul class="nav nav-second-level collapse">
+                        <li th:class="${actualSubTemplate == 'buscarUsuarios'} ? 'active'">
+                            <a th:href="@{/busquedas/usuarios}">
+                                <i class="fa fa-search"></i>
+                                Buscar Usuarios
+                            </a>
+                        </li>
+                        <li sec:authorize="hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN_INSTITUCION','ROLE_AYUDANTE_INSTITUCION','ROLE_ADMIN_CARRERA')" th:class="${actualSubTemplate == 'registrarUsuario'} ? 'active'">
+                            <a th:href="@{/usuario/registrar}">
+                                <i class="fa fa-plus"></i>
+                                Registrar Usuario
+                            </a>
+                        </li>
+                        <li sec:authorize="hasAnyRole('ROLE_SUPER_ADMIN')" th:class="${actualSubTemplate == 'importarUsuario'} ? 'active'">
+                            <a th:href="@{/usuario/importar}">
+                                <i class="fa fa-upload"></i>
+                                Importar Usuarios
+                            </a>
+                        </li>
+                        <li sec:authorize="hasAnyRole('ROLE_SUPER_ADMIN','ADMIN_INSTITUCION')" th:class="${actualSubTemplate == 'buscarUsuariosRepetidos'} ? 'active'">
+                            <a th:href="@{/busquedas/mezclador}">
+                                <i class="fa fa-random"></i>
+                                Mezclador Usuarios
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li th:class="${actualTemplate == 'empresas'} ? 'active'">
+                    <a href="#">
+                        <i class="fa fa-building-o"></i>
+                        <span class="nav-label">Empresas</span>
+                        <span class="fa arrow"></span>
+                    </a>
+                    <ul class="nav nav-second-level collapse">
+                        <li th:class="${actualSubTemplate == 'buscarEmpresas'} ? 'active'">
+                            <a th:href="@{/busquedas/empresas}">
+                                <i class="fa fa-search"></i>
+                                Buscar Empresas
+                            </a>
+                        </li>
+                        <li th:class="${actualSubTemplate == 'agregarEmpresa'} ? 'active'">
+                            <a th:href="@{/empresas/registrar}">
+                                <i class="fa fa-plus"></i>
+                                Registrar Empresa
+                            </a>
+                        </li>
+                        <li th:class="${actualSubTemplate == 'registrarContactoConEmpresa'} ? 'active'">
+                            <a th:href="@{/empresas/registrar-contacto}">
+                                <i class="fa fa-plus"></i>
+                                Registrar Contacto Con Empresa
+                            </a>
+                        </li>
+                        <li th:class="${actualSubTemplate == 'registrarCompromisoEmpresa'} ? 'active'">
+                            <a th:href="@{/empresas/registrar-compromiso/0}">
+                                <i class="fa fa-plus"></i>
+                                Registrar Compromiso de Empresa
+                            </a>
+                        </li>
+                        <li th:class="${actualSubTemplate == 'registrarPerfilPublicador'} ? 'active'">
+                            <a th:href="@{/empresas/registrar-perfil-publicador}">
+                                <i class="fa fa-plus"></i>
+                                Registrar Perfil Publicador
+                            </a>
+                        </li>
+                        <li sec:authorize="hasAnyRole('ROLE_SUPER_ADMIN','ADMIN_INSTITUCION','ADMIN_CARRERA_INSTITUCION')" th:class="${actualSubTemplate == 'validarEmpresas'} ? 'active'">
+                            <a>
+                                <i class="fa fa-check-square-o "></i>
+                                <span class="nav-label">Validar Empresas</span>
+                                <span class="fa arrow"></span>
+                            </a>
+                            <ul class="nav nav-third-level">
+                                <li th:class="${actualSubSubTemplate == 'validarEmpresasPorPublicador'} ? 'active'">
+                                    <a th:href="@{/busquedas/empresas/por-validar/publicadores/}">Validar Empresas Por Publicador</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'validarEmpresasPorAlumno'} ? 'active'">
+                                    <a th:href="@{/busquedas/empresas/por-validar/alumnos/}">Validar Empresas Por Alumno</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'validarSucursalesPorPublicador'} ? 'active'">
+                                    <a th:href="@{/busquedas/sucursales/por-validar/publicadores/}">Validar Sucursales Por Publicador</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'validarSucursalesPorAlumno'} ? 'active'">
+                                    <a th:href="@{/busquedas/sucursales/por-validar/alumnos/}">Validar Sucursales Por Alumno</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li th:class="${actualTemplate == 'carreras'} ? 'active'">
+                    <a href="#">
+                        <i class="fa fa-book"></i>
+                        <span class="nav-label">Carreras</span>
+                        <span class="fa arrow"></span>
+                    </a>
+                    <ul class="nav nav-second-level collapse">
+                        <li th:class="${actualSubTemplate == 'buscarCarreras'} ? 'active'">
+                            <a th:href="@{/carrera}">
+                                <i class="fa fa-search"></i>
+                                Buscar Carreras
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-second-level collapse">
+                        <li th:class="${actualSubTemplate == 'registrarCarrera'} ? 'active'">
+                            <a th:href="@{/carrera/registrar}">
+                                <i class="fa fa-plus"></i>
+                                Registrar Carreras
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-second-level collapse">
+                        <li sec:authorize="hasAnyRole('ROLE_SUPER_ADMIN','ADMIN_INSTITUCION')" th:class="${actualSubTemplate == 'mezclarCarrera'} ? 'active'">
+                            <a th:href="@{/carrera/buscarMezcladorCarrera}">
+                                <i class="fa fa-random"></i>
+                                Mezclar Carreras
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li th:class="${actualTemplate == 'instituciones'} ? 'active'">
+                    <a href="#">
+                        <i class="fa fa-mortar-board"></i>
+                        <span class="nav-label">Instituciones</span>
+                        <span class="fa arrow"></span>
+                    </a>
+                    <ul class="nav nav-second-level collapse">
+                        <li th:class="${actualSubTemplate == 'buscarInstituciones'} ? 'active'">
+                            <a th:href="@{/institucion}">
+                                <i class="fa fa-search"></i>
+                                Buscar Instituciones
+                            </a>
+                        </li>
+                        <li th:class="${actualSubTemplate == 'registrarInstitucion'} ? 'active'">
+                            <a th:href="@{/institucion/registrar}">
+                                <i class="fa fa-plus"></i>
+                                Registrar Institución
+                            </a>
+                        </li>
+                        <li sec:authorize="hasAnyRole('ROLE_SUPER_ADMIN')" th:class="${actualSubTemplate == 'mezclarInstitucion'} ? 'active'">
+                            <a th:href="@{/institucion/buscarMezcladorInstitucion}">
+                                <i class="fa fa-random"></i>
+                                Mezclar Instituciones
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li th:class="${actualTemplate == 'colegios'} ? 'active'">
+                    <a href="#">
+                        <i class="fa fa-university"></i>
+                        <span class="nav-label">Colegios</span>
+                        <span class="fa arrow"></span>
+                    </a>
+                    <ul class="nav nav-second-level collapse">
+                        <li th:class="${actualSubTemplate == 'buscarColegios'} ? 'active'">
+                            <a th:href="@{/colegio}">
+                                <i class="fa fa-search"></i>
+                                Buscar Colegios
+                            </a>
+                        </li>
+                        <li th:class="${actualSubTemplate == 'registrarColegio'} ? 'active'">
+                            <a th:href="@{/colegio/registrar}">
+                                <i class="fa fa-plus"></i>
+                                Registrar Colegio
+                            </a>
+                        </li>
+                        <li sec:authorize="hasAnyRole('ROLE_SUPER_ADMIN')" th:class="${actualSubTemplate == 'mezclarColegio'} ? 'active'">
+                            <a th:href="@{/colegio/buscarMezcladorColegio}">
+                                <i class="fa fa-random"></i>
+                                Mezclar Colegios
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li th:class="${actualTemplate == 'indices'} ? 'active'">
+                    <a href="#">
+                        <i class="fa fa-bar-chart-o"></i>
+                        <span class="nav-label">Indices</span>
+                        <span class="fa arrow"></span>
+                    </a>
+                    <ul class="nav nav-second-level collapse">
+                        <li th:class="${actualSubTemplate == 'empleo'} ? 'active'">
+                            <a th:href="@{/indices/empleos}">
+                                <i class="fa fa-bar-chart"></i>
+                                <span class="nav-label">Empleo</span>
+                                <span class="fa arrow"></span>
+                            </a>
+                            <ul class="nav nav-third-level">
+                                <li th:class="${actualSubSubTemplate == 'cantidadOfertasLaboralesPorCarrera'} ? 'active'">
+                                    <a th:href="@{/indices/empleos/cantidadOfertasLaboralesPorCarrera}">Cantidad Ofertas Laborales por Carrera</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadEmpresasOfrecenEmpleo'} ? 'active'">
+                                    <a th:href="@{/indices/empleos/cantidadEmpresasOfrecenEmpleo}">Cantidad Empresas que Ofrecen Empleo</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadOfertasLaboralesPorOferta'} ? 'active'">
+                                    <a th:href="@{/indices/empleos/cantidadOfertasLaboralesPorTipoOferta}">Cantidad Ofertas Laborales por Tipo Oferta</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'rankingCarrerasPorDemanda'} ? 'active'">
+                                    <a th:href="@{/indices/empleos/rankingCarrerasPorDemanda}">Ranking de Carreras por Demanda</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'rankingCarrerasPorSalario'} ? 'active'">
+                                    <a th:href="@{/indices/empleos/rankingCarrerasPorSalario}">Ranking de Carreras por Salario</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadPostulacionesOfertasEmpleo'} ? 'active'">
+                                    <a th:href="@{/indices/empleos/cantidadPostulacionesOfertasEmpleo}">Cantidad Postulaciones a Ofertas de Empleo</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadPostulacionesOfertasEmpleoPorRegion'} ? 'active'">
+                                    <a th:href="@{/indices/empleos/cantidadPostulacionesOfertasEmpleoPorRegion}">Cantidad Postulaciones a Ofertas de Empleo por Region</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadPostulacionesOfertasEmpleoPorTipoOferta'} ? 'active'">
+                                    <a th:href="@{/indices/empleos/cantidadPostulacionesOfertasEmpleoPorTipoOferta}">Cantidad Postulaciones a Ofertas de Empleo por Tipo Oferta</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadUsuariosPostulantesOfertasEmpleoPorEdad'} ? 'active'">
+                                    <a th:href="@{/indices/empleos/cantidadUsuariosPostulantesOfertasEmpleoPorEdad}">Cantidad de Usuarios Postulantes a Ofertas de Empleo por Edad</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadUsuariosPostulantesOfertasEmpleoPorSituacionLaboral'} ? 'active'">
+                                    <a th:href="@{/indices/empleos/cantidadUsuariosPostulantesOfertasEmpleoPorSituacionLaboral}">Cantidad de Usuarios Postulantes a Ofertas de Empleo por Situacion Laboral</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadUsuariosPostulantesOfertasEmpleoPorRegionYProvincia'} ? 'active'">
+                                    <a th:href="@{/indices/empleos/cantidadUsuariosPostulantesOfertasEmpleoPorRegionYProvincia}">Cantidad de Usuarios Postulantes a Ofertas de Empleo por Region y Provincia</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'segmentacionVacantes'} ? 'active'">
+                                    <a th:href="@{/indices/empleos/segmentacionVacantes}">Segmentacion de Vacantes</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadVacantesOfertasLaboralesPorCarrera'} ? 'active'">
+                                    <a th:href="@{/indices/empleos/cantidadVacantesOfertasLaboralesPorCarrera}">Cantidad Vacantes de Ofertas Laborales Por Carrera</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadVacantesOfertasLaboralesPorTipoOferta'} ? 'active'">
+                                    <a th:href="@{/indices/empleos/cantidadVacantesOfertasLaboralesPorTipoOferta}">Cantidad Vacantes de Ofertas Laborales por Tipo Oferta</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'rankingCarrerasPorVacantes'} ? 'active'">
+                                    <a th:href="@{/indices/empleos/rankingCarrerasPorVacantes}">Ranking de Carreras por Vacantes</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li th:class="${actualSubTemplate == 'curriculos'} ? 'active'">
+                            <a th:href="@{/indices/curriculos}">
+                                <i class="fa fa-bar-chart-o"></i>
+                                <span class="nav-label">Curriculos</span>
+                                <span class="fa arrow"></span>
+                            </a>
+                            <ul class="nav nav-third-level">
+                                <li th:class="${actualSubSubTemplate == 'cantidadCurriculosPorCarrera'} ? 'active'">
+                                    <a th:href="@{/indices/curriculos/cantidadCurriculosPorCarrera}">Cantidad Curriculos por Carrera</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadCurriculosPorFechaModificacion'} ? 'active'">
+                                    <a th:href="@{/indices/curriculos/cantidadCurriculosPorFechaModificacion}">Cantidad Curriculos Por Fecha de Modificacion</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadCurriculosPorSexo'} ? 'active'">
+                                    <a th:href="@{/indices/curriculos/cantidadCurriculosPorSexo}">Cantidad Curriculos Por Sexo</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadCurriculosPorEdad'} ? 'active'">
+                                    <a th:href="@{/indices/curriculos/cantidadCurriculosPorEdad}">Cantidad Curriculos Por Edad</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadCurriculosPorRegion'} ? 'active'">
+                                    <a th:href="@{/indices/curriculos/cantidadCurriculosPorRegion}">Cantidad Curriculos Por Region</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadCurriculosCompletos'} ? 'active'">
+                                    <a th:href="@{/indices/curriculos/cantidadCurriculosCompletos}">Cantidad Curriculos Completos</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li th:class="${actualSubTemplate == 'personas'} ? 'active'">
+                            <a th:href="@{/indices/personas}">
+                                <i class="fa fa-bar-chart-o"></i>
+                                <span class="nav-label">Personas</span>
+                                <span class="fa arrow"></span>
+                            </a>
+                            <ul class="nav nav-third-level">
+                                <li th:class="${actualSubSubTemplate == 'cantidadExalumnos'} ? 'active'">
+                                    <a th:href="@{/indices/personas/cantidad-exalumnos}">Cantidad Exalumnos</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadExalumnosSituacionContractual'} ? 'active'">
+                                    <a th:href="@{/indices/personas/cantidad-exalumnos-por-situacion-contractual}">Cantidad Exalumnos por Situacion Contractual</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadPersonasPorAniosExperiencia'} ? 'active'">
+                                    <a th:href="@{/indices/personas/cantidadPersonasPorAniosExperiencia}">Cantidad Personas por A&ntilde;os de Experiencia</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadPersonasConTrabajoPorTipoRubro'} ? 'active'">
+                                    <a th:href="@{/indices/personas/cantidadPersonasConTrabajoPorTipoRubro}">Cantidad Personas Con Trabajo por Tipo Rubro</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadPersonasConTrabajoPorTramoIngreso'} ? 'active'">
+                                    <a th:href="@{/indices/personas/cantidadPersonasConTrabajoPorTramoIngreso}">Cantidad Personas Con Trabajo por Tramo de Ingreso</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadPersonasPorNivelIdioma'} ? 'active'">
+                                    <a th:href="@{/indices/personas/cantidadPersonasPorNivelIdioma}">Cantidad Personas por Nivel de Idioma</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li th:class="${actualSubTemplate == 'empresas'} ? 'active'">
+                            <a th:href="@{/indices/empresas}">
+                                <i class="fa fa-bar-chart-o"></i>
+                                <span class="nav-label">Empresas</span>
+                                <span class="fa arrow"></span>
+                            </a>
+                            <ul class="nav nav-third-level">
+                                <li th:class="${actualSubSubTemplate == 'rankingEmpresasMasPersonasContratadas'} ? 'active'">
+                                    <a th:href="@{/indices/empresas/rankingEmpresasMasPersonasContratadas}">Ranking de Empresas con M&aacute;s Personas Contratadas</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadAporteEmpresas'} ? 'active'">
+                                    <a th:href="@{/indices/empresas/cantidadAportesEmpresas}">Cantidad de Aportes Por Empresa</a>
+                                </li>
+                                <li th:class="${actualSubSubTemplate == 'cantidadContactoEmpresaPorOperador'} ? 'active'">
+                                    <a th:href="@{/indices/empresas/cantidadContactoEmpresaPorOperador}">Cantidad de Contacto a Empresa Por Operador</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li sec:authorize="hasAnyRole('ROLE_SUPER_ADMIN','ADMIN_INSTITUCION','ADMIN_CARRERA_INSTITUCION')" th:class="${actualTemplate == 'descarga'} ? 'active'">
+                    <a href="#">
+                        <i class="fa fa-cloud-download"></i>
+                        <span class="nav-label">Descargas</span>
+                        <span class="fa arrow"></span>
+                    </a>
+                    <ul class="nav nav-second-level collapse">
+                        <li sec:authorize="hasAnyRole('ROLE_SUPER_ADMIN')" th:class="${actualSubTemplate == 'descargaEmpresa'} ? 'active'">
+                            <a th:href="@{/empresa/descargar}">
+                                <i class="fa fa-download"></i>
+                                Descarga Empresas
+                            </a>
+                        </li>
+                        <li th:class="${actualSubTemplate == 'descargaCarrera'} ? 'active'">
+                            <a th:href="@{/carrera/descargar}">
+                                <i class="fa fa-download"></i>
+                                Descarga KPI Carreras
+                            </a>
+                        </li>
+                        <li th:class="${actualSubTemplate == 'descargaOfertaLaboral'} ? 'active'">
+                            <a th:href="@{/ofertaLaboral/descargar}">
+                                <i class="fa fa-download"></i>
+                                Descarga Oferta Laboral
+                            </a>
+                        </li>
+                        <li th:class="${actualSubTemplate == 'descargaUsuario'} ? 'active'">
+                            <a th:href="@{/usuario/descargar}">
+                                <i class="fa fa-download"></i>
+                                Descarga Usuarios
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li sec:authorize="hasRole('ROLE_SUPER_ADMIN')" th:class="${actualTemplate == 'permisos'} ? 'active'">
+                    <a th:href="@{/busquedas/permisos-usuario}">
+                        <i class="fa fa-key"></i>
+                        <span class="nav-label">Permisos</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/logout}">
+                        <i class="fa fa-power-off"></i>
+                        <span class="nav-label">Cerrar Sesi&oacute;n</span>
+                    </a>
+                </li>
+                <li>
+                    <a data-toggle="modal" href="#problemasConSitio">>
+                        <i class="fa"></i>
+                        <span class="nav-label">¿Problemas con el Sitio?</span>
+                    </a>
+                    <div id="problemasConSitio" class="modal fade" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <p class="text-center">
+                                            Si presentas un problema con el sitio, no dudes en informarlo a <strong>hector.calquin@alumnos.usm.cl</strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+
+    <div id="page-wrapper" class="gray-bg">
+
+        <div class="row border-bottom">
+            <nav class="navbar navbar-static-top top-navigation" role="navigation">
+                <div class="navbar-header">
+                    <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+                    <!--
+                    <form role="search" class="navbar-form-custom" method="post" action="search_results.html">
+                        <div class="form-group">
+                            <input type="text" placeholder="Buscar..." class="form-control" name="top-search" id="top-search"/>
+                        </div>
+                    </form>
+                    -->
+                </div>
+
+                <ul class="nav navbar-top-links navbar-left">
+                    <li>
+                        <a th:href="@{/busquedas/usuarios}">
+                            <i class="fa fa-search"></i>Buscar Usuarios
+                        </a>
+                    </li>
+                    <li sec:authorize="hasRole('ROLE_SUPER_ADMIN')">
+                        <a th:href="@{/busquedas/mezclador}">
+                            <i class="fa fa-random"></i>Mezclador Usuarios
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/busquedas/empresas}">
+                            <i class="fa fa-search"></i>Buscar Empresas
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="nav navbar-top-links navbar-right">
+                    <li>
+                        <a th:href="@{/logout}">
+                            <i class="fa fa-sign-out"></i> Cerrar Sesi&oacute;n
+                        </a>
+                    </li>
+                </ul>
+
+            </nav>
+        </div>
+
+        <div class="row wrapper border-bottom white-bg page-heading">
+            <div class="col-lg-12" layout:fragment="title">
+                <h2>CRM</h2>
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="index.html">Inicio</a>
+                    </li>
+                    <li class="active">
+                        <strong>Secci&oacute;n</strong>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="row" layout:fragment="content"></div>
+        </div>
+
+        <div class="footer">
+            <div class="pull-right">
+                Hoy es <strong th:text="${#calendars.format(#dates.createNow(),'dd MMMM ''de'' yyyy')}"></strong>, ¡a trabajar!.
+            </div>
+            <div>
+                <strong>Copyright</strong> Red de Exalumnos - Universidad T&eacute;cnica Federico Santa Mar&iacute;a &copy; 2015
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Mainly scripts -->
+<script th:src="@{/js/jquery-2.1.1.js}"></script>
+<script th:src="@{/js/jquery-ui-1.10.4.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/plugins/metisMenu/jquery.metisMenu.js}"></script>
+<script th:src="@{/js/plugins/slimscroll/jquery.slimscroll.min.js}"></script>
+
+<!-- Custom and plugin javascript -->
+<script th:src="@{/js/inspinia.js}"></script>
+<script th:src="@{/js/plugins/pace/pace.min.js}"></script>
+<script th:src="@{/js/plugins/toastr/toastr.min.js}"></script>
+
+<script th:inline="javascript" th:if="${#vars['flash.warning']}">
+    $(function(){
+        var message = /*[[${#vars['flash.warning']}]]*/ null;
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "onclick": null,
+            "showDuration": "1000",
+            "hideDuration": "1000",
+            "timeOut": "7000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+        toastr.warning(message, 'Atenci\u00F3n');
+    });
+
+</script>
+
+<script th:inline="javascript" th:if="${#vars['flash.success']}">
+    $(function(){
+        var message = /*[[${#vars['flash.success']}]]*/ null;
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "onclick": null,
+            "showDuration": "700",
+            "hideDuration": "1000",
+            "timeOut": "7000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+        toastr.success(message, 'Atenci\u00F3n');
+    });
+
+</script>
+
+<script th:inline="javascript" th:if="${#vars['flash.error']}">
+    $(function(){
+        var message = /*[[${#vars['flash.error']}]]*/ null;
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "onclick": null,
+            "showDuration": "800",
+            "hideDuration": "1000",
+            "timeOut": "7000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+        toastr.error(message, 'Atenci\u00F3n');
+    });
+</script>
+
+<script th:inline="javascript" th:if="${session.percent != null}">
+    $(function(){
+        var message = "Su archivo está siendo procesado. Porcentaje de carga: ";
+        var usuariosValidos;
+        var toast;
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "progressBar": false,
+            "preventDuplicates": true,
+            "positionClass": "toast-bottom-center",
+            "onclick": null,
+            "showDuration": "0",
+            "hideDuration": "0",
+            "timeOut": "0",
+            "extendedTimeOut": "0",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+        toast = toastr.info(message, 'Estado de carga');
+        var intervalId = setInterval(function(){
+            $.ajax({
+                type: "GET",
+                url: '/usuario/importar/percentage',
+                error: function (err) {
+                    message = err.toString();
+                },
+                success: function (response) {
+                    if(response == 100) {
+                        toast.remove();
+                        $.ajax({
+                            type: "GET",
+                            url: '/usuario/importar/cantidad-usuarios-validos',
+                            error: function (err) {
+                                message = err.toString();
+                            },
+                            success: function (data) {
+                                usuariosValidos = data;
+                                toastr.options = {
+                                    "closeButton": true,
+                                    "debug": false,
+                                    "progressBar": true,
+                                    "positionClass": "toast-bottom-center",
+                                    "onclick": null,
+                                    "showDuration": "600",
+                                    "hideDuration": "1000",
+                                    "timeOut": "7000",
+                                    "extendedTimeOut": "1000",
+                                    "showEasing": "swing",
+                                    "hideEasing": "linear",
+                                    "showMethod": "fadeIn",
+                                    "hideMethod": "fadeOut"
+                                };
+                                toast = toastr.success('Se han cargado ' + usuariosValidos + ' usuarios correctamente.', 'Carga Finalizada');
+                                clearInterval(intervalId);
+                                if(window.location.pathname === '/usuario/importar'){
+                                    setTimeout(function() {
+                                        window.location.reload();
+                                    }, 7000);
+                                }
+                            }
+                        });
+                    }else {
+                        toast.find(".toast-message").text(message + response.toString() + '%');
+                    }
+                }
+            });
+
+        }, 1000);
+    });
+</script>
+
+<!--/*/
+<th:block layout:fragment="scripts">
+</th:block>/*/-->
+
+
+</body>
+
+</html>

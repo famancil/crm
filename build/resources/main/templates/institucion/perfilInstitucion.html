@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='instituciones'">
+<head>
+    <meta charset="utf-8"/>
+    <title>Perfil Institución</title>
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Perfil de Institución</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a th:href="@{/institucion}">Instituciones</a></li>
+        <li class="active">
+            <a th:href="@{/institucion/perfil/{id}(id=${institucion.codInstitucion})}">
+            <span th:switch="${institucion.nomInstitucion}">
+                <strong th:case="null">Sin Información</strong>
+                <strong th:case="*" th:text="${institucion.nomInstitucion}"></strong>
+            </span></a>
+        </li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h2 th:switch="${institucion.nomInstitucion}">
+                    <strong><span th:case="null">Sin Información</span></strong>
+                    <strong><span th:case="*" th:text="${institucion.nomInstitucion}"></span></strong>
+                </h2>
+            </div>
+
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <dl class="dl-horizontal">
+                            <dt>Nombre Institución:</dt>
+                            <dd th:switch="${institucion.nomInstitucion}">
+                                <span th:case="empty">Sin Información</span>
+                                <span th:case="' '">Sin Información</span>
+                                <span th:case="null">Sin Información</span>
+                                <span th:case="*" th:text="${institucion.nomInstitucion}"></span>
+                            </dd>
+                            <dt>País:</dt>
+                            <dd th:switch="${institucion.pais.nombre}">
+                                <span th:case="empty">Sin Información</span>
+                                <span th:case="' '">Sin Información</span>
+                                <span th:case="null">Sin Información</span>
+                                <span th:case="*" th:text="${institucion.pais.nombre}"></span>
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>Dirección:</dt>
+                            <dd th:switch="${institucion.direccion}">
+                                <span th:case="empty">Sin Información</span>
+                                <span th:case="' '">Sin Información</span>
+                                <span th:case="null">Sin Información</span>
+                                <span th:case="*" th:text="${institucion.direccion}"></span>
+                            </dd>
+                            <dt>Telefono:</dt>
+                            <dd th:switch="${institucion.telefono}">
+                                <span th:case="null">Sin Información</span>
+                                <span th:case="*" th:text="${institucion.telefono}"></span>
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>Estado:</dt>
+                            <dd><span th:text="${institucion.vigencia.nomVigencia}"></span></dd>
+                        </dl>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <dl class="dl-horizontal">
+                            <a class="btn btn-primary btn-sm" th:href="@{'/institucion/modificar/'+${institucion.codInstitucion}}">
+                                <i class="fa fa-edit"></i> Modificar Institución</a>
+                        </dl>
+
+                        <dl class="dl-horizontal">
+                            <a class="btn btn-success btn-sm" th:href="@{'/carreraInstitucion/registrar/'+${institucion.codInstitucion}+'/0'}">
+                                <i class="fa fa-link"></i> Asignar Carrera a la Institucion</a>
+                        </dl>
+
+                        <dl class="dl-horizontal">
+                            <a class="btn btn-danger btn-sm" th:href="@{'/institucion/eliminar/'+${institucion.codInstitucion}}"  onClick="return confirm('¿Está seguro que desea eliminar la Institucion?')">
+                            <i class="fa fa-trash"></i> Eliminar Institución</a>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h4>Carreras Asociadas
+                    <small>Carreras registradas en la Instituci&oacute;n.</small>
+                </h4>
+            </div>
+
+            <div class="ibox-content">
+                <div class="alert alert-info alert-dismissable" th:if="${carrerasInstitucion.size()} != 0">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    Se han encontrado <strong th:text="${carrerasInstitucion.size()}"></strong> Carreras asociadas
+                </div>
+                <div class="alert alert-info alert-dismissable" th:if="${carrerasInstitucion.size()} == 0">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    No se encontraron Institutuciones asociadas
+                </div>
+
+                <table th:if="${carrerasInstitucion.size()} != 0" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>EMPLEOS</th>
+                            <th>NOMBRE CARRERA</th>
+                            <th>VIGENCIA</th>
+                            <th>SITIO OFICIAL</th>
+                            <th>MODIFICAR</th>
+                            <th>ELIMINAR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="carreraInstitucion: ${carrerasInstitucion}" >
+                            <td>
+                                <i class="fa fa-check" th:if="${carreraInstitucion.habilitadoOfertaLaboral == true}"></i>
+                            </td>
+
+                            <td th:text="${carreraInstitucion.carrera.nombreCarrera}">
+                            </td>
+
+                            <td th:text="${carreraInstitucion.tipoVigencia.nomVigencia}">
+                            </td>
+
+                            <td>
+                                <a th:text="${carreraInstitucion.sitioOficial}"></a>
+                            </td>
+
+                            <td>
+                                <a class="btn btn-primary btn-xs" th:href="@{'/carreraInstitucion/modificar/'+${carreraInstitucion.codInstitucion}+'/'+${carreraInstitucion.codCarrera} }">
+                                    <i class="fa fa-paste"></i> Modificar de la Institucion</a>
+                            </td>
+
+                            <td>
+                                <a class="btn btn-danger btn-xs"  th:if="${carreraInstitucion.tipoVigencia.codVigencia!=3}" th:href="@{'/carreraInstitucion/eliminar/'+${carreraInstitucion.codInstitucion}+'/'+${carreraInstitucion.codCarrera}}" onClick="return confirm('¿Está seguro que desea eliminar la Carrera de la Institucion?')">
+                                    <i class="fa fa-trash"></i> Eliminar de la Institucion</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

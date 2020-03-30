@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="1.0"
+             xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+                    http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
+    <persistence-unit name="myapp">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>crm.entities.AccesoSistema</class>
+        <class>crm.entities.AccesoSistemaPK</class>
+        <class>crm.entities.ActividadExalumno</class>
+        <class>crm.entities.AntecedenteEducacional</class>
+        <class>crm.entities.AutorizacionUsuario</class>
+        <class>crm.entities.AutorizacionUsuarioPermisoAcceso</class>
+        <class>crm.entities.AutorizacionUsuarioPermisoAccesoPK</class>
+        <class>crm.entities.CampanaExalumno</class>
+        <class>crm.entities.Carrera</class>
+        <class>crm.entities.CarreraInstitucion</class>
+        <class>crm.entities.CarreraInstitucionPK</class>
+        <class>crm.entities.Ciudad</class>
+        <class>crm.entities.ComoSupoDeRedExalumnos</class>
+        <class>crm.entities.CompromisoSocio</class>
+        <class>crm.entities.Comuna</class>
+        <class>crm.entities.Empresa</class>
+        <class>crm.entities.EstadoSolicitudCredencial</class>
+        <class>crm.entities.FormatoCvUsmempleo</class>
+        <class>crm.entities.InfoProfesionalExalumno</class>
+        <class>crm.entities.Institucion</class>
+        <class>crm.entities.LoginAexa</class>
+        <class>crm.entities.Pais</class>
+        <class>crm.entities.PermisoAcceso</class>
+        <class>crm.entities.PreferenciaPrivacidad</class>
+        <class>crm.entities.PreferenciaUsuarioUsmempleo</class>
+        <class>crm.entities.Provincia</class>
+        <class>crm.entities.Region</class>
+        <class>crm.entities.RolAcceso</class>
+        <class>crm.entities.Sistema</class>
+        <class>crm.entities.SucursalEmpresa</class>
+        <class>crm.entities.TipoActividadExalumno</class>
+        <class>crm.entities.TipoAporte</class>
+        <class>crm.entities.TipoCampana</class>
+        <class>crm.entities.TipoCargo</class>
+        <class>crm.entities.TipoCausaAporte</class>
+        <class>crm.entities.TipoDisponibilidad</class>
+        <class>crm.entities.TipoDominioCompu</class>
+        <class>crm.entities.TipoEstadoCivil</class>
+        <class>crm.entities.TipoEstadoEstudio</class>
+        <class>crm.entities.TipoEstudio</class>
+        <class>crm.entities.TipoGrado</class>
+        <class>crm.entities.TipoMoneda</class>
+        <class>crm.entities.TipoNivelFacturacion</class>
+        <class>crm.entities.TipoObjetivoCampana</class>
+        <class>crm.entities.TipoPeriocidad</class>
+        <class>crm.entities.TipoSector</class>
+        <class>crm.entities.TipoSituacionLaboral</class>
+        <class>crm.entities.TipoUsuario</class>
+        <class>crm.entities.TipoVigencia</class>
+        <class>crm.entities.Usuario</class>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
+            <property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/exalumnos"/>
+            <!--<property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/exalumnos"/>-->
+            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+            <property name="hibernate.connection.username" value="postgres"/>
+            <!--<property name="hibernate.connection.password" value="Rrg*olesr6"/>-->
+            <property name="hibernate.connection.password" value="123456qwer"/>
+            <property name="hibernate.show_sql" value="false"/>
+            <property name="hibernate.format_sql" value="false"/>
+            <property name="hibernate.current_session_context_class" value="thread"/>
+            <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
+        </properties>
+    </persistence-unit>
+</persistence>

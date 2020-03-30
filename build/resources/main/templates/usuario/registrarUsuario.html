@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='usuarios',actualSubTemplate='registrarUsuario'">
+<head>
+    <meta charset="utf-8"/>
+    <title>Registrar Usuario</title>
+
+    <!--/*/
+    <th:block layout:fragment="css">
+    <link th:href="@{/css/plugins/datapicker/datepicker3.css}" rel="stylesheet"/>
+    </th:block>
+/*/-->
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Registrar usuario</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li>Usuarios</li>
+        <li>
+            <a th:href="@{/usuario/registrar}" >Registrar
+            </a>
+        </li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Modificar datos personales
+                    <small>Para guardar presione "Guardar Cambios". Si desea volver sin realizar cambios presione "Cancelar"</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+            <div class="ibox-content">
+
+                <form action="#" th:action="@{/usuario/registrar}" th:object="${usuario}" method="post">
+                    <div class="alert alert-danger" th:if="${#fields.hasErrors('*') or passwordMatchError!=null}">
+                        <strong>Atenci&oacute;n: </strong> debes solucionar los errores marcados en rojo antes de
+                        proceder con la actualizaci&oacute;n del perfil del usuario.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('rut')}? 'has-error'">
+                                <label class="control-label">Rut</label>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <input type="text" size="8" maxlength="8" th:field="*{rut}" class="form-control" placeholder="RUT. Sin Puntos"/>
+                                    </div>
+                                    <div class="col-md-6 rut-form">
+                                        <input type="text" size="1" maxlength="1" th:field="*{digitoVerificador}" class="form-control"/>
+                                    </div>
+                                </div>
+                                <span class="help-block m-b-none">Sin puntos. El d&iacute;gito verificador debe ir en la
+                                segunda casilla.</span>
+                                <label class="error" th:if="${#fields.hasErrors('rut')}" th:text="${#fields.errors('*{rut}')}"></label>
+                                <label class="error" th:if="${#fields.hasErrors('digitoVerificador')}" th:text="${#fields.errors('*{digitoVerificador}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('pasaporte')}? 'has-error'">
+                                <label class="control-label">Pasaporte</label>
+                                <input type="text" th:field="*{pasaporte}" class="form-control" placeholder="Pasaporte"/>
+                                <label class="error" th:if="${#fields.hasErrors('pasaporte')}" th:text="${#fields.errors('*{pasaporte}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" th:classappend="${passwordMatchError}? 'has-error'">
+                                <label class="control-label" >Contrase&ntilde;a</label>
+                                <input type="password" th:field="*{credencialesAcceso.password}" name="credencialesAcceso.password" placeholder="Contraseña" class="form-control"/>
+                                <label class="error" th:text="${passwordMatchError}" th:if="${passwordMatchError}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" th:classappend="${passwordMatchError}? 'has-error'">
+                                <label class="control-label">Confirmar contrase&ntilde;a</label>
+                                <input type="password" name="confirmPassword" placeholder="Confirmar contraseña" class="form-control"/>
+                                <label class="error" th:text="${passwordMatchError}" th:if="${passwordMatchError}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('nombres')}? 'has-error'">
+                                <label class="control-label">Nombres</label>
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <select th:field="*{vocativo}" class="form-control">
+                                            <option th:selected="${usuario.vocativo == 'Sr'}" th:value="'Sr'" th:text="'Sr'"></option>
+                                            <option th:selected="${usuario.vocativo == 'Srta'}" th:value="'Srta'"
+                                                    th:text="'Srta.'"></option>
+                                            <option th:selected="${usuario.vocativo == 'Sra'}" th:value="'Sra'" th:text="'Sra'"></option>
+                                            <option th:selected="${usuario.vocativo == 'Padre'}" th:value="'Padre'"
+                                                    th:text="'Padre'"></option>
+                                            <option th:selected="${usuario.vocativo == 'Hermana'}" th:value="'Hermana'"
+                                                    th:text="'Hermana'"></option>
+                                            <option th:selected="${usuario.vocativo == 'Doctor'}" th:value="'Doctor'"
+                                                    th:text="'Doctor'"></option>
+                                            <option th:selected="${usuario.vocativo == 'Doctora'}" th:value="'Doctora'"
+                                                    th:text="'Doctora'"></option>
+                                            <option th:selected="${usuario.vocativo == 'Profesor'}" th:value="'Profesor'"
+                                                    th:text="'Profesor'"></option>
+                                            <option th:selected="${usuario.vocativo == 'Profesora'}" th:value="'Profesora'"
+                                                    th:text="'Profesora'"></option>
+                                            <option th:selected="${usuario.vocativo == 'Reverendo'}" th:value="'Reverendo'"
+                                                    th:text="'Reverendo'"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <input type="text" th:field="*{nombres}" class="form-control" placeholder="Nombres"/>
+                                        <label class="error" th:if="${#fields.hasErrors('nombres')}" th:text="${#fields.errors('*{nombres}')}"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('apodo')}? 'has-error'">
+                                <label class="control-label">Apodo</label>
+                                <input type="text" th:field="*{apodo}" placeholder="Apodo" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('apodo')}" th:text="${#fields.errors('*{apodo}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('apellidoPaterno')}? 'has-error'">
+                                <label class="control-label">Apellido paterno</label>
+                                <input type="text" th:field="*{apellidoPaterno}" placeholder="Apellido paterno" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('apellidoPaterno')}" th:text="${#fields.errors('*{apellidoPaterno}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('apellidoMaterno')}? 'has-error'">
+                                <label class="control-label">Apellido materno</label>
+                                <input type="text" th:field="*{apellidoMaterno}" placeholder="Apellido materno" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('apellidoMaterno')}" th:text="${#fields.errors('*{apellidoMaterno}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('fechaNacimiento')}? 'has-error'">
+                                <label class="control-label">Fecha de nacimiento</label>
+                                <input type="text" th:field="*{fechaNacimiento}" class="form-control" placeholder="DD/MM/AAAA"/>
+                                <label class="error" th:if="${#fields.hasErrors('fechaNacimiento')}" th:text="${#fields.errors('*{fechaNacimiento}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('sexo')}? 'has-error'">
+                                <label class="control-label">Sexo</label>
+                                <div class="radio">
+                                    <label class="radio-inline">
+                                        <input type="radio" th:checked="${true or usuario.sexo == 0}" th:field="*{sexo}" th:value="0"/> Sin Informacion
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" th:checked="${usuario.sexo == 1}" th:field="*{sexo}" th:value="1"/> Masculino
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" th:checked="${usuario.sexo == 2}" th:field="*{sexo}" th:value="2"/> Femenino
+                                    </label>
+                                </div>
+                                <label class="error" th:if="${#fields.hasErrors('sexo')}" th:text="${#fields.errors('*{sexo}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('estadoCivil.codigo')}? 'has-error'">
+                                <label class="control-label">Estado civil</label>
+                                <select th:field="*{estadoCivil.codigo}" class="form-control">
+                                    <option th:each="estado: ${estados}"
+                                            th:selected="${usuario.estadoCivil.nombre == estado.nombre}" th:value="${estado.codigo}"
+                                            th:text="${estado.nombre}"></option>
+                                </select>
+                                <label class="error" th:if="${#fields.hasErrors('estadoCivil.codigo')}" th:text="${#fields.errors('*{estadoCivil.codigo}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('numeroHijos')}? 'has-error'">
+                                <label class="control-label">N&uacute;mero de hijos</label>
+                                <select th:field="*{numeroHijos}" class="form-control">
+                                    <option th:each="i: ${#numbers.sequence(0,20)}" th:selected="${usuario.numeroHijos == i}"
+                                            th:value="${i}" th:text="${i}"></option>
+                                </select>
+                                <label class="error" th:if="${#fields.hasErrors('numeroHijos')}" th:text="${#fields.errors('*{numeroHijos}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+
+                        <div class='col-lg-3' >
+                            <div class="form-group">
+                                <label class="control-label">Pa&iacute;s:</label>
+                                <select id="selectPaises" th:field="*{pais.id}" class="form-control paises"
+                                        onchange="cambiarPaisActual(); mostrarOpcionesRegiones(); mostrarOpcionesProvincias(); mostrarOpcionesComunas()">
+                                </select>
+                            </div>
+                        </div>
+                        <div class='form-group' style="margin-bottom:10px;" >
+                            <div id ="region">
+                                <div class='col-lg-3' >
+                                    <div class="form-group">
+                                        <label class="control-label">Regi&oacute;n:</label>
+                                        <select th:field="*{comuna.provincia.region.id}"
+                                                name="region.id"
+                                                class="form-control regiones"
+                                                id="selectRegiones"
+                                                onchange="cambiarRegionActual(); mostrarOpcionesProvincias(); mostrarOpcionesComunas()"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="provincia">
+                                <div class='col-lg-3' >
+                                    <div class="form-group">
+                                        <label class="control-label">Provincia:</label>
+                                        <select th:field="*{comuna.provincia.id}"
+                                                class="form-control provincias"
+                                                name="provincia.id"
+                                                id="selectProvincias"
+                                                onchange="cambiarProvinciaActual(); mostrarOpcionesComunas()"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="comuna">
+                                <div class='col-lg-3'>
+                                    <div class="form-group">
+                                        <label class="control-label">Comuna:</label>
+                                        <select th:field="*{comuna.codigo}"
+                                                class="form-control comunas"
+                                                id="selectComunas"
+                                                onchange="cambiarComunaActual()"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('direccion')}? 'has-error'">
+                                <label class="control-label">Direcci&oacute;n</label>
+                                <input type="text" th:field="*{direccion}" class="form-control" placeholder="Direccion"/>
+                                <span class="help-block m-b-none">Agregar localidad si no es chileno</span>
+                                <label class="error" th:if="${#fields.hasErrors('direccion')}" th:text="${#fields.errors('*{direccion}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('codigoPostal')}? 'has-error'">
+                                <label class="control-label">C&oacute;digo postal</label>
+                                <input type="text" th:field="*{codigoPostal}" class="form-control" placeholder="Codigo Postal"/>
+                                <label class="error" th:if="${#fields.hasErrors('codigoPostal')}" th:text="${#fields.errors('*{codigoPostal}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('fonoParticular')}? 'has-error'">
+                                <label class="control-label">Tel&eacute;fono particular</label>
+                                <input id="particular" type="text" th:field="*{fonoParticular}" class="form-control" placeholder="Telefono Particular"/>
+                                <span class="help-block m-b-none">Agregar código de área de la localidad</span>
+                                <label class="error" th:if="${#fields.hasErrors('fonoParticular')}" th:text="${#fields.errors('*{fonoParticular}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('celular')}? 'has-error'">
+                                <label class="control-label">Tel&eacute;fono celular</label>
+                                <input id="fonoCelular" type="text" th:field="*{celular}" class="form-control" placeholder="Telefono celular"/>
+                                <label class="error" th:if="${#fields.hasErrors('celular')}" th:text="${#fields.errors('*{celular}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('fonoOpcional')}? 'has-error'">
+                                <label class="control-label">Tel&eacute;fono opcional</label>
+                                <input id="opcional" type="text" th:field="*{fonoOpcional}" class="form-control" placeholder="Telefono Opcional"/>
+                                <label class="error" th:if="${#fields.hasErrors('fonoOpcional')}" th:text="${#fields.errors('*{fonoOpcional}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('email')}? 'has-error'">
+                                <label class="control-label">Email</label>
+                                <input type="email" th:field="*{email}" class="form-control" placeholder="Ejemplo@gmail.com"/>
+                                <label class="error" th:if="${#fields.hasErrors('email')}" th:text="${#fields.errors('*{email}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('emailLaboral')}? 'has-error'">
+                                <label class="control-label">Email laboral</label>
+                                <input type="email" th:field="*{emailLaboral}" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('emailLaboral')}" th:text="${#fields.errors('*{emailLaboral}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('emailOpcional')}? 'has-error'">
+                                <label class="control-label">Email opcional</label>
+                                <input type="email" th:field="*{emailOpcional}" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('emailOpcional')}" th:text="${#fields.errors('*{emailOpcional}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('tipoVigencia.codVigencia')}? 'has-error'">
+                                <label class="control-label">Tipo de Vigencia</label>
+                                <select th:field="*{tipoVigencia.codVigencia}" class="form-control">
+                                    <option th:each="tipoVigencia: ${vigencias}"
+                                            th:selected="${usuario.tipoVigencia.codVigencia == tipoVigencia.codVigencia}"
+                                            th:value="${tipoVigencia.codVigencia}"
+                                            th:text="${tipoVigencia.nomVigencia}"></option>
+                                </select>
+                                <label class="error" th:if="${#fields.hasErrors('tipoVigencia.codVigencia')}" th:text="${#fields.errors('*{tipoVigencia.codVigencia}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--
+                    TODO BORRAR
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group" th:class="${#fields.hasErrors('comoSupoDeRedExalumnos.codigo')}? 'has-error'">
+                        <label class="control-label">&iquest;C&oacute;mo supo el usuario acerca de la Red de Exalumnos?</label>
+                        <select th:field="*{comoSupoDeRedExalumnos.codigo}" class="form-control">
+                            <option th:each="razon: ${razones}"
+                                    th:selected="${usuario.comoSupoDeRedExalumnos.codigo == razon.codigo}"
+                                    th:value="${razon.codigo}"
+                                    th:text="${razon.titulo}"></option>
+                        </select>
+                        <label class="error" th:if="${#fields.hasErrors('comoSupoDeRedExalumnos.codigo')}" th:text="${#fields.errors('*{comoSupoDeRedExalumnos.codigo}')}"></label>
+                    </div>
+                    -->
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <a th:href="@{/}" class="btn btn-white">Cancelar</a>
+                        <button class="btn btn-primary" type="submit">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block layout:fragment="scripts">
+    <script th:src="@{/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
+    <script th:inline="javascript" type="text/javascript">
+        /*<![CDATA[*/
+        var paisActual = [[ ${usuario.getPais().getId()} ]] || '56';
+        var regionActual = [[ ${usuario.getComuna().getProvincia().getRegion().getId()} ]] || '0';
+        var provinciaActual = [[ ${usuario.getComuna().getProvincia().getId()} ]] || '0';
+        var comunaActual = [[ ${usuario.getComuna().getCodigo()} ]] || '0';
+
+        var cambiarPaisActual = function() {
+            paisActual = $('#selectPaises option:selected').val();
+            regionActual = '0';
+            provinciaActual = '0';
+            comunaActual = '0';
+        };
+
+        var cambiarRegionActual = function() {
+            regionActual = $('#selectRegiones option:selected').val();
+            provinciaActual = '0';
+            comunaActual = '0';
+        };
+
+        var cambiarProvinciaActual = function() {
+            provinciaActual = $('#selectProvincias option:selected').val();
+            comunaActual = '0';
+        };
+
+        var cambiarComunaActual = function() {
+            comunaActual = $('#selectComunas option:selected').val();
+        };
+
+        var mostrarOpcionesPaises = function() {
+            var selectPaises = $('#selectPaises');
+            $.ajax({
+                url: '/geo/paises',
+                method: 'GET',
+                success: function(response) {
+                    $.each(response, function(index, value) {
+                        var optPais = $('<option></option>').attr('value', value.id).text(value.nombre);
+                        if(value.id == paisActual) {
+                            optPais.attr('selected', 'selected');
+                        }
+                        selectPaises.append(optPais);
+                    });
+                }
+            });
+        };
+
+        var mostrarOpcionesRegiones = function() {
+            if(paisActual == 56) {
+                var selectRegiones = $('#selectRegiones');
+                selectRegiones.empty();
+                $.ajax({
+                    url: '/geo/regiones',
+                    method: 'GET',
+                    success: function(response) {
+                        $.each(response, function(index, value) {
+                            var optRegion = $('<option></option>').attr('value', value.id).text(value.nombre);
+                            if(value.id == regionActual) {
+                                optRegion.attr('selected', 'selected');
+                            }
+                            selectRegiones.append(optRegion);
+                        });
+                    }
+                });
+                $('#region').show();
+            }
+            else {
+                $('#region').hide();
+                regionActual = '0';
+            }
+        };
+
+        var mostrarOpcionesProvincias = function() {
+            if(paisActual == 56) {
+                var selectProvincias = $('#selectProvincias');
+                var geoUrl = '/geo/pais/56/provincias';
+                selectProvincias.empty();
+                selectProvincias.append($('<option></option>').attr('value', '0').attr('selected', 'selected').text('Sin información'));
+                if(regionActual != '0') {
+                    geoUrl = '/geo/region/' + regionActual + '/provincias';
+                }
+                $.ajax({
+                    url: geoUrl,
+                    method: 'GET',
+                    success: function(response) {
+                        $.each(response, function(index, value) {
+                            var optProvincia = $('<option></option>').attr('value', value.id).text(value.nombre);
+                            if(value.id == provinciaActual) {
+                                optProvincia.attr('selected', 'selected');
+                            }
+                            selectProvincias.append(optProvincia);
+                        });
+                    }
+                });
+                $('#provincia').show();
+            }
+            else {
+                $('#provincia').hide();
+                provinciaActual = '0';
+            }
+        };
+
+        var mostrarOpcionesComunas = function() {
+            if(paisActual == 56) {
+                var selectComunas = $('#selectComunas');
+                var geoUrl = '/geo/pais/56/comunas';
+                selectComunas.empty();
+                selectComunas.append($('<option></option>').attr('value', '0').attr('selected', 'selected').text('Sin información'));
+                if(regionActual != '0') {
+                    geoUrl = '/geo/region/' + regionActual + '/comunas';
+                }
+                if(provinciaActual != '0') {
+                    geoUrl = '/geo/provincia/' + provinciaActual + '/comunas';
+                }
+                $.ajax({
+                    url: geoUrl,
+                    method: 'GET',
+                    success: function(response) {
+                        $.each(response, function(index, value) {
+                            var optComuna = $('<option></option>').attr('value', value.codigo).text(value.nombre);
+                            if(value.codigo == comunaActual) {
+                                optComuna.attr('selected', 'selected');
+                            }
+                            selectComunas.append(optComuna);
+                        });
+                    }
+                });
+                $('#comuna').show();
+            }
+            else {
+                $('#comuna').hide();
+                comunaActual = '0';
+            }
+        };
+
+        $(function() {
+            $("#particular").autocomplete({
+                minLength:6,
+                source: function (request, response) {
+                    var aux = $("#particular").val();
+                    if(aux.length<=8 && aux.length>0) {
+                        if(aux.indexOf("+56")==-1) {
+                            aux = aux.charAt(0) + aux.charAt(1) + ' ' + aux.charAt(2) + aux.charAt(3)+
+                                    aux.charAt(4) + aux.charAt(5)+ aux.charAt(6) + aux.charAt(7)+aux.charAt(8);
+                            $("#particular").val("+" + paisActual + " " + aux);
+                        }
+                    }
+                }
+            });
+        });
+
+        $(function() {
+            $("#fonoCelular").autocomplete({
+                minLength:8,
+                source: function (request, response) {
+                    var aux2 = $("#fonoCelular").val();
+                    if(aux2.length<=8 && aux2.length>0) {
+                        if(aux2.indexOf("+56")==-1) {
+                            aux2 = aux2.charAt(0) + ' ' + aux2.charAt(1) + aux2.charAt(2) + aux2.charAt(3)+
+                            ' '+ aux2.charAt(4) + aux2.charAt(5)+ aux2.charAt(6) + aux2.charAt(7);
+                            $("#fonoCelular").val("+" + paisActual + " 9" + aux2);
+                        }
+                    }
+                }
+            });
+        });
+
+        /*$("#particular").click(function(){
+            var aux1 = $("#particular").val();
+            if(aux1.length<=8 && aux1.length>0) {
+                if(aux1.indexOf("+56")==-1)
+                $("#particular").val("+" + paisActual + " " + aux1);
+            }
+        });*/
+
+        /*$("#fonoCelular").click(function(){
+            var aux2 = $("#fonoCelular").val();
+            if(aux2.length<=8 && aux2.length>0) {
+                if(aux2.indexOf("+56")==-1)
+                $("#fonoCelular").val("+" + paisActual + " " + aux2);
+            }
+        });*/
+
+        $(function() {
+            $("#opcional").autocomplete({
+                minLength:8,
+                source: function (request, response) {
+                    var aux2 = $("#opcional").val();
+                    if(aux2.length<=8 && aux2.length>0) {
+                        if(aux2.indexOf("+56")==-1) {
+                            aux2 = aux2.charAt(0) + ' ' + aux2.charAt(1) + aux2.charAt(2) + aux2.charAt(3)+
+                                    ' '+ aux2.charAt(4) + aux2.charAt(5)+ aux2.charAt(6) + aux2.charAt(7);
+                            $("#opcional").val("+" + paisActual + " 9" + aux2);
+                        }
+                    }
+                }
+            });
+        });
+
+
+        $(function(){
+            $.fn.datepicker.dates['es'] = {
+                days: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+                daysShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
+                daysMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa", "Do"],
+                months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+                monthsShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+                today: "Hoy"
+            };
+            $('#fechaNacimiento').datepicker({
+                format: 'dd/mm/yyyy',
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                language: "es"
+            });
+            $('#preferenciaUsuarioUsmempleo.inicioPermisoPost').datepicker({
+                format: 'dd/mm/yyyy',
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                language: "es"
+            });
+            $('#fechaFinPermiso').datepicker({
+                format: 'dd/mm/yyyy',
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                language: "es"
+            });
+        });
+        $(document).ready(function() {
+
+            mostrarOpcionesPaises();
+            mostrarOpcionesRegiones();
+            mostrarOpcionesProvincias();
+            mostrarOpcionesComunas();
+            //document.getElementById("example").innerHTML = "Paragraph changed!";
+
+        });
+        /*]]>*/
+    </script>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='colegios', actualSubTemplate='buscarColegios'">
+<head>
+    <meta charset="UTF-8" />
+    <title>Buscar Colegios</title>
+
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Buscar Colegios</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a th:href="@{/colegio}">Colegio</a></li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>B&uacute;squeda de Colegios
+                    <small>Puede realizar una b&uacute;squeda por el nombre, codigo Rbd, pais y vigencia del Colegio.</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content">
+                <form id="formBusqueda" th:action="@{/colegio/buscar}" method="GET" class="form-horizontal">
+
+                    <div class="form-group">
+                        <div class="col-sm-8">
+                            <label class="control-label">Nombre del Colegio</label>
+                            <input type="text" name="nombreColegio" id="nombreColegio" th:value="${nombreColegio}" class="form-control" placeholder="Ingrese nombre de Colegio. Puede dejar en blanco para buscar todos"/>
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="control-label">C&oacute;digo Rbd</label>
+                            <input type="number" name="codigoRbd" id="codigoRbd" th:value="${codigoRbd}" class="form-control"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+
+                        <div class="col-sm-4">
+                            <label class="control-label">Vigencia</label>
+                            <select name="tipoVigencia" id="tipoVigencia" class="form-control">
+                                <option value="0">Todas</option>
+                                <option th:each="vig :${vigencias}" th:value="${vig.codVigencia}" th:text="${vig.nomVigencia}"></option>
+                            </select>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <label class="control-label">Pa&iacute;s:</label>
+                            <select name="idPais" id="paises" class="form-control" onchange="mostrarOpcionesComunas();">
+                                <option value="0">Todos</option>
+                            </select>
+                        </div>
+
+                        <div class="col-sm-4" id="divComuna">
+                            <label class="control-label">Comuna</label>
+                            <select name="idComuna" id="comunas" class="form-control">
+                                <option value="0">Todas</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group text-center">
+                        <input type="hidden" name="pagina" value="1"/>
+                        <button onclick="submitFormBusqueda()" class="btn btn-primary" type="button">Buscar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-12" th:if="${colegios != null}" id="resultados_busqueda">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>
+                    Resultados de la busqueda
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content">
+                <div class="alert alert-info alert-dismissable" th:if="${colegios.getTotalElements()} != 0">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    Se han encontrado <strong th:text="${colegios.getTotalElements()}"></strong> resultados para tu b&uacute;squeda
+                </div>
+                <div class="alert alert-info alert-dismissable" th:if="${colegios.getTotalElements()} == 0">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    No se encontraron resultados para tu busqueda
+                </div>
+
+                <table th:if="${colegios.getTotalElements()} != 0" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>NOMBRE COLEGIO</th>
+                            <th>PAÍS</th>
+                            <th th:if="${idPais == '56' or idPais == '0'}">COMUNA</th>
+                            <th>CÓDIGO RBD</th>
+                            <th>VER</th>
+                            <th>MODIFICAR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="colegio : ${colegios}">
+                            <td th:text="${colegio.nombreOficial}">
+                            </td>
+
+                            <td th:text="${colegio.pais.nombre}">
+                            </td>
+
+                            <td th:if="${idPais == '56' or idPais == '0'}" th:text="${colegio.comuna.nombre}">
+                            </td>
+
+                            <td th:text="${colegio.rbd}">
+                            </td>
+
+                            <td>
+                                <a class="btn btn-info btn-xs" th:href="@{'/colegio/perfil/'+${colegio.codigo}}">
+                                    <i class="fa fa-search"></i> Ver </a>
+                            </td>
+
+                            <td>
+                                <a class="btn btn-primary btn-xs" th:href="@{'/colegio/modificar/'+${colegio.codigo}}">
+                                    <i class="fa fa-edit"></i> Modificar </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="row">
+                    <div class="col-md-6 text-left">
+                        <p th:text="|Total encontrados: ${colegios.getTotalElements()}|"></p>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <p th:if="${colegios.getTotalPages() != 0}" th:text="|P&aacute;gina ${colegios.getNumber() + 1} de ${colegios.getTotalPages()}|"></p>
+                        <p th:if="${colegios.getTotalPages() == 0}" th:text="|P&aacute;gina 1 de 1|"></p>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <ul class="pagination">
+                        <li class="disabled" th:if="${currentIndex == 1}"><a href="#">&lt;&lt;</a></li>
+                        <li class="disabled" th:if="${currentIndex == 1}"><a href="#">&lt;</a></li>
+                        <li th:if="${currentIndex != 1}">
+                            <a th:href="@{/colegio/buscar(nombreColegio=${nombreColegio},codigoRbd=${codigoRbd},idPais=${idPais},idComuna=${idComuna},tipoVigencia=${tipoVigencia},pagina=1)}">&lt;&lt;</a>
+                        </li>
+                        <li th:if="${currentIndex != 1}">
+                            <a th:href="@{/colegio/buscar(nombreColegio=${nombreColegio},codigoRbd=${codigoRbd},idPais=${idPais},idComuna=${idComuna},tipoVigencia=${tipoVigencia},pagina=${currentIndex-1})}">&lt;</a>
+                        </li>
+                        <li th:each="i : ${#numbers.sequence( beginIndex, endIndex)}" th:class="${i == currentIndex}? 'active'">
+                            <a th:if="${i!=0}" th:text="${i}" th:href="@{/colegio/buscar(nombreColegio=${nombreColegio},codigoRbd=${codigoRbd},idPais=${idPais},idComuna=${idComuna},tipoVigencia=${tipoVigencia},pagina=${i})}"></a>
+                        </li>
+                        <li class="disabled" th:if="${currentIndex == colegios.getTotalPages() || colegios.getTotalPages() == 0}"><a href="#">&gt;</a></li>
+                        <li class="disabled" th:if="${currentIndex == colegios.getTotalPages() || colegios.getTotalPages() == 0}"><a href="#">&gt;&gt;</a></li>
+                        <li><a th:href="@{/colegio/buscar(nombreColegio=${nombreColegio},codigoRbd=${codigoRbd},idPais=${idPais},idComuna=${idComuna},tipoVigencia=${tipoVigencia},pagina=${currentIndex+1})}" th:if="${currentIndex != colegios.totalPages and colegios.getTotalPages() != 0}">&gt;</a></li>
+                        <li><a th:href="@{/colegio/buscar(nombreColegio=${nombreColegio},codigoRbd=${codigoRbd},idPais=${idPais},idComuna=${idComuna},tipoVigencia=${tipoVigencia},pagina=${colegios.getTotalPages()})}" th:if="${currentIndex != colegios.totalPages and colegios.getTotalPages() != 0}">&gt;&gt;</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+
+    <script th:inline="javascript" type="text/javascript">
+
+        function mostrarOpcionesPaises() {
+            $.ajax({
+                type: "GET",
+                url: '/geo/paises',
+                success: function (response) {
+                    $.each(response, function (index, value) {
+                        $('#paises').append($("<option></option>").attr("value", value.id).text(value.nombre));
+                    });
+                }
+            });
+        }
+
+        function mostrarOpcionesComunas() {
+            if ($('#paises').val() == 56 ) {
+
+                $('#divComuna').show();
+
+                $.ajax({
+                    type: "GET",
+                    url: '/geo/comunas',
+                    success: function (response) {
+                        $.each(response, function (index, value) {
+                            $('#comunas').append($("<option></option>").attr("value", value.codigo).text(value.nombre));
+                        });
+                    }
+                });
+            }
+            else {
+                $('#divComuna').hide();
+            }
+        }
+
+        $(document).keypress(function(e) {
+            if(e.which == 13) {
+                submitFormBusqueda();
+            }
+        });
+
+        function submitFormBusqueda(){
+            var nombre = $("#nombreColegio").val();
+            $("#nombreColegio").val(encodeURI($("#nombreColegio").val()));
+            $("#formBusqueda").submit();
+            $("#nombreColegio").val(nombre);
+        }
+
+        $(document).ready(function() {
+            $('#divComuna').hide();
+            mostrarOpcionesPaises();
+
+            $(document).ready(function() {
+                $('html, body').animate({
+                    scrollTop: $("#resultados_busqueda").offset().top
+                }, 1000);
+            });
+        });
+
+    </script>
+</th:block>
+
+</body>
+</html>

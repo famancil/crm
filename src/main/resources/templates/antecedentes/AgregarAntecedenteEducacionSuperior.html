@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main">
+<head>
+    <meta charset="utf-8" />
+    <title>Agregar antecedentes de educación superior</title>
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Agregar Antecedente de Educación Superior</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li>Usuarios</li>
+        <li class="active">
+            <a th:href="@{/usuario/perfil/{id}(id=${perfil.id})}">
+            <span th:switch="${perfil.nombre}">
+                <strong th:case="null">Sin Información</strong>
+                <strong th:case="*" th:text="${perfil.nombre}"></strong>
+            </span></a>
+        </li>
+        <li><strong>Agregar Antecedente Educacional</strong></li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Agregar Antecedente Educacional
+                    <small>Para guardar presione "Guardar Cambios". Si desea volver sin agregar cambios presione "Cancelar"</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    <a class="close-link"><i class="fa fa-times"></i></a>
+                </div>
+            </div>
+            <div class="ibox-content">
+
+                <form th:action="@{/antecedente-educacional/perfil/educacion-superior/agregar}" th:object="${antecedenteEducacional}" method="post">
+
+                    <div class="alert alert-danger" th:if="${#fields.hasErrors('*') || anioEgresoError != null || anioIngresoError != null}">
+                        <strong>Atenci&oacute;n: </strong> debes solucionar los errores marcados en rojo antes de
+                        proceder con la actualizaci&oacute;n del perfil de la sucursal.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('pais.id')}? 'has-error'">
+                                <label class="control-label">Pa&iacute;s</label>
+                                <select name="pais" id="pais" class="form-control paises">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="form-group">
+                                <label class="control-label">Institucion</label>
+                                <select name="codInstitucion" id="codInstitucion" class="form-control instituciones">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group" th:class="${#fields.hasErrors('carrera.codCarrera')}? 'has-error'">
+                                <label class="control-label">Carrera</label>
+                                <select name="codCarrera" id="codCarrera" class="form-control carreras">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('tipoEstudio.codEstudio')}? 'has-error'">
+                                <label class="control-label">Tipo de estudio</label>
+                                <select th:field="*{tipoEstudio.codEstudio}" class="form-control">
+                                    <option th:each="tipo: ${tipoEstudio}" th:value="${tipo.codEstudio}" th:text="${tipo.nomEstudio}" ></option>
+                                </select>
+                                <label class="error" th:if="${#fields.hasErrors('tipoEstudio.codEstudio')}" th:text="${#fields.errors('*{tipoEstudio.codEstudio}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('tipoEstadoEstudio.codEstadoEstudio')}? 'has-error'">
+                                <label class="control-label">Estado Estudio</label>
+                                <select th:field="*{tipoEstadoEstudio.codEstadoEstudio}" class="form-control">
+                                    <option th:each="estado: ${estadoEstudio}" th:value="${estado.codEstadoEstudio}" th:text="${estado.nomEstadoEstudio}" ></option>
+                                </select>
+                                <label class="error" th:if="${#fields.hasErrors('tipoEstadoEstudio.codEstadoEstudio')}" th:text="${#fields.errors('*{tipoEstadoEstudio.codEstadoEstudio}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('anioIngreso')}? 'has-error'">
+                                <label class="control-label">Año Ingreso</label>
+                                <select th:field="*{anioIngreso}" class="form-control">
+                                    <option th:each="anio: ${anios}" th:value="${anio}" th:text="${anio}" ></option>
+                                </select>
+                                <label class="error" th:if="${#fields.hasErrors('anioIngreso')}" th:text="${#fields.errors('*{anioIngreso}')}"></label>
+                                <label class="error" th:text="${anioIngresoError}" th:if="${anioIngresoError}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('anioEgreso')}? 'has-error'">
+                                <label class="control-label">Año Egreso</label>
+                                <select th:field="*{anioEgreso}" class="form-control">
+                                    <option th:each="anio: ${anios}" th:value="${anio}" th:text="${anio}" ></option>
+                                </select>
+                                <label class="error" th:if="${#fields.hasErrors('anioEgreso')}" th:text="${#fields.errors('*{anioEgreso}')}"></label>
+                                <label class="error" th:text="${anioEgresoError}" th:if="${anioEgresoError}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('anioTitulo')}? 'has-error'">
+                                <label class="control-label">Año Título</label>
+                                <select th:field="*{anioTitulo}" class="form-control">
+                                    <option th:each="anio: ${anios}" th:value="${anio}" th:text="${anio}" ></option>
+                                </select>
+                                <label class="error" th:if="${#fields.hasErrors('anioTitulo')}" th:text="${#fields.errors('*{anioTitulo}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group" th:class="${#fields.hasErrors('abstractMemoria')}? 'has-error'">
+                                <label class="control-label">Abstract</label>
+                                <input type="text" th:field="*{abstractMemoria}" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('abstractMemoria')}" th:text="${#fields.errors('*{abstractMemoria}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <input type="hidden" th:name="id" th:value="*{id}"/>
+                        <input type="hidden" th:name="idUsuario" th:value="${perfil.id}"/>
+                        <a th:href="@{/antecedente-educacional/perfil/{id}/educacion-superior(id=${perfil.id})}" class="btn btn-white">Cancelar</a>
+                        <button class="btn btn-primary" type="submit">Guardar cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+<th:block layout:fragment="scripts">
+    <script th:inline="javascript">
+        $(".paises").change(function(){
+            $.ajax({
+                type: "GET",
+                url: '/edu/pais/'+$(this).val()+'/instituciones',
+                success: function (response) {
+                    $('.instituciones').empty();
+                    $.each(response, function(index, value){
+                        $('.instituciones').append($("<option></option>").attr("value", value.codInstitucion).text(value.nomInstitucion))
+                                .trigger("change");
+                    });
+                }
+            });
+        });
+
+        $(".instituciones").change(function(){
+            $.ajax({
+                type: "GET",
+                url: '/edu/pais/institucion/'+$(this).val()+'/carreras',
+                success: function (response) {
+                    $('.carreras').empty();
+                    $.each(response, function(index, value){
+                        $('.carreras').append($("<option></option>").attr("value", value.codCarrera).text(value.nombreCarrera))
+                                .trigger("change");
+                    });
+                }
+            });
+        });
+
+        $(document).ready(function() {
+            $.ajax({
+                type: "GET",
+                url: '/edu/paises',
+                success: function (response) {
+                    $.each(response, function(index, value) {
+                        if(value.id == [[${idPais}]]){
+                            $('.paises').append($("<option></option>").attr("value", value.id).text(value.nombre).attr("selected",true));
+                        }else{
+                            $('.paises').append($("<option></option>").attr("value", value.id).text(value.nombre));
+                        }
+                    });
+                }
+            });
+
+            $.ajax({
+                type: "GET",
+                url: '/edu/pais/'+[[${idPais}]]+'/instituciones',
+                success: function (response) {
+                    $('.instituciones').empty();
+                    $.each(response, function(index, value){
+                        if(value.codInstitucion == [[${codInstitucion}]]){
+                            $('.instituciones').append($("<option></option>").attr("value", value.codInstitucion).text(value.nomInstitucion).attr("selected",true))
+                        }else {
+                            $('.instituciones').append($("<option></option>").attr("value", value.codInstitucion).text(value.nomInstitucion))
+                        }
+                    });
+                }
+            });
+
+            $.ajax({
+                type: "GET",
+                url: '/edu/pais/institucion/'+[[${codInstitucion}]]+'/carreras',
+                success: function (response) {
+                    $('.carreras').empty();
+                    $.each(response, function(index, value){
+                        if(value.codCarrera == [[${codCarrera}]]){
+                            $('.carreras').append($("<option></option>").attr("value", value.codCarrera).text(value.nombreCarrera).attr("selected",true))
+                        }else {
+                            $('.carreras').append($("<option></option>").attr("value", value.codCarrera).text(value.nombreCarrera))
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>

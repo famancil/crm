@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='usuarios'">
+<head>
+    <title>Antecedentes Educacionales</title>
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Antecedentes Educacionales</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li>Usuarios</li>
+        <li class="active">
+            <a th:href="@{/usuario/perfil/{id}(id=${perfil.id})}">
+            <span th:switch="${perfil.nombre}">
+                <strong th:case="null">Sin Información</strong>
+                <strong th:case="*" th:text="${perfil.nombre}"></strong>
+            </span></a>
+        </li>
+        <li><strong>Antecedentes Educacionales</strong></li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+
+    <div class="col-lg-9">
+
+        <div class="ibox">
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="m-b-md">
+
+                            <h2 th:switch="${nombre}">
+                                <span th:case="null">Sin Información</span>
+                                <span th:case="*" th:text="${nombre}"></span>
+                                <a th:href="@{/antecedente-educacional/perfil/{idUsuario}/educacion-superior/agregar(idUsuario=${perfil.id})}" class="btn btn-success btn-xs pull-right" style="float: left;"><i class="fa fa-plus"></i> Agregar Antecedente</a>
+                            </h2>
+                        </div>
+                        <div class="row">
+
+                            <div class="col-lg-12">
+                                <div class="ibox float-e-margins">
+                                    <div class="ibox-title">
+                                        <h5>Carreras en la Universidad Técnica Federico Santa María</h5>
+
+                                        <div class="ibox-tools">
+                                            <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                            <a class="close-link"><i class="fa fa-times"></i></a>
+                                        </div>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <table class="table table-hover">
+                                            <thead>
+                                            <tr>
+                                                <th>Carrera</th>
+                                                <th>Tipo Estudio</th>
+                                                <th>Año Ingreso</th>
+                                                <th>Año Egreso</th>
+                                                <th>Año Título</th>
+                                                <th>Modificar</th>
+                                                <th>Eliminar</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr th:each="antecedente : ${antecedentesUsm}">
+                                                <td>
+                                                    <span th:switch="${antecedente.carrera.nombreCarrera}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${antecedente.carrera.nombreCarrera}"></span>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span th:switch="${antecedente.carrera.tipoGrado.nomGrado}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${antecedente.carrera.tipoGrado.nomGrado}"></span>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span th:switch="${antecedente.anioIngreso}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${antecedente.anioIngreso}"></span>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span th:switch="${antecedente.anioEgreso}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${antecedente.anioEgreso}"></span>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span th:switch="${antecedente.anioTitulo}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${antecedente.anioTitulo}"></span>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a th:href="@{/antecedente-educacional/perfil/{idUsuario}/educacion-superior/{idAntecedente}/modificar(idAntecedente=${antecedente.id},idUsuario=${perfil.id})}" class="btn btn-primary btn-xs"><i class="fa fa-pencil-square-o"></i> Modificar</a>
+                                                </td>
+                                                <td>
+                                                    <form action="#" th:action="@{/antecedente-educacional/perfil/{idUsuario}/educacion-superior/{idAntecedente}/eliminar(idAntecedente=${antecedente.id},idUsuario=${perfil.id})}" method="post" >
+                                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                                        <button class="btn btn-danger btn-xs" type="submit" onClick="return confirm('¿Seguro que desea eliminar este antecedente?')"><i class="fa fa-trash-o"></i> Eliminar</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            <tr th:if="${antecedentesUsm.size()==0}"><td colspan="6" style="color:gray" align="center">EL USUARIO NO TIENE ANTECEDENTES DE EDUCACION SUPERIOR ASOCIADOS A LA UTFSM</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12">
+                                <div class="ibox float-e-margins">
+                                    <div class="ibox-title">
+                                        <h5>Carreras en otras instituciones</h5>
+
+                                        <div class="ibox-tools">
+                                            <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                            <a class="close-link"><i class="fa fa-times"></i></a>
+                                        </div>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <table class="table table-hover">
+                                            <thead>
+                                            <tr>
+                                                <th>Carrera</th>
+                                                <th>Tipo Estudio</th>
+                                                <th>Año Ingreso</th>
+                                                <th>Año Egreso</th>
+                                                <th>Año Título</th>
+                                                <th>Modificar</th>
+                                                <th>Eliminar</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr th:each="antecedente : ${antecedentes}">
+                                                <td>
+                                                    <span th:switch="${antecedente.carrera.nombreCarrera}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${antecedente.carrera.nombreCarrera}"></span>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span th:switch="${antecedente.tipoEstudio.nomEstudio}">
+                                                        <span th:case="empty">Sin Información</span>
+                                                        <span th:case="' '">Sin Información</span>
+                                                        <span th:case="*" th:text="${antecedente.tipoEstudio.nomEstudio}"></span>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span th:switch="${antecedente.anioIngreso}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${antecedente.anioIngreso}"></span>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span th:switch="${antecedente.anioEgreso}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${antecedente.anioEgreso}"></span>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span th:switch="${antecedente.anioTitulo}">
+                                                        <span th:case="null">Sin Información</span>
+                                                        <span th:case="*" th:text="${antecedente.anioTitulo}"></span>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a th:href="@{/antecedente-educacional/perfil/{idUsuario}/educacion-superior/{idAntecedente}/modificar(idAntecedente=${antecedente.id},idUsuario=${perfil.id})}" class="btn btn-primary btn-xs"><i class="fa fa-pencil-square-o"></i> Modificar</a>
+                                                </td>
+                                                <td>
+                                                    <form action="#" th:action="@{/antecedente-educacional/perfil/{idUsuario}/educacion-superior/{idAntecedente}/eliminar(idAntecedente=${antecedente.id},idUsuario=${perfil.id})}" method="post" >
+                                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                                        <button class="btn btn-danger btn-xs" type="submit" onClick="return confirm('¿Seguro que desea eliminar este antecedente?')"><i class="fa fa-trash-o"></i> Eliminar</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            <tr th:if="${antecedentes.size()==0}"><td colspan="6" style="color:gray" align="center">EL USUARIO NO TIENE ANTECEDENTES DE EDUCACION SUPERIOR ASOCIADOS A OTRAS INSTITUCIONES</td></tr>
+                                            </tbody>
+                                        </table>
+                                        <a th:href="@{/usuario/perfil/{id}(id=${perfil.id})}" class="btn btn-white">Cancelar</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div class="wrapper wrapper-content project-manager">
+
+            <p th:switch="${perfil.urlFoto}" class="text-center">
+                <img th:case="null"
+                     src="http://digitalinstitute.ncl.ac.uk/wp-content/themes/digital-institute/assets/images/missing-staff.jpg"
+                     class="img-circle circle-border m-b-md img-perfil-usuario"/>
+                <img th:case="*" th:src="'http://perfil.sansanos.cl/data'+${perfil.urlFoto}"
+                     class="img-circle circle-border m-b-md img-perfil-usuario"/>
+            </p>
+
+            <div class="widget yellow-bg p-lg text-center"><i class="fa fa-thumbs-up fa-4x"></i>
+
+                <h3 class="font-bold no-margins">Cumplea&ntilde;os</h3>
+                <small>Faltan</small>
+                <h1 class="m-xs" th:switch="${dias}">
+                    <span th:case="null">--</span>
+                    <span th:case="*" th:text="${dias}"></span>
+                </h1>
+                <small>d&iacute;as.</small>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<th:block layout:fragment="scripts">
+    <script th:inline="javascript">
+        $(document).ready(function() {
+            $.ajax({
+                type: "GET",
+                url: '/edu/paises',
+                success: function (response) {
+                    $.each(response, function(index, value) {
+                        if(value.id == [[${idPais}]]){
+                            $('.paises').append($("<option></option>").attr("value", value.id).text(value.nombre).attr("selected",true));
+                        }else{
+                            $('.paises').append($("<option></option>").attr("value", value.id).text(value.nombre));
+                        }
+                    });
+                }
+            });
+
+            $.ajax({
+                type: "GET",
+                url: '/edu/pais/'+[[${idPais}]]+'/instituciones',
+                success: function (response) {
+                    $('.instituciones').empty();
+                    $.each(response, function(index, value){
+                        if(value.codInstitucion == [[${codInstitucion}]]){
+                            $('.instituciones').append($("<option></option>").attr("value", value.codInstitucion).text(value.nomInstitucion).attr("selected",true))
+                                    .trigger("change");
+                        }else {
+                            $('.instituciones').append($("<option></option>").attr("value", value.codInstitucion).text(value.nomInstitucion))
+                                    .trigger("change");
+                        }
+                    });
+                }
+            });
+
+            var carreras = [];
+            $.ajax({
+                type: "GET",
+                url: '/edu/pais/institucion/'+[[${codInstitucion}]]+'/carreras',
+                success: function (response) {
+                    carreras = response;
+                    $('.carreras').empty();
+                    $.each(response, function(index, value){
+                        $('.carreras').append($("<option></option>").attr("value", value.codCarrera).text(value.nombreCarrera))
+                                .trigger("change");
+                    });
+                }
+            });
+
+            $(".paises").change(function(){
+                $.ajax({
+                    type: "GET",
+                    url: '/edu/pais/'+$(this).val()+'/instituciones',
+                    success: function (response) {
+                        $('.instituciones').empty();
+                        $.each(response, function(index, value){
+                            $('.instituciones').append($("<option></option>").attr("value", value.codInstitucion).text(value.nomInstitucion))
+                                    .trigger("change");
+                        });
+                    }
+                });
+            });
+
+            var carreras = [];
+            $(".instituciones").change(function(){
+                $.ajax({
+                    type: "GET",
+                    url: '/edu/pais/institucion/'+$(this).val()+'/carreras',
+                    success: function (response) {
+                        carreras = response;
+                        $('.carreras').empty();
+                        $('.carreras').append($("<option></option>").attr("value", -1).text('Todas'))
+                        $.each(response, function(index, value){
+                            $('.carreras').append($("<option></option>").attr("value", value.codCarrera).text(value.nombreCarrera))
+                                    .trigger("change");
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='empresas', actualSubTemplate='validarEmpresas'">
+<head>
+    <title>Completar datos de sucursal</title>
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Completar datos de sucursal</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li>Empresas</li>
+        <li>
+            <span th:switch="${sucursal.empresa.razonSocial}">
+                <span th:case="null">Sin Información</span>
+                <span th:case="' '" th:text="${sucursal.empresa.nombreFantasiaEmpresa}"></span>
+                <span th:case="''" th:text="${sucursal.empresa.nombreFantasiaEmpresa}"></span>
+                <span th:case="*" th:text="${sucursal.empresa.razonSocial}"></span>
+            </span>
+        </li>
+        <li>Sucursales</li>
+        <li>
+            <span th:switch="${sucursal.sucSucursal}">
+                <span th:case="null">Sin Información</span>
+                <span th:case="*" th:text="${sucursal.sucSucursal}"></span>
+            </span>
+        </li>
+        <li><strong>Completar datos de la sucursal</strong></li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Completar datos de la sucursal
+                        <small>Para guardar presione "Guardar Cambios". Si desea volver sin realizar cambios presione "Cancelar"</small>
+                    </h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <form th:action="@{/sucursal/completar-datos/}" th:object="${sucursal}" method="post" enctype="multipart/form-data">
+
+                        <div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
+                            <strong>Atenci&oacute;n: </strong> debes solucionar los errores marcados en rojo antes de
+                            proceder con la actualizaci&oacute;n del perfil de la sucursal.
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group" th:class="${#fields.hasErrors('sucSucursal')}? 'has-error'">
+                                    <label class="control-label">Nombre</label>
+                                    <input type="text" th:field="*{sucSucursal}" placeholder="Nombre de la sucursal" class="form-control"/>
+                                    <label class="error" th:if="${#fields.hasErrors('sucSucursal')}" th:text="${#fields.errors('*{sucSucursal}')}"></label>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="control-label">Empresa</label>
+                                    <label class="form-control" th:switch="${sucursal.empresa.razonSocial}">
+                                        <label th:case="null" th:text="${sucursal.empresa.nombreFantasiaEmpresa}"></label>
+                                        <label th:case="empty" th:text="${sucursal.empresa.nombreFantasiaEmpresa}"></label>
+                                        <label th:case="''" th:text="${sucursal.empresa.nombreFantasiaEmpresa}"></label>
+                                        <label th:case="' '" th:text="${sucursal.empresa.nombreFantasiaEmpresa}"></label>
+                                        <label th:case="*" th:text="${sucursal.empresa.razonSocial}"></label>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group" th:class="${#fields.hasErrors('sucEmail')}? 'has-error'">
+                                    <label class="control-label">E-mail</label>
+                                    <input type="text" th:field="*{sucEmail}" placeholder="E-mail" class="form-control"/>
+                                    <label class="error" th:if="${#fields.hasErrors('sucEmail')}" th:text="${#fields.errors('*{sucEmail}')}"></label>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group" th:class="${#fields.hasErrors('sucDireccion')}? 'has-error'">
+                                    <label class="control-label">Direccion</label>
+                                    <input type="text" th:field="*{sucDireccion}" placeholder="Direccion" class="form-control"/>
+                                    <label class="error" th:if="${#fields.hasErrors('sucDireccion')}" th:text="${#fields.errors('*{sucDireccion}')}"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group" th:class="${#fields.hasErrors('sucFono')}? 'has-error'">
+                                    <label class="control-label">Telefono fijo</label>
+                                    <input type="text" th:field="*{sucFono}" placeholder="Telefono fijo" class="form-control"/>
+                                    <label class="error" th:if="${#fields.hasErrors('sucFono')}" th:text="${#fields.errors('*{sucFono}')}"></label>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group" th:class="${#fields.hasErrors('sucFax')}? 'has-error'">
+                                    <label class="control-label">Fax</label>
+                                    <input type="text" th:field="*{sucFax}" placeholder="Fax" class="form-control"/>
+                                    <label class="error" th:if="${#fields.hasErrors('sucFax')}" th:text="${#fields.errors('*{sucFax}')}"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="row">
+
+                            <div class='col-lg-3' >
+                                <div class="form-group">
+                                    <label class="control-label">Pa&iacute;s:</label>
+                                    <select id="selectPaises" th:field="*{pais.id}" class="form-control paises"
+                                            onchange="cambiarPaisActual(); mostrarOpcionesRegiones(); mostrarOpcionesProvincias(); mostrarOpcionesComunas()">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class='form-group' style="margin-bottom:10px;" >
+                                <div id ="region">
+                                    <div class='col-lg-3' >
+                                        <div class="form-group">
+                                            <label class="control-label">Regi&oacute;n:</label>
+                                            <select th:field="*{comuna.provincia.region.id}"
+                                                    name="region.id"
+                                                    class="form-control regiones"
+                                                    id="selectRegiones"
+                                                    onchange="cambiarRegionActual(); mostrarOpcionesProvincias(); mostrarOpcionesComunas()"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="provincia">
+                                    <div class='col-lg-3' >
+                                        <div class="form-group">
+                                            <label class="control-label">Provincia:</label>
+                                            <select th:field="*{comuna.provincia.id}"
+                                                    class="form-control provincias"
+                                                    name="provincia.id"
+                                                    id="selectProvincias"
+                                                    onchange="cambiarProvinciaActual(); mostrarOpcionesComunas()"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="comuna">
+                                    <div class='col-lg-3'>
+                                        <div class="form-group">
+                                            <label class="control-label">Comuna:</label>
+                                            <select th:field="*{comuna.codigo}"
+                                                    class="form-control comunas"
+                                                    id="selectComunas"
+                                                    onchange="cambiarComunaActual()"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="form-group">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <input type="hidden" name="idSucursal" th:value="*{sucursalCodigo}"/>
+                            <input type="hidden" name="from" th:value="${from}"/>
+                            <a th:href="@{/empresa/{id}/sucursales/por-validar/{from}(id=${sucursal.empresa.id},from=${from})}" class="btn btn-white">Cancelar</a>
+                            <button class="btn btn-primary" type="submit">Guardar cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <th:block layout:fragment="scripts">
+
+        <script th:inline="javascript" type="text/javascript">
+            /*<![CDATA[*/
+
+            var paisActual = [[ ${sucursal.getPais().getId()} ]] || '56';
+            var regionActual = [[ ${sucursal.getComuna().getProvincia().getRegion().getId()} ]] || '0';
+            var provinciaActual = [[ ${sucursal.getComuna().getProvincia().getId()} ]] || '0';
+            var comunaActual = [[ ${sucursal.getComuna().getCodigo()} ]] || '0';
+
+            var cambiarPaisActual = function() {
+                paisActual = $('#selectPaises option:selected').val();
+                regionActual = '0';
+                provinciaActual = '0';
+                comunaActual = '0';
+            };
+
+            var cambiarRegionActual = function() {
+                regionActual = $('#selectRegiones option:selected').val();
+                provinciaActual = '0';
+                comunaActual = '0';
+            };
+
+            var cambiarProvinciaActual = function() {
+                provinciaActual = $('#selectProvincias option:selected').val();
+                comunaActual = '0';
+            };
+
+            var cambiarComunaActual = function() {
+                comunaActual = $('#selectComunas option:selected').val();
+            };
+
+            var mostrarOpcionesPaises = function() {
+                var selectPaises = $('#selectPaises');
+                $.ajax({
+                    url: '/geo/paises',
+                    method: 'GET',
+                    success: function(response) {
+                        $.each(response, function(index, value) {
+                            var optPais = $('<option></option>').attr('value', value.id).text(value.nombre);
+                            if(value.id == paisActual) {
+                                optPais.attr('selected', 'selected');
+                            }
+                            selectPaises.append(optPais);
+                        });
+                    }
+                });
+            };
+
+            var mostrarOpcionesRegiones = function() {
+                if(paisActual == 56) {
+                    var selectRegiones = $('#selectRegiones');
+                    selectRegiones.empty();
+                    $.ajax({
+                        url: '/geo/regiones',
+                        method: 'GET',
+                        success: function(response) {
+                            $.each(response, function(index, value) {
+                                var optRegion = $('<option></option>').attr('value', value.id).text(value.nombre);
+                                if(value.id == regionActual) {
+                                    optRegion.attr('selected', 'selected');
+                                }
+                                selectRegiones.append(optRegion);
+                            });
+                        }
+                    });
+                    $('#region').show();
+                }
+                else {
+                    $('#region').hide();
+                    regionActual = '0';
+                }
+            };
+            var mostrarOpcionesProvincias = function() {
+                if(paisActual == 56) {
+                    var selectProvincias = $('#selectProvincias');
+                    var geoUrl = '/geo/pais/56/provincias';
+                    selectProvincias.empty();
+                    selectProvincias.append($('<option></option>').attr('value', '0').attr('selected', 'selected').text('Sin información'));
+                    if(regionActual != '0') {
+                        geoUrl = '/geo/region/' + regionActual + '/provincias';
+                    }
+                    $.ajax({
+                        url: geoUrl,
+                        method: 'GET',
+                        success: function(response) {
+                            $.each(response, function(index, value) {
+                                var optProvincia = $('<option></option>').attr('value', value.id).text(value.nombre);
+                                if(value.id == provinciaActual) {
+                                    optProvincia.attr('selected', 'selected');
+                                }
+                                selectProvincias.append(optProvincia);
+                            });
+                        }
+                    });
+                    $('#provincia').show();
+                }
+                else {
+                    $('#provincia').hide();
+                    provinciaActual = '0';
+                }
+            };
+
+            var mostrarOpcionesComunas = function() {
+                if(paisActual == 56) {
+                    var selectComunas = $('#selectComunas');
+                    var geoUrl = '/geo/pais/56/comunas';
+                    selectComunas.empty();
+                    selectComunas.append($('<option></option>').attr('value', '0').attr('selected', 'selected').text('Sin información'));
+                    if(regionActual != '0') {
+                        geoUrl = '/geo/region/' + regionActual + '/comunas';
+                    }
+                    if(provinciaActual != '0') {
+                        geoUrl = '/geo/provincia/' + provinciaActual + '/comunas';
+                    }
+                    $.ajax({
+                        url: geoUrl,
+                        method: 'GET',
+                        success: function(response) {
+                            $.each(response, function(index, value) {
+                                var optComuna = $('<option></option>').attr('value', value.codigo).text(value.nombre);
+                                if(value.codigo == comunaActual) {
+                                    optComuna.attr('selected', 'selected');
+                                }
+                                selectComunas.append(optComuna);
+                            });
+                        }
+                    });
+                    $('#comuna').show();
+                }
+                else {
+                    $('#comuna').hide();
+                    comunaActual = '0';
+                }
+            };
+
+            $(document).ready(function() {
+
+                mostrarOpcionesPaises();
+                mostrarOpcionesRegiones();
+                mostrarOpcionesProvincias();
+                mostrarOpcionesComunas();
+
+            });
+            /*]]>*/
+        </script>
+    </th:block>
+</body>
+</html>

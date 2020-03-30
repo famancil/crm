@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <title>CRM Red de Ex Alumnos | Iniciar Sesi&oacute;n</title>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="font-awesome/css/font-awesome.css" rel= "stylesheet"/>
+    <link href="css/animate.css" rel="stylesheet"/>
+    <link href="css/theme-style.css" rel="stylesheet"/>
+</head>
+
+<body class="gray-bg">
+
+<div class="middle-box text-center loginscreen  animated fadeInDown">
+    <div>
+        <div>
+            <h1 class="logo-name">CRM</h1>
+        </div>
+        <h3>Bienvenido, invitado.</h3>
+        <p>
+            Para continuar, debes iniciar sesi&oacute;n utilizando el formulario a continuaci&oacute;n. Si no recuerdas
+            tu contrase&ntilde;a puedes solicitar la recuperaci&oacute;n de esta.
+        </p>
+
+        <p th:if="${param.error}" class="text-danger">
+            Has ingresado un nombre de usuario o contrase&ntilde;a incorrecta.
+        </p>
+
+        <p th:if="${param.logout}">
+            Has cerrado tu sesi&oacute;n.
+        </p>
+
+        <form th:action="@{/login}" class="m-t" role="form" method="post">
+            <div class="form-group">
+                <input type="email" name="username" class="form-control" placeholder="Nombre de usuario" required="required"/>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" class="form-control" placeholder="Password" required="required"/>
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            </div>
+            <button type="submit" class="btn btn-primary block full-width m-b">Iniciar Sesi&oacute;n</button>
+
+            <a href="#"><small>&iquest;Olvidaste tu contrase&ntilde;a?</small></a>
+            <p class="text-muted text-center"><small>&iquest;No posees una cuenta?</small></p>
+            <a class="btn btn-sm btn-white btn-block" href="register.html">Solicitar una cuenta</a>
+        </form>
+
+        <p class="m-t"> <small>Unidad de Tecnolog&iacute;as e Inform&aacute;tica Red de Exalumnos UTFSM &copy; 2014</small> </p>
+
+    </div>
+</div>
+
+<script src="js/jquery-2.1.1.js"></script>
+<script src="js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

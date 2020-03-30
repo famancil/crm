@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='descarga',actualSubTemplate='descargaEmpresa'">
+<head>
+      <meta charset="utf-8"/>
+      <title>Descarga de Datos de Empresas</title>
+
+</head>
+<body>
+
+<div layout:fragment="title">
+      <h2>Descarga de Datos de Empresas</h2>
+      <ol class="breadcrumb">
+            <li><a th:href="@{/}">Inicio</a></li>
+            <li><a href="#">Empresa</a></li>
+            <li><a th:href="@{/empresa/descargar}">Descargas Empresas</a></li>
+      </ol>
+</div>
+
+<div layout:fragment="content">
+
+      <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                  <div class="ibox-title">
+                        <h5>B&uacute;squeda de Empresas
+                              <small>Puede descargar los datos de una empresa en especifico o todas las empresas.</small>
+                        </h5>
+                        <div class="ibox-tools">
+                              <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </div>
+                  </div>
+
+                  <div class="ibox-content">
+
+                        <form th:action="@{/empresa/descargar}" method="POST" class="form-horizontal">
+
+
+                              <div class="form-group" >
+                                    <label class="col-sm-2 control-label">Nombre Empresa</label>
+
+                                    <div class="col-sm-6" >
+                                          <input type="text" name="nombreEmpresa" id="nombreEmpresa" class="form-control" placeholder="Ingrese nombre de la Empresa" onchange="activarBotonBuscar();" onpaste="activarBotonBuscar();" oninput="activarBotonBuscar();"/>
+                                          <input type="checkbox" value="" onchange="cambiarEstado();activarBotonBuscar();" /> Todas las empresas
+                                    </div>
+
+                                    <div class="col-sm-4" >
+                                          <input type="checkbox" name="incluirPublicadores" id="incluirPublicadores" value=""/>Mostrar Informacion de Perfiles Publicadores
+                                    </div>
+                              </div>
+
+                              <div class="hr-line-dashed"></div>
+
+                              <div class="form-group text-center">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                                    <input type="submit" class="btn btn-primary" id="botonBuscar" disabled="true" value="Buscar"/>
+                              </div>
+                        </form>
+                  </div>
+            </div>
+      </div>
+</div>
+
+
+<th:block layout:fragment="scripts">
+
+      <script th:inline="javascript">
+
+            $(function() {
+                  $("#nombreEmpresa").autocomplete({
+                        minLength:3,
+                        source: function (request, response) {
+                              $.getJSON("/opciones/empresas", {
+                                            term: request.term
+                                      },
+                                      response);
+                        }
+                  });
+            });
+
+            function cambiarEstado() {
+                  if ( $('#nombreEmpresa').prop("readonly") ) {
+                        $('#nombreEmpresa').removeAttr("readonly");
+                  }
+                  else {
+                        $('#nombreEmpresa').prop("readonly", "readonly");
+                        $('#nombreEmpresa').val("Todas las Empresas");
+                  }
+            }
+
+            function activarBotonBuscar() {
+                  console.log("asdasasd");
+                  $('#botonBuscar').removeAttr("disabled");
+            }
+
+            $(document).ready(function() {
+
+                  $('html, body').animate({
+                        scrollTop: $("#resultados_busqueda").offset().top
+                  }, 1000);
+
+            });
+
+
+      </script>
+
+</th:block>
+
+</body>
+</html>
+

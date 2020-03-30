@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='empresas'">
+<head>
+    <title>Ofertas Laborales de la Empresa</title>
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Ofertas Laborales de la Empresa</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li>Empresas</li>
+        <li class="active">
+            <a th:href="@{/empresa/perfil/{id}(id=${empresa.id})}">
+            <span th:switch="${empresa.razonSocial}">
+                <strong th:case="null">Sin Información</strong>
+                <strong th:case="*" th:text="${empresa.razonSocial}"></strong>
+            </span></a>
+        </li>
+        <li>Ofertas Laborales - DETALLE</li>
+    </ol>
+</div>
+
+
+<div layout:fragment="content">
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        <div class="row">
+
+                            <div class="m-b-md">
+                                <a th:href="@{/empresa/{id}/modificar(id=${empresa.id})}"
+                                   class="btn btn-white btn-xs pull-right">
+                                    Editar informaci&oacute;n de empresa
+                                </a>
+                                <h2 th:switch="${empresa.razonSocial}">
+                                    <span th:case="null">Sin Información</span>
+                                    <span th:case="*" th:text="${empresa.razonSocial}"></span>
+                                </h2>
+                            </div>
+
+                            <div class="col-lg-2">
+                                <p class="text-center">
+                                    <a th:if="${empresa.logo==true}">
+                                        <img th:src="'http://empleos.sansanos.cl/data/empresas/logos/'+*{empresa.id}+'_100.jpg'" height="100" width="100"/>
+                                    </a>
+                                    <a th:if="${empresa.logo==false}">
+                                        <img th:src="'http://empleos.sansanos.cl/resources/images/NoImagen.jpg'" height="100" width="100"/>
+                                    </a>
+                                </p>
+                            </div>
+
+                            <div class="col-lg-5">
+
+                                <dl class="dl-horizontal">
+
+                                    <dt>Empresa:</dt>
+                                    <dd th:switch="${empresa.nombreFantasiaEmpresa}">
+                                        <span th:case="null">Sin Información</span>
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="*" th:text="${empresa.nombreFantasiaEmpresa}"></span>
+                                    </dd>
+                                    <dt>Razon Social:</dt>
+                                    <dd th:switch="${empresa.razonSocial}">
+                                        <span th:case="null">Sin Información</span>
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="*" th:text="${empresa.razonSocial}"></span>
+                                    </dd>
+                                    <dt th:if="${empresa.rutEmpresa!=null}">Rut:</dt>
+                                    <dd th:if="${empresa.rutEmpresa!=null}" th:switch="${empresa.rutEmpresa}">
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="*" th:text="${empresa.rutEmpresa}"></span>
+                                    </dd>
+                                    <dt th:if="${empresa.idEmpresaExtranjera!=null}">ID:</dt>
+                                    <dd th:if="${empresa.idEmpresaExtranjera!=null}" th:switch="${empresa.idEmpresaExtranjera}">
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="*" th:text="${empresa.idEmpresaExtranjera}"></span>
+                                    </dd>
+                                    <dt>Giro:</dt>
+                                    <dd th:switch="${empresa.giroEmpresa}">
+                                        <span th:case="null">Sin Información</span>
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="*" th:text="${empresa.giroEmpresa}"></span>
+                                    </dd>
+                                    <dt>Sector:</dt>
+                                    <dd th:switch="${empresa.sector.nombre}">
+                                        <span th:case="null">Sin Información</span>
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="*" th:text="${empresa.sector.nombre}"></span>
+                                    </dd>
+                                </dl>
+                            </div>
+
+                            <div class="col-lg-5">
+                                <dl class="dl-horizontal">
+                                    <dt>Headhunter</dt>
+                                    <dd th:switch="${empresa.headHunter}">
+                                        <span th:case="null">Sin Información</span>
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="true">SI</span>
+                                        <span th:case="false">NO</span>
+                                    </dd>
+                                    <dt>Nacionalidad:</dt>
+                                    <dd th:switch="${empresa.pais.nombreNacionalidad}">
+                                        <span th:case="null">Sin Información</span>
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="*" th:text="${empresa.pais.nombreNacionalidad}"></span>
+                                    </dd>
+                                    <dt>Nivel de Facturaci&oacute;n:</dt>
+                                    <dd th:switch="${empresa.sector.nombre}">
+                                        <span th:case="null">Sin Información</span>
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="*" th:text="${empresa.nivelFacturacion.nomNivelFacturacion}"></span>
+                                    </dd>
+                                    <dt># Trabajadores</dt>
+                                    <dd th:switch="${empresa.numEmpleados}">
+                                        <span th:case="null">Sin Información</span>
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="*" th:text="${empresa.numEmpleados}"></span>
+                                    </dd>
+                                    <dt># Ofertas Publicadas</dt>
+                                    <dd th:switch="${nOfertas}">
+                                        <span th:case="empty">Sin Información</span>
+                                        <span th:case="' '">Sin Información</span>
+                                        <span th:case="*" th:text="${nOfertas}"></span>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="row">
+                            <div id="ofeLaboralesDetalle">
+                                <div class="hr-line-dashed"></div>
+                                <div class="col-lg-12">
+                                    <label class="control-label">OFERTAS LABORALES - DETALLE:</label>
+                                    <table class="table table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <td>ID</td>
+                                            <td>PUBLICADO</td>
+                                            <td>CARGO</td>
+                                            <td>VACANTES</td>
+                                            <td>POSTULACIONES</td>
+                                            <td>LUGAR</td>
+                                            <td>CONTRATO</td>
+                                            <td>SALARIO (TIPO DE MONEDA)</td>
+                                        </tr>
+                                        </thead>
+                                        <tr th:if="${detalleOfertas.size()!=0}" th:each="detOfert : ${detalleOfertas}">
+                                            <td th:switch="${detOfert.id}">
+                                                <span th:case="null">Sin Información</span>
+                                                <span th:case="*" th:text="${detOfert.id}"></span>
+                                            </td>
+                                            <td th:switch="${detOfert.fechaPublicacion}">
+                                                <span th:case="null">Sin Información</span>
+                                                <span th:case="*" th:text="${#calendars.format(detOfert.fechaPublicacion, 'dd/MM/yyyy')}"></span>
+                                            </td>
+                                            <td th:switch="${detOfert.cargo.nomCargo}">
+                                                <span th:case="null">Sin Información</span>
+                                                <span th:case="*" th:text="${detOfert.cargo.nomCargo}"></span>
+                                            </td>
+                                            <td th:switch="${detOfert.vacantes}">
+                                                <span th:case="null">0</span>
+                                                <span th:case="*" th:text="${detOfert.vacantes}"></span>
+                                            </td>
+                                            <td th:switch="${detOfert.cantPostulantes}">
+                                                <span th:case="null">0</span>
+                                                <span th:case="*" th:text="${detOfert.cantPostulantes}"></span>
+                                            </td>
+                                            <td th:switch="${detOfert.localidad}">
+                                                <span th:case="null">Sin Información</span>
+                                                <span th:case="*" th:text="${detOfert.localidad}"></span>
+                                            </td>
+                                            <td th:switch="${detOfert.duracionContrato}">
+                                                <span th:case="null">Sin Información</span>
+                                                <span th:case="*" th:text="${detOfert.duracionContrato}"></span>
+                                            </td>
+                                            <td th:switch="${detOfert.salario}">
+                                                <span th:case="null">Sin Información</span>
+                                                <span th:case="*" th:text="${detOfert.salario+' ('+detOfert.moneda.nombre+')'}"></span>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${detalleOfertas.size()==0}">
+                                            <td colspan="8" style="color:red" align="center">NO HAY INFORMACION AL RESPECTO</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

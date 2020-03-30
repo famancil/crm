@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='indices', actualSubTemplate='curriculos', actualSubSubTemplate='cantidadCurriculosPorEdad'">
+<head>
+    <title>Indice Curriculos Por Edad</title>
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Indice Curriculos Por Edad</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a href="#">Indices</a></li>
+        <li><a th:href="@{/indices/curriculos}">Curriculos</a></li>
+        <li><a th:href="@{/indices/curriculos/cantidadCurriculosPorEdad}">Indice Curriculos Por Edad</a></li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Indice Curriculos Por Edad
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content" >
+
+                <form th:action="@{/indices/curriculos/buscarCantidadCurriculosPorEdad}" method="GET" >
+
+                    <div class="row">
+                        <div class="col-sm-6" >
+                            <div class="form-group" >
+                                <label class="control-label">Pa&iacute;s:</label>
+                                <select id="pais" class="form-control" onchange="mostrarOpcionesInstituciones()">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6" >
+                            <div class="form-group" >
+                                <label class="control-label">Instituci&oacute;n:</label>
+                                <select name="codInstitucion" id="codInstitucion" class="form-control" onchange="mostrarOpcionesCarrerasAsociadasAInstitucion()">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-12" >
+                            <div class="form-group" >
+                                <label   class='control-label'>Carrera:</label>
+                                <select name="codCarrera" id="codCarrera" class="form-control" >
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group text-center">
+                        <button class="btn btn-primary" type="submit">Buscar</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-lg-12" th:if="${curriculosPorEdad != null}" id="resultados-indice">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>
+                    Resultados del indice
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content">
+                <div class="alert alert-info alert-dismissable" th:if="${curriculosPorEdad}">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    Se han encontrado los siguientes resultados para tu b&uacute;squeda
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label">Tabla Cantidad Curriculos por Edad</label>
+                            <table class="table table-striped table-bordered table-hover" th:if="${curriculosPorEdad}">
+                                <thead>
+                                    <tr>
+                                        <th>EDAD</th>
+                                        <th>CANTIDAD</th>
+                                        <th>PORCENTAJE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr >
+                                        <td> 15-19 </td>
+                                        <td th:text="${curriculosPorEdad[0]}"> </td>
+                                        <td th:text="${curriculosPorEdad[1]}"> </td>
+                                    </tr>
+                                    <tr >
+                                        <td> 20-24 </td>
+                                        <td th:text="${curriculosPorEdad[2]}"> </td>
+                                        <td th:text="${curriculosPorEdad[3]}"> </td>
+                                    </tr>
+
+                                    <tr >
+                                        <td> 25-29 </td>
+                                        <td th:text="${curriculosPorEdad[4]}"> </td>
+                                        <td th:text="${curriculosPorEdad[5]}"> </td>
+                                    </tr>
+                                    <tr >
+                                        <td> 30-34 </td>
+                                        <td th:text="${curriculosPorEdad[6]}"> </td>
+                                        <td th:text="${curriculosPorEdad[7]}"> </td>
+                                    </tr>
+                                    <tr >
+                                        <td> 35-39 </td>
+                                        <td th:text="${curriculosPorEdad[8]}"> </td>
+                                        <td th:text="${curriculosPorEdad[9]}"> </td>
+                                    </tr>
+                                    <tr >
+                                        <td> 40-44 </td>
+                                        <td th:text="${curriculosPorEdad[10]}"> </td>
+                                        <td th:text="${curriculosPorEdad[11]}"> </td>
+                                    </tr>
+                                    <tr >
+                                        <td> 45-49 </td>
+                                        <td th:text="${curriculosPorEdad[12]}"> </td>
+                                        <td th:text="${curriculosPorEdad[13]}"> </td>
+                                    </tr>
+                                    <tr >
+                                        <td> 50-54 </td>
+                                        <td th:text="${curriculosPorEdad[14]}"> </td>
+                                        <td th:text="${curriculosPorEdad[15]}"> </td>
+                                    </tr>
+                                    <tr >
+                                        <td> 55-59 </td>
+                                        <td th:text="${curriculosPorEdad[16]}"> </td>
+                                        <td th:text="${curriculosPorEdad[17]}"> </td>
+                                    </tr>
+                                    <tr >
+                                        <td> 60-64 </td>
+                                        <td th:text="${curriculosPorEdad[18]}"> </td>
+                                        <td th:text="${curriculosPorEdad[19]}"> </td>
+                                    </tr>
+                                    <tr >
+                                        <td> 65 &oacute; m&aacute;s </td>
+                                        <td th:text="${curriculosPorEdad[20]}"> </td>
+                                        <td th:text="${curriculosPorEdad[21]}"> </td>
+                                    </tr>
+                                    <tr >
+                                        <td>S/I</td>
+                                        <td th:text="${curriculosPorEdad[22]}"> </td>
+                                        <td th:text="${curriculosPorEdad[23]}"> </td>
+                                    </tr>
+                                    <tr >
+                                        <td>Total</td>
+                                        <td th:text="${curriculosPorEdad[24]}"> </td>
+                                        <td th:text="${curriculosPorEdad[25]}"> </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-8">
+                        <div class="form-group">
+                            <label class="control-label">Grafico Cantidad Curriculos por Edad</label>
+                            <canvas class="center-block" id="income" width="500" height="400"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<th:block layout:fragment="scripts">
+
+    <script th:src="@{/js/jquery-ui-1.10.4.min.js}"></script>
+
+    <!-- ChartJS-->
+    <script th:src="@{/js/plugins/chartJs/Chart.min.js}"></script>
+
+    <script th:inline="javascript">
+        $(document).ready(function() {
+
+            mostrarOpcionesPaises();
+
+            $('html, body').animate({
+                scrollTop: $("#resultados-indice").offset().top
+            }, 1000);
+
+            mostrarGrafico();
+        });
+
+        function mostrarOpcionesPaises() {
+            $.ajax({
+                type: "GET",
+                url: '/geo/paises',
+                success: function (response) {
+                    $.each(response, function(index, value){
+                        if (value.id == 56 ) {
+                            $('#pais').append($("<option></option>").attr("value", value.id).attr("selected", "selected").text(value.nombre));
+                        }
+                        else {
+                            $('#pais').append($("<option></option>").attr("value", value.id).text(value.nombre));
+                        }
+                    });
+
+                    mostrarOpcionesInstituciones();
+                }
+            });
+        }
+
+        function mostrarOpcionesInstituciones() {
+            $.ajax({
+                type: "GET",
+                url: '/opciones/pais/'+$('#pais').val()+'/instituciones',
+                success: function (response) {
+                    $('#codInstitucion').empty();
+
+                    $.each(response, function(index, value){
+                        if (value.codInstitucion == 25 ) {
+                            $('#codInstitucion').append($("<option></option>").attr("value", value.codInstitucion).attr("selected", "selected").text(value.nomInstitucion));
+                        }
+                        else {
+                            $('#codInstitucion').append($("<option></option>").attr("value", value.codInstitucion).text(value.nomInstitucion));
+                        }
+                    });
+
+                    mostrarOpcionesCarrerasAsociadasAInstitucion();
+                }
+            });
+        }
+
+        function mostrarOpcionesCarrerasAsociadasAInstitucion() {
+            $.ajax({
+                type: "GET",
+                url: '/opciones/institucion/'+$('#codInstitucion').val()+'/carreras',
+                success: function (response) {
+                    $('#codCarrera').empty();
+
+                    $('#codCarrera').append($("<option></option>").attr("value", 0).text("Todas"));
+
+                    $.each(response, function(index, value){
+                        $('#codCarrera').append($("<option></option>").attr("value", value.carrera.codCarrera).text(value.carrera.nombreCarrera));
+                    });
+                }
+            });
+        }
+
+        function mostrarGrafico() {
+            rangos = ["15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65 o Mas", "S/I"];
+            cantidades = [[${curriculosPorEdadJSON}]];
+            cantidades = JSON.parse(cantidades);
+
+            // bar chart data
+            var barData = {
+                labels: rangos,
+                datasets: [
+                    {
+                        fillColor: "rgba(151,187,205,0.2)",
+                        strokeColor: "rgba(151,187,205,0.6)",
+                        highlightFill: "rgba(151,187,205,.8)",
+                        highlightStroke: "rgba(151,187,205,1)",
+                        data: cantidades
+                    }
+                ]
+            }
+
+            // get bar chart canvas
+            var income = document.getElementById("income").getContext("2d");
+
+            // draw bar chart
+            new Chart(income).Bar(barData);
+        }
+
+    </script>
+
+</th:block>
+
+
+</body>
+</html>
+

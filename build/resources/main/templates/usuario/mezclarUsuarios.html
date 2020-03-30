@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='mezclarUsuarios'">
+<head>
+    <title>Mezclar Usuarios</title>
+
+    <!--/*/
+    <th:block layout:fragment="css">
+        <link th:href="@{/css/jQueryUI/jquery-ui-1.10.4.custom.min.css}" rel="stylesheet"/>
+    </th:block>
+    /*/-->
+</head>
+
+<body>
+
+<div layout:fragment="title">
+    <h2>Mezclar Usuarios</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li>Usuarios</li>
+        <li>Mezclar Usuario Repetido</li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Modificar datos personales
+                    <small>Seleccione los datos que desea preservar en el usuario final. Para guardar presione "Guardar Cambios". Si desea volver sin realizar cambios presione "Cancelar"</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="alert alert-info alert-dismissable" th:if="${usuario == null}">
+                    No existe usuarios duplicados seg&uacute;n el criterio y valor especificados
+                </div>
+
+                <form action="#" th:action="@{/usuario/mezclar}" th:object="${usuario}" th:if="${usuario != null}" method="post">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>CAMPO</th>
+                                <th>USUARIO 1</th>
+                                <th>USUARIO 2</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <label class="control-label">ID</label>
+                                </td>
+                                <div class="radio">
+                                    <td>
+                                        <input type="radio" name="id"
+                                               th:value="${usuario1.id}"
+                                               th:text="${usuario1.id}"
+                                               th:checked="${usuario1.id le usuario2.id}"/>
+                                    </td>
+                                    <td>
+                                        <input type="radio" name="id"
+                                               th:value="${usuario2.id}"
+                                               th:text="${usuario2.id}"
+                                               th:checked="${usuario1.id gt usuario2.id}"/>
+                                    </td>
+                                </div>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Nombres</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="nombres" id="nombres1"
+                                                   th:value="${usuario1.nombres}"
+                                                   th:checked="${usuario2.nombres == null OR ( usuario1.nombres != null AND usuario2.nombres != null AND usuario1.nombres.length() ge usuario2.nombres.length() )}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario1.nombres}"
+                                                   onchange="document.getElementById('nombres1').value=this.value"
+                                                   onclick="document.getElementById('nombres1').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="nombres" id="nombres2"
+                                                   th:value="${usuario2.nombres}"
+                                                   th:checked="${usuario1.nombres == null OR ( usuario1.nombres != null AND usuario2.nombres != null AND usuario1.nombres.length() lt usuario2.nombres.length() )}" />
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario2.nombres}"
+                                                   onchange="document.getElementById('nombres2').value=this.value"
+                                                   onclick="document.getElementById('nombres2').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Apellido Paterno</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="apellidoPaterno" id="apellidoPaterno1"
+                                                   th:value="${usuario1.apellidoPaterno}"
+                                                   th:checked="${usuario2.apellidoPaterno == null OR ( usuario1.nombres != null AND usuario2.nombres != null AND usuario1.apellidoPaterno.length() ge usuario2.apellidoPaterno.length() )}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                               th:value="${usuario1.apellidoPaterno}"
+                                               onchange="document.getElementById('apellidoPaterno1').value=this.value"
+                                               onclick="document.getElementById('apellidoPaterno1').checked=true"
+                                               class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="apellidoPaterno" id="apellidoPaterno2"
+                                                   th:value="${usuario2.apellidoPaterno}"
+                                                   th:checked="${usuario1.apellidoPaterno == null OR ( usuario1.nombres != null AND usuario2.nombres != null AND usuario1.apellidoPaterno.length() lt usuario2.apellidoPaterno.length() )}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                               th:value="${usuario2.apellidoPaterno}"
+                                               onchange="document.getElementById('apellidoPaterno2').value=this.value"
+                                               onclick="document.getElementById('apellidoPaterno2').checked=true"
+                                               class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Apellido Materno</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="apellidoMaterno" id="apellidoMaterno1"
+                                               th:value="${usuario1.apellidoMaterno}"
+                                               th:checked="${usuario2.apellidoMaterno == null OR ( usuario1.nombres != null AND usuario2.nombres != null AND usuario1.apellidoMaterno.length() ge usuario2.apellidoMaterno.length() )}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario1.apellidoMaterno}"
+                                                   onchange="document.getElementById('apellidoMaterno1').value=this.value"
+                                                   onclick="document.getElementById('apellidoMaterno1').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="apellidoMaterno" id="apellidoMaterno2"
+                                                   th:value="${usuario2.apellidoMaterno}"
+                                                   th:checked="${usuario1.apellidoMaterno == null OR ( usuario1.nombres != null AND usuario2.nombres != null AND usuario1.apellidoMaterno.length() lt usuario2.apellidoMaterno.length() )}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario2.apellidoMaterno}"
+                                                   onchange="document.getElementById('apellidoMaterno2').value=this.value"
+                                                   onclick="document.getElementById('apellidoMaterno2').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">RUN</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+
+                                        <input type="hidden" name="digitoVerificador" id="digitoVerificador"/>
+
+                                        <div class="col-md-1">
+                                            <input type="radio" name="rut" id="rut1"
+                                                   th:value="${usuario1.rut}"
+                                                   th:checked="${usuario2.rut == null or true}"/>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <input type="text"
+                                                   th:value="${usuario1.rut}"
+                                                   onchange="document.getElementById('rut1').value=this.value; document.getElementById('digitoVerificador').value=document.getElementById('digitoVerificador1').value"
+                                                   onclick="document.getElementById('rut1').checked=true; document.getElementById('digitoVerificador').value=document.getElementById('digitoVerificador1').value"
+                                                   class="form-control"/>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <p>-</p>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="text" id="digitoVerificador1"
+                                                   th:value="${usuario1.digitoVerificador}"
+                                                   onchange="document.getElementById('digitoVerificador').value=this.value"
+                                                   onclick="document.getElementById('rut1').checked=true; document.getElementById('digitoVerificador').value=this.value"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="rut" id="rut2"
+                                                   th:value="${usuario2.rut}"
+                                                   th:checked="${usuario1.rut == null}"/>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <input type="text"
+                                                   th:value="${usuario2.rut}"
+                                                   onchange="document.getElementById('rut2').value=this.value; document.getElementById('digitoVerificador').value=document.getElementById('digitoVerificador2').value"
+                                                   onclick="document.getElementById('rut2').checked=true; document.getElementById('digitoVerificador').value=document.getElementById('digitoVerificador2').value"
+                                                   class="form-control"/>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <p>-</p>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="text" id="digitoVerificador2"
+                                                   th:value="${usuario2.digitoVerificador}"
+                                                   onchange="document.getElementById('digitoVerificador').value=this.value"
+                                                   onclick="document.getElementById('rut2').checked=true; document.getElementById('digitoVerificador').value=this.value"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Direcci&oacute;n</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="direccion" id="direccion1"
+                                                   th:value="${usuario1.direccion}"
+                                                   th:checked="${#dates.format(usuario1.fechaModificacion, 'dd/MM/yyyy') le #dates.format(usuario2.fechaModificacion, 'dd/MM/yyyy')  or true}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario1.direccion}"
+                                                   onchange="document.getElementById('direccion1').value=this.value"
+                                                   onclick="document.getElementById('direccion1').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="direccion" id="direccion2"
+                                                   th:value="${usuario2.direccion}"
+                                                   th:checked="${#dates.format(usuario2.fechaModificacion, 'dd/MM/yyyy') gt #dates.format(usuario1.fechaModificacion, 'dd/MM/yyyy')}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario2.direccion}"
+                                                   onchange="document.getElementById('direccion2').value=this.value"
+                                                   onclick="document.getElementById('direccion2').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Email</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="email" id="email1"
+                                                   th:value="${usuario1.email}"
+                                                   th:checked="${(usuario2.email == null) or (#dates.format(usuario1.fechaModificacion, 'dd/MM/yyyy') le #dates.format(usuario2.fechaModificacion, 'dd/MM/yyyy'))}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="email"
+                                                   th:value="${usuario1.email}"
+                                                   onchange="document.getElementById('email1').value=this.value"
+                                                   onclick="document.getElementById('email1').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="email" id="email2"
+                                                   th:value="${usuario2.email}"
+                                                   th:checked="${(usuario1.email == null) or (#dates.format(usuario1.fechaModificacion, 'dd/MM/yyyy') gt #dates.format(usuario2.fechaModificacion, 'dd/MM/yyyy'))}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="email"
+                                                   th:value="${usuario2.email}"
+                                                   onchange="document.getElementById('email2').value=this.value"
+                                                   onclick="document.getElementById('email2').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Email Laboral</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="emailLaboral" id="emailLaboral1"
+                                                   th:value="${usuario1.emailLaboral}"
+                                                   th:checked="${(usuario2.emailLaboral == null) or ( #dates.format(usuario1.fechaModificacion, 'dd/MM/yyyy') le #dates.format(usuario2.fechaModificacion, 'dd/MM/yyyy'))}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="email"
+                                                   th:value="${usuario1.emailLaboral}"
+                                                   onchange="document.getElementById('emailLaboral1').value=this.value"
+                                                   onclick="document.getElementById('emailLaboral1').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="emailLaboral" id="emailLaboral2"
+                                                   th:value="${usuario2.emailLaboral}"
+                                                   th:checked="${(usuario1.emailLaboral == null) or (#dates.format(usuario1.fechaModificacion, 'dd/MM/yyyy') gt #dates.format(usuario2.fechaModificacion, 'dd/MM/yyyy'))}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="email"
+                                                   th:value="${usuario2.emailLaboral}"
+                                                   onchange="document.getElementById('emailLaboral2').value=this.value"
+                                                   onclick="document.getElementById('emailLaboral2').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Email Opcional</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="emailOpcional" id="emailOpcional1"
+                                                   th:value="${usuario1.emailOpcional}"
+                                                   th:checked="${(usuario2.emailOpcional == null) or (#dates.format(usuario1.fechaModificacion, 'dd/MM/yyyy') le #dates.format(usuario2.fechaModificacion, 'dd/MM/yyyy'))}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="email"
+                                                   th:value="${usuario1.emailOpcional}"
+                                                   onchange="document.getElementById('emailOpcional1').value=this.value"
+                                                   onclick="document.getElementById('emailOpcional1').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="emailOpcional" id="emailOpcional2"
+                                                   th:value="${usuario2.emailOpcional}"
+                                                   th:checked="${(usuario1.emailOpcional == null) or (#dates.format(usuario1.fechaModificacion, 'dd/MM/yyyy') gt #dates.format(usuario2.fechaModificacion, 'dd/MM/yyyy'))}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="email"
+                                                   th:value="${usuario2.emailOpcional}"
+                                                   onchange="document.getElementById('emailOpcional2').value=this.value"
+                                                   onclick="document.getElementById('emailOpcional2').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Fecha Nacimiento</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="fechaNacimiento" id="fechaNacimiento1"
+                                                   th:value="${usuario1.fechaNacimiento} ? ${#dates.format(usuario1.fechaNacimiento, 'dd/MM/yyyy')}"
+                                                   th:checked="${usuario1.fechaNacimiento != null or true}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario1.fechaNacimiento} ? ${#dates.format(usuario1.fechaNacimiento, 'dd/MM/yyyy')}"
+                                                   onchange="document.getElementById('fechaNacimiento1').value=this.value"
+                                                   onclick="document.getElementById('fechaNacimiento1').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="fechaNacimiento" id="fechaNacimiento2"
+                                                   th:value="${usuario2.fechaNacimiento} ? ${#dates.format(usuario2.fechaNacimiento, 'dd/MM/yyyy')}"
+                                                   th:checked="${usuario2.fechaNacimiento != null}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario2.fechaNacimiento} ? ${#dates.format(usuario2.fechaNacimiento, 'dd/MM/yyyy')}"
+                                                   onchange="document.getElementById('fechaNacimiento2').value=this.value"
+                                                   onclick="document.getElementById('fechaNacimiento2').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Nacionalidad</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="nacionalidad" id="nacionalidad1"
+                                                   th:value="${usuario1.nacionalidad}"
+                                                   th:checked="${usuario2.nacionalidad == null or true}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario1.nacionalidad}"
+                                                   onchange="document.getElementById('nacionalidad1').value=this.value"
+                                                   onclick="document.getElementById('nacionalidad1').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="nacionalidad" id="nacionalidad2"
+                                                   th:value="${usuario2.nacionalidad}"
+                                                   th:checked="${usuario1.nacionalidad == null}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario2.nacionalidad}"
+                                                   onchange="document.getElementById('nacionalidad2').value=this.value"
+                                                   onclick="document.getElementById('nacionalidad2').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">URL Foto</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="urlFoto" id="urlFoto1"
+                                                   th:value="${usuario1.urlFoto}"
+                                                   th:checked="${usuario2.urlFoto == null}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario1.urlFoto}"
+                                                   onchange="document.getElementById('urlFoto1').value=this.value"
+                                                   onclick="document.getElementById('urlFoto1').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="urlFoto" id="urlFoto2"
+                                                   th:value="${usuario2.urlFoto}"
+                                                   th:checked="${usuario1.urlFoto == null}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario2.urlFoto}"
+                                                   onchange="document.getElementById('urlFoto2').value=this.value"
+                                                   onclick="document.getElementById('urlFoto2').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">C&oacute;digo Postal</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="codigoPostal" id="codigoPostal1"
+                                                   th:value="${usuario1.codigoPostal}"
+                                                   th:checked="${usuario2.codigoPostal == null}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="number"
+                                                   th:value="${usuario1.codigoPostal}"
+                                                   onchange="document.getElementById('codigoPostal1').value=this.value"
+                                                   onclick="document.getElementById('codigoPostal1').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="codigoPostal" id="codigoPostal2"
+                                                   th:value="${usuario2.codigoPostal}"
+                                                   th:checked="${usuario1.codigoPostal == null}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="number"
+                                                   th:value="${usuario2.codigoPostal}"
+                                                   onchange="document.getElementById('codigoPostal2').value=this.value"
+                                                   onclick="document.getElementById('codigoPostal2').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Estado Civil</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" id="estadoCivil1" name="estadoCivil.codigo"
+                                                   th:value="${usuario1.estadoCivil?.codigo}"
+                                                   th:checked="${usuario2.estadoCivil?.codigo == 0  or true}" />
+                                        </div>
+                                        <div class="col-md-10">
+                                            <select class="form-control" onchange="document.getElementById('estadoCivil1').value=this.value" onclick="document.getElementById('estadoCivil1').checked=true">
+                                                <option th:each="estadoCivil: ${listadoEstadosCiviles}"
+                                                        th:selected="${usuario1.estadoCivil?.codigo == estadoCivil.codigo}"
+                                                        th:value="${estadoCivil.codigo}"
+                                                        th:text="${estadoCivil.nombre}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" id="estadoCivil2" name="estadoCivil.codigo"
+                                                   th:value="${usuario2.estadoCivil?.codigo}"
+                                                   th:checked="${usuario1.estadoCivil?.codigo == 0}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <select class="form-control" onchange="document.getElementById('estadoCivil2').value=this.value" onclick="document.getElementById('estadoCivil2').checked=true">
+                                                <option th:each="estadoCivil: ${listadoEstadosCiviles}"
+                                                        th:selected="${usuario2.estadoCivil?.codigo == estadoCivil.codigo}"
+                                                        th:value="${estadoCivil.codigo}"
+                                                        th:text="${estadoCivil.nombre}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Sexo</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" id="sexo1" name="sexo" th:value="${usuario1.sexo}" th:if="${usuario1.sexo==0}" th:checked="${usuario2.sexo == 0 or true}" />
+                                            <input type="radio" id="sexo1" name="sexo" th:value="${usuario1.sexo}" th:if="${usuario1.sexo==1}" th:checked="${usuario2.sexo == 0 or true}" />
+                                            <input type="radio" id="sexo1" name="sexo" th:value="${usuario1.sexo}" th:if="${usuario1.sexo==2}" th:checked="${usuario2.sexo == 0 or true}" />
+                                        </div>
+                                        <div class="col-md-10">
+                                            <select class="form-control" onchange="document.getElementById('sexo1').value=this.value" onclick="document.getElementById('sexo1').checked=true">
+                                                <option th:selected="${usuario1.sexo == 0}" value="0" >Sin Informaci&oacute;n</option>
+                                                <option th:selected="${usuario1.sexo == 1}" value="1" >Femenino</option>
+                                                <option th:selected="${usuario1.sexo == 2}" value="2" >Masculino</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" id="sexo2" name="sexo" th:value="${usuario2.sexo}" th:if="${usuario2.sexo==0}" th:checked="${usuario1.sexo == 0}" />
+                                            <input type="radio" id="sexo2" name="sexo" th:value="${usuario2.sexo}" th:if="${usuario2.sexo==1}" th:checked="${usuario1.sexo == 0}"/>
+                                            <input type="radio" id="sexo2" name="sexo" th:value="${usuario2.sexo}" th:if="${usuario2.sexo==2}" th:checked="${usuario1.sexo == 0}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <select class="form-control" onchange="document.getElementById('sexo2').value=this.value" onclick="document.getElementById('sexo2').checked=true">
+                                                <option th:selected="${usuario2.sexo == 0}" value="0" >Sin Informaci&oacute;n</option>
+                                                <option th:selected="${usuario2.sexo == 1}" value="1" >Femenino</option>
+                                                <option th:selected="${usuario2.sexo == 2}" value="2" >Masculino</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Apodo</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="apodo" id="apodo1"
+                                                   th:value="${usuario1.apodo}"
+                                                   th:checked="${usuario2.apodo == null or true}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario1.apodo}"
+                                                   onchange="document.getElementById('apodo1').value=this.value"
+                                                   onclick="document.getElementById('apodo1').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="apodo" id="apodo2"
+                                                   th:value="${usuario2.apodo}"
+                                                   th:checked="${usuario1.apodo == null}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario2.apodo}"
+                                                   onchange="document.getElementById('apodo2').value=this.value"
+                                                   onclick="document.getElementById('apodo2').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Pasaporte</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="pasaporte" id="pasaporte1"
+                                                   th:value="${usuario1.pasaporte}"
+                                                   th:checked="${usuario2.pasaporte == null or true}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario1.pasaporte}"
+                                                   onchange="document.getElementById('pasaporte1').value=this.value"
+                                                   onclick="document.getElementById('pasaporte1').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="pasaporte" id="pasaporte2"
+                                                   th:value="${usuario2.pasaporte}"
+                                                   th:checked="${usuario1.pasaporte == null}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario2.pasaporte}"
+                                                   onchange="document.getElementById('pasaporte2').value=this.value"
+                                                   onclick="document.getElementById('pasaporte2').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">N&uacute;mero de Hijos</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="numeroHijos" id="numeroHijos1"
+                                                   th:value="${usuario1.numeroHijos}"
+                                                   th:checked="${usuario2.numeroHijos == null or true}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="number"
+                                                   th:value="${usuario1.numeroHijos}"
+                                                   onchange="document.getElementById('numeroHijos1').value=this.value"
+                                                   onclick="document.getElementById('numeroHijos1').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="numeroHijos" id="numeroHijos2"
+                                                   th:value="${usuario2.numeroHijos}"
+                                                   th:checked="${usuario1.numeroHijos == null}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="number"
+                                                   th:value="${usuario2.numeroHijos}"
+                                                   onchange="document.getElementById('numeroHijos2').value=this.value"
+                                                   onclick="document.getElementById('numeroHijos2').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Vocativo</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="vocativo" id="vocativo1"
+                                                   th:value="${usuario1.vocativo}"
+                                                   th:checked="${usuario2.vocativo == null or true}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario1.vocativo}"
+                                                   onchange="document.getElementById('vocativo1').value=this.value"
+                                                   onclick="document.getElementById('vocativo1').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="vocativo" id="vocativo2"
+                                                   th:value="${usuario2.vocativo}"
+                                                   th:checked="${usuario1.vocativo == null}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario2.vocativo}"
+                                                   onchange="document.getElementById('vocativo2').value=this.value"
+                                                   onclick="document.getElementById('vocativo2').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Tel&eacute;fono Particular</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="fonoParticular" id="fonoParticular1"
+                                                   th:value="${usuario1.fonoParticular}"
+                                                   th:checked="${usuario2.fonoParticular == null or true}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario1.fonoParticular}"
+                                                   onchange="document.getElementById('fonoParticular1').value=this.value"
+                                                   onclick="document.getElementById('fonoParticular1').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="fonoParticular" id="fonoParticular2"
+                                                   th:value="${usuario2.fonoParticular}"
+                                                   th:checked="${usuario1.fonoParticular == null}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario2.fonoParticular}"
+                                                   onchange="document.getElementById('fonoParticular2').value=this.value"
+                                                   onclick="document.getElementById('fonoParticular2').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Celular</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="celular" id="celular1"
+                                                   th:value="${usuario1.celular}"
+                                                   th:checked="${usuario2.celular == null or true}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario1.celular}"
+                                                   onchange="document.getElementById('celular1').value=this.value"
+                                                   onclick="document.getElementById('celular1').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="celular" id="celular2"
+                                                   th:value="${usuario2.celular}"
+                                                   th:checked="${usuario1.celular == null}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario2.celular}"
+                                                   onchange="document.getElementById('celular2').value=this.value"
+                                                   onclick="document.getElementById('celular2').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Tel&eacute;fono Opcional</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="fonoOpcional" id="fonoOpcional1"
+                                                   th:value="${usuario1.fonoOpcional}"
+                                                   th:checked="${usuario2.fonoOpcional == null or true}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario1.fonoOpcional}"
+                                                   onchange="document.getElementById('fonoOpcional1').value=this.value"
+                                                   onclick="document.getElementById('fonoOpcional1').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" name="fonoOpcional" id="fonoOpcional2"
+                                                   th:value="${usuario2.fonoOpcional}"
+                                                   th:checked="${usuario1.fonoOpcional == null}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text"
+                                                   th:value="${usuario2.fonoOpcional}"
+                                                   onchange="document.getElementById('fonoOpcional2').value=this.value"
+                                                   onclick="document.getElementById('fonoOpcional2').checked=true"
+                                                   class="form-control"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Apoderado</label>
+                                </td>
+                                <div class="radio">
+                                    <td>
+                                        <input type="radio" name="apoderado.usuarioId"
+                                               th:if="${usuario1.apoderado}"
+                                               th:value="${usuario1.apoderado?.usuarioId}"
+                                               th:text="${usuario1.apoderado.nombre}"
+                                               th:checked="${usuario2.apoderado == null or true}"/>
+                                    </td>
+                                    <td>
+                                        <input type="radio" name="apoderado.usuarioId"
+                                               th:if="${usuario2.apoderado}"
+                                               th:value="${usuario2.apoderado?.usuarioId}"
+                                               th:text="${usuario2.apoderado.nombre}"
+                                               th:checked="${usuario1.apoderado == null}"/>
+                                    </td>
+                                </div>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Comuna</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" id="comuna1" name="comuna.codigo" th:if="${usuario1.comuna}" th:value="${usuario1.comuna?.codigo}" th:checked="${usuario2.comuna == null or true}" />
+                                        </div>
+                                        <div class="col-md-10">
+                                            <select class="form-control" onchange="document.getElementById('comuna1').value=this.value" onclick="document.getElementById('comuna1').checked=true">
+                                                <option th:each="com: ${listadoComunas}"
+                                                        th:selected="${usuario1.comuna?.codigo == com.codigo}"
+                                                        th:value="${com.codigo}"
+                                                        th:text="${com.nombre}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                        <input type="radio" id="comuna2" name="comuna.codigo" th:if="${usuario2.comuna}" th:value="${usuario2.comuna?.codigo}" th:checked="${usuario1.comuna == null}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <select class="form-control" onchange="document.getElementById('comuna2').value=this.value" onclick="document.getElementById('comuna2').checked=true">
+                                                <option th:each="com: ${listadoComunas}"
+                                                        th:selected="${usuario2.comuna?.codigo == com.codigo}"
+                                                        th:value="${com.codigo}"
+                                                        th:text="${com.nombre}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Pais</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" id="pais1" name="pais.id" th:if="${usuario1.pais}" th:value="${usuario1.pais?.id}" th:checked="${usuario2.pais == null or true}" />
+                                        </div>
+                                        <div class="col-md-10">
+                                            <select class="form-control" onchange="document.getElementById('pais1').value=this.value" onclick="document.getElementById('pais1').checked=true">
+                                                <option th:each="pais: ${listadoPaises}"
+                                                        th:selected="${usuario1.pais?.id == pais.id}"
+                                                        th:value="${pais.id}"
+                                                        th:text="${pais.nombre}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" id="pais2" name="pais.id" th:if="${usuario2.pais}" th:value="${usuario2.pais?.id}" th:checked="${usuario1.pais == null}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <select class="form-control" onchange="document.getElementById('pais2').value=this.value" onclick="document.getElementById('pais2').checked=true">
+                                                <option th:each="pais: ${listadoPaises}"
+                                                        th:selected="${usuario2.pais?.id == pais.id}"
+                                                        th:value="${pais.id}"
+                                                        th:text="${pais.nombre}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!--
+                            TODO BORRAR
+                            <tr>
+                                <td>
+                                    <label class="control-label">Como supo de la Red de Exalumnos</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" id="comoSupoDeRedExalumnos1" name="comoSupoDeRedExalumnos.codigo" th:value="${usuario1.comoSupoDeRedExalumnos?.codigo}" th:checked="${usuario2.comoSupoDeRedExalumnos?.codigo == 0  or true}" />
+                                        </div>
+                                        <div class="col-md-10">
+                                            <select class="form-control" onchange="document.getElementById('comoSupoDeRedExalumnos1').value=this.value" onclick="document.getElementById('comoSupoDeRedExalumnos1').checked=true">
+                                                <option th:each="razon: ${listadoComoSupo}"
+                                                        th:selected="${usuario1.comoSupoDeRedExalumnos?.codigo == razon.codigo}"
+                                                        th:value="${razon.codigo}" th:text="${razon.titulo}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" id="comoSupoDeRedExalumnos2" name="comoSupoDeRedExalumnos.codigo" th:value="${usuario2.comoSupoDeRedExalumnos?.codigo}" th:checked="${usuario1.comoSupoDeRedExalumnos?.codigo == 0}"/>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <select class="form-control" onchange="document.getElementById('comoSupoDeRedExalumnos2').value=this.value" onclick="document.getElementById('comoSupoDeRedExalumnos2').checked=true">
+                                                <option th:each="razon: ${listadoComoSupo}"
+                                                        th:selected="${usuario2.comoSupoDeRedExalumnos?.codigo == razon.codigo}"
+                                                        th:value="${razon.codigo}" th:text="${razon.titulo}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Estado Solicitud Credencial</label>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" id="estadoSolicitudCredencial1" name="estadoSolicitudCredencial.codigo"
+                                                   th:value="${usuario1.estadoSolicitudCredencial?.codigo}"
+                                                   th:checked="${usuario2.estadoSolicitudCredencial == null OR true}" />
+                                        </div>
+                                        <div class="col-md-10">
+                                            <select class="form-control" onchange="document.getElementById('estadoSolicitudCredencial1').value=this.value" onclick="document.getElementById('estadoSolicitudCredencial1').checked=true">
+                                                <option th:each="estado: ${listadoSolicitudCredencial}"
+                                                        th:selected="${usuario1.estadoSolicitudCredencial?.codigo == estado.codigo}"
+                                                        th:value="${estado.codigo}"
+                                                        th:text="${estado.nombre}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <input type="radio" id="estadoSolicitudCredencial2" name="estadoSolicitudCredencial.codigo" th:value="${usuario2.estadoSolicitudCredencial?.codigo}" th:checked="${usuario1.estadoSolicitudCredencial == null}" />
+                                        </div>
+                                        <div class="col-md-10">
+                                            <select class="form-control" onchange="document.getElementById('estadoSolicitudCredencial2').value=this.value" onclick="document.getElementById('estadoSolicitudCredencial2').checked=true">
+                                                <option th:each="estado: ${listadoSolicitudCredencial}"
+                                                        th:selected="${usuario2.estadoSolicitudCredencial?.codigo == estado.codigo}"
+                                                        th:value="${estado.codigo}"
+                                                        th:text="${estado.nombre}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Operador</label>
+                                </td>
+                                <div class="radio">
+                                    <td>
+                                        <input type="radio" id="operadorEncargado1" name="operadorEncargado.id"
+                                               th:if="${usuario1.operadorEncargado}"
+                                               th:value="${usuario1.operadorEncargado?.id}"
+                                               th:text="${usuario1.operadorEncargado.nombres} + ${usuario1.operadorEncargado.apellidoPaterno} + ${usuario1.operadorEncargado.apellidoMaterno}"
+                                               th:checked="${usuario1.operadorEncargado.id != null or true}" />
+                                    </td>
+                                    <td>
+                                        <input type="radio" id="operadorEncargado2" name="operadorEncargado.id"
+                                               th:if="${usuario2.operadorEncargado}"
+                                               th:value="${usuario2.operadorEncargado?.id}"
+                                               th:text="${usuario2.operadorEncargado.nombres} + ${usuario2.operadorEncargado.apellidoPaterno} + ${usuario2.operadorEncargado.apellidoMaterno}"
+                                               th:checked="${usuario2.operadorEncargado.id != null}" />
+                                    </td>
+                                </div>
+                            </tr>
+                            -->
+                            <tr>
+                                <td>
+                                    <label class="control-label">Fecha Registro</label>
+                                </td>
+                                <div class="radio">
+                                    <td>
+                                        <input type="radio" name="fechaRegistro" id="fechaRegistro1"
+                                               th:value="${#dates.format(usuario1.fechaRegistro, 'dd/MM/yyyy')}"
+                                               th:text="${#dates.format(usuario1.fechaRegistro, 'dd/MM/yyyy')}"
+                                               th:checked="${#dates.format(usuario1.fechaRegistro, 'dd/MM/yyyy') gt #dates.format(usuario2.fechaRegistro, 'dd/MM/yyyy')}"/>
+                                    </td>
+                                    <td>
+                                        <input type="radio" name="fechaRegistro" id="fechaRegistro1"
+                                               th:value="${#dates.format(usuario2.fechaRegistro, 'dd/MM/yyyy')}"
+                                               th:text="${#dates.format(usuario2.fechaRegistro, 'dd/MM/yyyy')}"
+                                               th:checked="${#dates.format(usuario1.fechaRegistro, 'dd/MM/yyyy') le #dates.format(usuario2.fechaRegistro, 'dd/MM/yyyy')}"/>
+                                    </td>
+                                </div>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Preferencias Privacidad</label>
+                                </td>
+                                <div class="radio">
+                                    <td>
+                                        <input type="radio" name="preferenciaPrivacidad.usuarioId"
+                                               th:if="${usuario1.preferenciaPrivacidad != null}"
+                                               th:value="${usuario1.preferenciaPrivacidad.usuarioId}"
+                                               th:text="${#dates.format(usuario1.preferenciaPrivacidad.fechaModificacion, 'dd/MM/yyyy')}"
+                                               th:checked="${usuario2.preferenciaPrivacidad == null} or (${#dates.format(usuario1.preferenciaPrivacidad.fechaModificacion, 'dd/MM/yyyy') le #dates.format(usuario2.preferenciaPrivacidad.fechaModificacion, 'dd/MM/yyyy')})"/>
+                                    </td>
+                                    <td>
+                                        <input type="radio" name="preferenciaPrivacidad.usuarioId"
+                                               th:if="${usuario2.preferenciaPrivacidad != null}"
+                                               th:value="${usuario2.preferenciaPrivacidad.usuarioId}"
+                                               th:text="${#dates.format(usuario2.preferenciaPrivacidad.fechaModificacion, 'dd/MM/yyyy')}"
+                                               th:checked="${usuario1.preferenciaPrivacidad == null} or (${#dates.format(usuario1.preferenciaPrivacidad.fechaModificacion, 'dd/MM/yyyy') gt #dates.format(usuario2.preferenciaPrivacidad.fechaModificacion, 'dd/MM/yyyy')})"/>
+                                    </td>
+                                </div>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Preferencias Usuario UsmEmpleo</label>
+                                </td>
+                                <div class="radio">
+                                    <td>
+                                        <input type="radio" name="preferenciaUsuarioUsmempleo.usuarioId"
+                                               th:if="${usuario1.preferenciaUsuarioUsmempleo != null}"
+                                               th:value="${usuario1.preferenciaUsuarioUsmempleo.usuarioId}"
+                                               th:text="${#dates.format(usuario1.preferenciaUsuarioUsmempleo.fechaModificacion, 'dd/MM/yyyy')}"
+                                               th:checked="${usuario2.preferenciaUsuarioUsmempleo == null or (#dates.format(usuario1.preferenciaUsuarioUsmempleo.fechaModificacion, 'dd/MM/yyyy') le #dates.format(usuario2.preferenciaUsuarioUsmempleo.fechaModificacion, 'dd/MM/yyyy'))}"/>
+                                    </td>
+                                    <td>
+                                        <input type="radio" name="preferenciaUsuarioUsmempleo.usuarioId"
+                                               th:if="${usuario2.preferenciaUsuarioUsmempleo != null}"
+                                               th:value="${usuario2.preferenciaUsuarioUsmempleo.usuarioId}"
+                                               th:text="${#dates.format(usuario2.preferenciaUsuarioUsmempleo.fechaModificacion, 'dd/MM/yyyy')}"
+                                               th:checked="${usuario1.preferenciaUsuarioUsmempleo == null or (#dates.format(usuario1.preferenciaUsuarioUsmempleo.fechaModificacion, 'dd/MM/yyyy') gt #dates.format(usuario2.preferenciaUsuarioUsmempleo.fechaModificacion, 'dd/MM/yyyy'))}"/>
+                                    </td>
+                                </div>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Informaci&oacute;n Profesional Exalumno</label>
+                                </td>
+                                <div class="radio">
+                                    <td>
+                                        <input type="radio" name="informacionProfesional.usuarioId"
+                                               th:if="${usuario1.informacionProfesional != null}"
+                                               th:value="${usuario1.informacionProfesional.usuarioId}"
+                                               th:text="${#dates.format(usuario1.informacionProfesional.fechaModificacion, 'dd/MM/yyyy')}"
+                                               th:checked="${usuario2.informacionProfesional == null or (#dates.format(usuario1.informacionProfesional.fechaModificacion, 'dd/MM/yyyy') le #dates.format(usuario2.informacionProfesional.fechaModificacion, 'dd/MM/yyyy'))}"/>
+                                    </td>
+                                    <td>
+                                        <input type="radio" name="informacionProfesional.usuarioId"
+                                               th:if="${usuario2.informacionProfesional != null}"
+                                               th:value="${usuario2.informacionProfesional.usuarioId}"
+                                               th:text="${#dates.format(usuario2.informacionProfesional.fechaModificacion, 'dd/MM/yyyy')}"
+                                               th:checked="${usuario1.informacionProfesional == null or (#dates.format(usuario1.informacionProfesional.fechaModificacion, 'dd/MM/yyyy') gt #dates.format(usuario2.informacionProfesional.fechaModificacion, 'dd/MM/yyyy'))}"/>
+                                    </td>
+                                </div>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Asesor</label>
+                                </td>
+                                <div class="radio">
+                                    <td>
+                                        <input type="radio" name="asesor.usuarioId"
+                                               th:if="${usuario1.asesor != null}"
+                                               th:value="${usuario1.asesor.usuarioId}"
+                                               th:text="${#dates.format(usuario1.asesor.fechaModificacion, 'dd/MM/yyyy')}"
+                                               th:checked="${usuario2.asesor == null or (#dates.format(usuario1.asesor.fechaModificacion, 'dd/MM/yyyy') le #dates.format(usuario2.asesor.fechaModificacion, 'dd/MM/yyyy'))}"/>
+                                    </td>
+                                    <td>
+                                        <input type="radio" name="asesor.usuarioId"
+                                               th:if="${usuario2.asesor != null}"
+                                               th:value="${usuario2.asesor.usuarioId}"
+                                               th:text="${#dates.format(usuario2.asesor.fechaModificacion, 'dd/MM/yyyy')}"
+                                               th:checked="${usuario1.asesor == null or (#dates.format(usuario1.asesor.fechaModificacion, 'dd/MM/yyyy') gt #dates.format(usuario2.asesor.fechaModificacion, 'dd/MM/yyyy'))}"/>
+                                    </td>
+                                </div>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class="control-label">Login</label>
+                                </td>
+                                <div class="radio">
+                                    <td>
+                                        <p th:if="${usuario1.credencialesAcceso != null}" th:text="${usuario1.credencialesAcceso.username}"> </p>
+                                        <input type="radio" name="credencialesAcceso.usuarioId"
+                                               th:if="${usuario1.credencialesAcceso != null}"
+                                               th:value="${usuario1.credencialesAcceso.usuarioId}"
+                                               th:text="${#dates.format(usuario1.credencialesAcceso.fechaModificacion, 'dd/MM/yyyy')}"
+                                               th:checked="${usuario2.credencialesAcceso == null or (#dates.format(usuario1.credencialesAcceso.fechaModificacion, 'dd/MM/yyyy') gt #dates.format(usuario2.credencialesAcceso.fechaModificacion, 'dd/MM/yyyy'))}"/>
+                                    </td>
+                                    <td>
+                                        <p th:if="${usuario2.credencialesAcceso != null}" th:text="${usuario2.credencialesAcceso.username}"> </p>
+                                        <input type="radio" name="credencialesAcceso.usuarioId"
+                                               th:if="${usuario2.credencialesAcceso != null}"
+                                               th:value="${usuario2.credencialesAcceso.usuarioId}"
+                                               th:text="${#dates.format(usuario2.credencialesAcceso.fechaModificacion, 'dd/MM/yyyy')}"
+                                               th:checked="${usuario1.credencialesAcceso == null or (#dates.format(usuario1.credencialesAcceso.fechaModificacion, 'dd/MM/yyyy') le #dates.format(usuario2.credencialesAcceso.fechaModificacion, 'dd/MM/yyyy'))}"/>
+                                    </td>
+                                </div>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Otros Campos <small>Presionar la flecha de la derecha para visualizar</small></h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link" id="collapse">
+                                    <i class="fa fa-chevron-down"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <table class="table table-bordered table-hover">
+                                <tr>
+                                    <td>TABLA ASOCIADA</td>
+                                    <td>USUARIO 1</td>
+                                    <td>USUARIO 2</td>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxManejoIdiomas" checked="checked"/>
+                                            <label class="control-label">Manejo Idiomas</label>
+                                        </td>
+                                        <td th:text="${usuario1.manejoIdiomasList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.manejoIdiomasList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxCompromisosUsuario" checked="checked"/>
+                                            <label class="control-label">Comprisos Usuario</label>
+                                        </td>
+                                        <td th:text="${usuario1.compromisoUsuarioList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.compromisoUsuarioList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxAntecedenteEducacional" checked="checked"/>
+                                            <label class="control-label">Antecedente Educacional</label>
+                                        </td>
+                                        <td th:text="${usuario1.antecedenteEducacionalList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.antecedenteEducacionalList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxAntecedenteColegio" checked="checked"/>
+                                            <label class="control-label">Antecedente Colegio</label>
+                                        </td>
+                                        <td th:text="${usuario1.antecedenteColegioList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.antecedenteColegioList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxPostulacionOfertaLaboral" checked="checked"/>
+                                            <label class="control-label">Postulaci&oacute;n Oferta Laboral</label>
+                                        </td>
+                                        <td th:text="${usuario1.postulacionOfertaLaboralUsmempleoList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.postulacionOfertaLaboralUsmempleoList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxEncuestaPostulacionLaboral" checked="checked"/>
+                                            <label class="control-label">Encuesta Postulacion Laboral</label>
+                                        </td>
+                                        <td th:text="${usuario1.encuestaPostulacionLaboralList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.encuestaPostulacionLaboralList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxPostulacionArchivosAdjuntos" checked="checked"/>
+                                            <label class="control-label">Postulacion Archivos Adjuntos</label>
+                                        </td>
+                                        <td th:text="${usuario1.postulacionArchivosAdjuntosList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.postulacionArchivosAdjuntosList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxRespuestaPreguntaOfertaLaboral" checked="checked"/>
+                                            <label class="control-label">Respuestas Preguntas Oferta Laboral</label>
+                                        </td>
+                                        <td th:text="${usuario1.respuestaPreguntaOfertaLaboralExalumnoList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.respuestaPreguntaOfertaLaboralExalumnoList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxRecadosContactoUsuario" checked="checked"/>
+                                            <label class="control-label">Recados Contacto Usuario (quien recibe el contacto)</label>
+                                        </td>
+                                        <td th:text="${usuario1.recadoContactoUsuarioList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.recadoContactoUsuarioList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxRecadosContactoUsuUsuario" checked="checked"/>
+                                            <label class="control-label">Recados Contacto UsuUsuario (quien realiza el contacto)</label>
+                                        </td>
+                                        <td th:text="${usuario1.recadoContactoUsuUsuarioList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.recadoContactoUsuUsuarioList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxCampanaExalumno" checked="checked"/>
+                                            <label class="control-label">Campana Exalumno</label>
+                                        </td>
+                                        <td th:text="${usuario1.campanaExalumnoList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.campanaExalumnoList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxStickynotesAexaUsuario" checked="checked"/>
+                                            <label class="control-label">Stickynotes Aexa Usuario (Quien recibe del Stickynote)</label>
+                                        </td>
+                                        <td th:text="${usuario1.stickynotesAexaUsuarioList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.stickynotesAexaUsuarioList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxStickynotesAexaUsuUsuario" checked="checked"/>
+                                            <label class="control-label">Stickynotes Aexa UsuUsuario (Quien realiza el Stickynote)</label>
+                                        </td>
+                                        <td th:text="${usuario1.stickynotesAexaUsuUsuarioList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.stickynotesAexaUsuUsuarioList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxArchivosAdjuntos" checked="checked"/>
+                                            <label class="control-label">Archivos Adjuntos</label>
+                                        </td>
+                                        <td th:text="${usuario1.archivosAdjuntosList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.archivosAdjuntosList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxPaginasUsuario" checked="checked"/>
+                                            <label class="control-label">Paginas Usuario</label>
+                                        </td>
+                                        <td th:text="${usuario1.paginaExalumnoList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.paginaExalumnoList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxRoles" checked="checked"/>
+                                            <label class="control-label">Roles de Acceso</label>
+                                        </td>
+                                        <td th:text="${usuario1.rolesUsuario.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.rolesUsuario.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxAutorizaciones" checked="checked"/>
+                                            <label class="control-label">Autorizaciones del Usuario</label>
+                                        </td>
+                                        <td th:text="${usuario1.autorizacionesUsuario.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.autorizacionesUsuario.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxAccesosSistemas" checked="checked"/>
+                                            <label class="control-label">Accesos Sistemas (Perfil Aexa)</label>
+                                        </td>
+                                        <td th:text="${usuario1.accesosSistemas.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.accesosSistemas.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxCompetencias" checked="checked"/>
+                                            <label class="control-label">Competencias</label>
+                                        </td>
+                                        <td th:text="${usuario1.competenciaExalumnoList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.competenciaExalumnoList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxConocimientoInformatico" checked="checked"/>
+                                            <label class="control-label">Conocimiento Informatico</label>
+                                        </td>
+                                        <td th:text="${usuario1.conocimientoInfoExalumnoList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.conocimientoInfoExalumnoList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxDuenoEmpresa" checked="checked"/>
+                                            <label class="control-label">Dueño Empresa</label>
+                                        </td>
+                                        <td th:text="${usuario1.duenoEmpresaList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.duenoEmpresaList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxAporteSocio" checked="checked"/>
+                                            <label class="control-label">Aportes Socio</label>
+                                        </td>
+                                        <td th:text="${usuario1.aporteSocioList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.aporteSocioList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxUsuarioVistoUsmEmpleo" checked="checked"/>
+                                            <label class="control-label">CV Visto Usm Empleo</label>
+                                        </td>
+                                        <td th:text="${usuario1.usuarioVistoUsmEmpleoList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.usuarioVistoUsmEmpleoList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxCapacitacionExalumno" checked="checked"/>
+                                            <label class="control-label">Capacitaciones</label>
+                                        </td>
+                                        <td th:text="${usuario1.capacitacionExalumnoList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.capacitacionExalumnoList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxActividadExalumno" checked="checked"/>
+                                            <label class="control-label">Actividad Exalumno</label>
+                                        </td>
+                                        <td th:text="${usuario1.actividadExalumnoList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.actividadExalumnoList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxContactoHistoricoEmpresa" checked="checked"/>
+                                            <label class="control-label">Contacto Historico Empresa</label>
+                                        </td>
+                                        <td th:text="${usuario1.contactoHistoricoEmpresaList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.contactoHistoricoEmpresaList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxInvitacionVideoEntrevistaUsmEmpleo" checked="checked"/>
+                                            <label class="control-label">Invitacion Video Entrevista</label>
+                                        </td>
+                                        <td th:text="${usuario1.invitacionVideoEntrevistaUsmEmpleoList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.invitacionVideoEntrevistaUsmEmpleoList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxVideoEntrevistaUsmEmpleo" checked="checked"/>
+                                            <label class="control-label">Video Entrevista</label>
+                                        </td>
+                                        <td th:text="${usuario1.videoEntrevistaUsmEmpleoList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.videoEntrevistaUsmEmpleoList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxVideoCurriculoUsuario" checked="checked"/>
+                                            <label class="control-label">Video Curriculo</label>
+                                        </td>
+                                        <td th:text="${usuario1.videoCurriculoUsuarioList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.videoCurriculoUsuarioList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxAptitudUsuario" checked="checked"/>
+                                            <label class="control-label">Aptitud Usuario</label>
+                                        </td>
+                                        <td th:text="${usuario1.aptitudUsuarioList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.aptitudUsuarioList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxRespuestaUsuario" checked="checked"/>
+                                            <label class="control-label">Respuestas Usuario</label>
+                                        </td>
+                                        <td th:text="${usuario1.respuestaUsuarioList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.respuestaUsuarioList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxFiltroOfertaLaboral" checked="checked"/>
+                                            <label class="control-label">Filtro Oferta Laboral</label>
+                                        </td>
+                                        <td th:text="${usuario1.filtroOfertaLaboralList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.filtroOfertaLaboralList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxPagoAsesoria" checked="checked"/>
+                                            <label class="control-label">Pago Asesoria</label>
+                                        </td>
+                                        <td th:text="${usuario1.pagoAsesoriaList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.pagoAsesoriaList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxCategoriaAsesoriaUsuario" checked="checked"/>
+                                            <label class="control-label">Categoria Asesoria Usuario</label>
+                                        </td>
+                                        <td th:text="${usuario1.categoriaAsesoriaUsuarioList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.categoriaAsesoriaUsuarioList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxPostulanteFavorito" checked="checked"/>
+                                            <label class="control-label">Postulante Favorito</label>
+                                        </td>
+                                        <td th:text="${usuario1.postulanteFavoritoList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.postulanteFavoritoList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxPostulacionUsuarioAsesoria" checked="checked"/>
+                                            <label class="control-label">Postulacion Usuario Asesoria</label>
+                                        </td>
+                                        <td th:text="${usuario1.postulacionUsuarioAsesoriaList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.postulacionUsuarioAsesoriaList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxTestPsicologicoExalumno" checked="checked"/>
+                                            <label class="control-label">Test Psicologico</label>
+                                        </td>
+                                        <td th:text="${usuario1.testPsicologicoExalumnoList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.testPsicologicoExalumnoList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxOfertasCrawled" checked="checked"/>
+                                            <label class="control-label">Ofertas Crawled</label>
+                                        </td>
+                                        <td th:text="${usuario1.ofertaCrawledList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.ofertaCrawledList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxCorreosValidados" checked="checked"/>
+                                            <label class="control-label">Correos Validados</label>
+                                        </td>
+                                        <td th:text="${usuario1.correosValidadosList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.correosValidadosList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="checkbox">
+                                        <td>
+                                            <input type="checkbox" name="checkBoxRespaldoUsuario" checked="checked"/>
+                                            <label class="control-label">Respaldo Usuario</label>
+                                        </td>
+                                        <td th:text="${usuario1.respaldoUsuarioList.size()}">
+                                        </td>
+                                        <td th:text="${usuario2.respaldoUsuarioList.size()}">
+                                        </td>
+                                    </div>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+
+                    <div class="hr-line-dashed"></div>
+
+
+                    <input type="hidden" th:name="idUsuario1" th:value="${usuario1.id}"/>
+                    <input type="hidden" th:name="idUsuario2" th:value="${usuario2.id}"/>
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+
+
+                    <div class="form-group text-center">
+                        <button class="btn btn-primary" type="submit">Mezclar Usuarios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+
+    <script th:src="@{/js/jquery-ui-1.10.4.min.js}"></script>
+
+    <script th:inline="javascript">
+
+        $(document).ready(function() {
+
+            if (document.getElementById('rut1').checked == true) {
+                document.getElementById('digitoVerificador').value=document.getElementById('digitoVerificador1').value;
+            }
+            if (document.getElementById('rut2').checked == true) {
+                document.getElementById('digitoVerificador').value=document.getElementById('digitoVerificador2').value;
+            }
+
+            $('#collapse').click();
+        });
+
+    </script>
+
+</th:block>
+
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='indices', actualSubTemplate='empleo', actualSubSubTemplate='rankingCarrerasPorSalario'">
+<head>
+    <title>Ranking Carreras Por Salario</title>
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Ranking Carreras Por Salario</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a href="#">Indices</a></li>
+        <li><a th:href="@{/indices/empleos}">Empleos</a></li>
+        <li><a th:href="@{/indices/empleos/rankingCarrerasPorSalario}">Ranking Carreras Por Salario</a></li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+
+
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Ranking Carreras Por Salario
+                    <small>Puede seleccionar el A&ntilde;o, Orden (de mayor a menor o viceversa) y cantidad de Carreras a mostrar y el Rango de salario promedio a considerar.</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content" >
+
+                <form th:action="@{/indices/empleos/buscarRankingCarrerasPorSalario}" method="GET" >
+
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="control-label">Orden del Ranking</label>
+                                <select name="orden" id="orden" class="form-control" >
+                                    <option value="1" th:selected="${orden} == 1">Mayores salarios primero</option>
+                                    <option value="2" th:selected="${orden} == 2">Menores salarios primero</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="control-label">A&ntilde;o de las Ofertas Laborales</label>
+                                <select name="anio" id="anio"  class="form-control">
+                                    <option th:each="i: ${#numbers.sequence(#dates.year(#dates.createNow()),1930)}"
+                                            th:value="${i}" th:text="${i}" th:selected="${i} == ${anio}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="control-label">Cantidad de Carreras a Mostrar</label>
+                                <select name="cantidadMostrar" id="cantidadMostrar" class="form-control" >
+                                    <option value="5" th:selected="${cantidadMostrar} == 5">5</option>
+                                    <option value="10" th:selected="${cantidadMostrar} == 10">10</option>
+                                    <option value="15" th:selected="${cantidadMostrar} == 15">15</option>
+                                    <option value="20" th:selected="${cantidadMostrar} == 20">20</option>
+                                    <option value="25" th:selected="${cantidadMostrar} == 25">25</option>
+                                    <option value="50" th:selected="${cantidadMostrar} == 50">50</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${errorRangoInicial}? 'has-error'">
+                                <label class="control-label">Inicio del Rango del Salario Promedio</label>
+                                <input type="number" name="rangoInicial" id="rangoInicial" class="form-control" th:value="${rangoInicial}" />
+                                <label class="error" th:if="${errorRangoInicial}" th:text="${errorRangoInicial}"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${errorRangoFinal}? 'has-error'">
+                                <label class="control-label">Fin del Rango del Salario Promedio</label>
+                                <input type="number" name="rangoFinal" id="rangoFinal" class="form-control" th:value="${rangoFinal}"/>
+                                <label class="error" th:if="${errorRangoFinal}" th:text="${errorRangoFinal}"></label>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group text-center">
+                        <button class="btn btn-primary" type="submit">Buscar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="col-lg-12" th:if="${carrerasPorSalario != null}" id="resultados-indice">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>
+                    Resultados del indice
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content">
+                <div class="alert alert-info alert-dismissable" th:if="${carrerasPorSalario.size()} != 0">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    Se han encontrado los siguientes resultados para tu b&uacute;squeda para el A&ntilde;o <strong th:text="${anio}"></strong>, Orden
+                    <strong th:if="${orden} == 1" >M&aacute;s demandadas primero</strong>
+                    <strong th:if="${orden} == 2" >Menos demandadas primero</strong>, con Salario con rango entre
+                    <strong th:text="${rangoInicial}" ></strong> y <strong th:text="${rangoFinal}" ></strong>
+                </div>
+                <div class="alert alert-info alert-dismissable" th:if="${carrerasPorSalario.size()} == 0">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    No se encontraron resultados para tu busqueda
+                </div>
+
+                <table class="table table-striped table-bordered table-hover" th:if="${carrerasPorSalario.size()} != 0">
+                    <thead>
+                        <tr>
+                            <th>CARRERA</th>
+                            <th>SIN INFO</th>
+                            <th>FULL TIME</th>
+                            <th>PART TIME</th>
+                            <th>FREELANCE</th>
+                            <th>PRACTICA</th>
+                            <th>TEMPORAL</th>
+                            <th>TRAINEE</th>
+                            <th>BECA</th>
+                            <th>PRACTICA Y MEMORIA</th>
+                            <th>MEMORIA</th>
+                            <th>PROMEDIO TOTAL</th>
+                            <th>TOTAL DE OFERTAS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="carrera: ${carrerasPorSalario}">
+
+                            <!-- Lista por carrera -->
+                            <td th:each="valor: ${carrera}" th:text="${valor}">
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<th:block layout:fragment="scripts">
+
+    <script th:src="@{/js/jquery-ui-1.10.4.min.js}"></script>
+
+    <!-- ChartJS-->
+    <script th:src="@{/js/plugins/chartJs/Chart.min.js}"></script>
+
+    <script th:inline="javascript">
+        $(document).ready(function() {
+
+            $('html, body').animate({
+                scrollTop: $("#resultados-indice").offset().top
+            }, 1000);
+
+        });
+    </script>
+
+</th:block>
+
+</body>
+</html>
+

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='empresas',actualSubTemplate='registrarCompromisoEmpresa'">
+<head>
+    <title>Registrar Compromiso de Empresa</title>
+    <!--/*/
+   <th:block layout:fragment="css">
+       <link th:href="@{/css/plugins/datapicker/datepicker3.css}" rel="stylesheet"/>
+   </th:block>
+   /*/-->
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Registrar Compromiso de Empresa</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a th:href="@{#}">Empresas</a></li>
+        <li><a th:href="@{/empresas/registrar-comp}">Registrar Compromiso</a></li>
+    </ol>
+</div>
+
+
+
+<div layout:fragment="content">
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Registre el Compromiso de la Empresa
+                    <small>Para ingresar el compromiso de la empresa presione "Guardar Compromiso de Empresa".</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+
+            <div class="ibox-content" >
+
+                <form id="formGuardarUsuariosEmpresaUsmempleo" th:action="@{/empresas/registrarCompromiso}" th:object="${compromiso}" method="POST" >
+
+                    <div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
+                        <strong>Atenci&oacute;n: </strong> debes solucionar los errores marcados en rojo antes de
+                        proceder con el registro del compromiso con la empresa.
+                    </div>
+                    <div class="alert alert-danger" th:if="${empresaError!=null}">
+                        <strong>Atenci&oacute;n: </strong> Empresa vacia, favor ingresar.
+                    </div>
+
+                    <div class="alert alert-danger" th:if="${sucursalError!=null}">
+                        <strong>Atenci&oacute;n: </strong> Sucursal Invalida o Vacia, favor revisar.
+                    </div>
+
+                    <div class="alert alert-danger" th:if="${usuarioError!=null}">
+                        <strong>Atenci&oacute;n: </strong> El usuario operador ingresado no existe.
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-sm-5">
+                            <div class="form-group">
+                                <label class="control-label">Nombre Operador a Cargo(*)</label>
+                                <input type="text" id="nombreOperador" name="nombreOperador" placeholder="Nombre Operador" th:value="${nombreOperador}" class="form-control"/>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label">Nombre Empresa (*)</label>
+                                <input th:if="${empresa!=null}" th:value="${empresa.razonSocial}" type="text" id="nombreField" name="nombreEmpresa" placeholder="Nombre Empresa" class="form-control"/>
+                                <input th:if="${empresa==null}" type="text" id="nombreField" name="nombreEmpresa" placeholder="Nombre Empresa" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <label class="control-label" style="color:white">boton</label>
+                                <button type="button" id="mostrarSucursalesButton" class="btn btn-primary">Buscar Sucursales</button>
+                            </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <div id="selectSucursalesDiv" class="form-group" >
+                                <label class="control-label">Sucursal</label>
+                                <select id="selectSucursales" name="codSucursal" th:value="${codSucursal}"  class="form-control"></select>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label">Causa del Compromiso (*) </label>
+                                <select id="codOportunidad" name="codOportunidad" class="form-control" th:field="*{tipoCompromiso.codCompromiso}">
+                                    <option th:each="to: ${tipoCompromisos}" th:value="${to.codCompromiso}" th:text="${to.nomCompromiso}" ></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label">Forma de Pago (*) </label>
+                                <select id="codFormaPago" name="codFormaPago" class="form-control" th:field="*{tipoFormaPago.codFormaPago}">
+                                    <option th:each="tfp: ${tipoFormaPagos}" th:value="${tfp.codFormaPago}" th:text="${tfp.nomFormaPago}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="form-group" th:class="${#fields.hasErrors('fechaInicio')}? 'has-error'">
+                                <label class="control-label">Fecha Inicio (*)</label>
+                                <input type="text" id="fechaInicio" name="fechaInicio" class="form-control" th:field="*{fechaInicio}" placeholder="DD/MM/AAAA"/>
+                                <label class="error" th:if="${#fields.hasErrors('fechaInicio')}" th:text="${#fields.errors('*{fechaInicio}')}"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4 col-sm-offset-1">
+                            <div class="form-group" th:class="${#fields.hasErrors('fechaTermino')}? 'has-error'">
+                                <label class="control-label">Fecha Termino (*)</label>
+                                <input type="text" id="fechaTermino" class="form-control" th:field="*{fechaTermino}" placeholder="DD/MM/AAAA"/>
+                                <input type="checkbox" id="noAgendo" name="noAgendo" class="checkboxes" />No Agendo &nbsp;
+                                <input type="checkbox" id="indefinido" name="indefinido" class="checkboxes" />Indefinido
+                                <label class="error" th:if="${#fields.hasErrors('fechaTermino')}" th:text="${#fields.errors('*{fechaTermino}')}"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <div class="form-group" th:class="${#fields.hasErrors('fechaSiguienteCompromiso')}? 'has-error'">
+                                <label class="control-label">Fecha Siguiente Compromiso (*)</label>
+                                <input type="text" id="fechaSgteCompromiso" class="form-control" th:field="*{fechaSiguienteCompromiso}" placeholder="DD/MM/AAAA"/>
+                                <input type="checkbox" id="noAgendoSgte" class="checkboxes"/>No Agendo &nbsp;
+                                <label class="error" th:if="${#fields.hasErrors('fechaSiguienteCompromiso')}" th:text="${#fields.errors('*{fechaSiguienteCompromiso}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('montoComprometido')}? 'has-error'">
+                                <label class="control-label">Monto Compromiso (*)</label>
+                                <input type="number" class="form-control" th:field="*{montoComprometido}"/>   <!--th:field="*{informacionProfesional.expectativaSalarial}"/>-->
+                                <label class="error" th:if="${#fields.hasErrors('montoComprometido')}" th:text="${#fields.errors('*{montoComprometido}')}"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label">Vigencia </label>
+                                <select id="selectListVigencia" name="selectListVigencia" class="form-control" th:field="*{tipoVigencia.codVigencia}">
+                                    <option th:each="to: ${tipoVigencias}" th:value="${to.codVigencia}" th:text="${to.nomVigencia}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="form-group"  th:class="${#fields.hasErrors('comentario')}? 'has-error'"> <!-- th:class="${#fields.hasErrors('comentario')}? 'has-error'">-->
+                            <label class="col-sm-2 control-label">Acuerdos (*)</label>
+                            <div class="col-sm-10">
+                                <textarea id="comentario" name="comentario" rows="4" cols="50" class="form-control" th:field="*{comentario}"></textarea>
+                                <label class="error" th:if="${#fields.hasErrors('comentario')}" th:text="${#fields.errors('*{comentario}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group text-center">
+                        <input id="checkNoAgendoInicio" type="hidden" name="checkNoAgendoInicio" />
+                        <input id="checkIndefinido" type="hidden" name="checkIndefinido" />
+                        <input id="checkNoAgendoSgte" type="hidden" name="checkNoAgendoSgte" />
+                        <input id="idEmpresa" type="hidden" name="idEmpresa" th:value="${idEmpresa}"/>
+                        <input type="hidden" name="listaUsuariosUsmempleoEmpresaParticipantes" id="listaUsuariosUsmempleoEmpresaParticipantes" th:value="${usuariosUsmempleoEmpresaParticipantes}"/>
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                        <input type="submit" class="btn btn-primary"  value="Guardar Compromiso Con Empresa"/>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+    <script th:src="@{/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
+    <script th:inline="javascript">
+
+        $(document).ready(function() {
+            agregarOpcionesAUsuariosSeleccionadosCasoErrorEnFormulario();
+            $('#indefinido').attr('checked', false);
+            $('#noAgendo').attr('checked', false);
+            $('#noAgendoSgte').attr('checked', false);
+            $('#checkIndefinido').val(false);
+            $('#checkNoAgendoInicio').val(false);
+            $('#checkNoAgendoSgte').val(false);
+            $('#noAgendo').change(function () {
+                if($('#checkNoAgendoInicio').val()=="true") $('#checkNoAgendoInicio').val(false)
+                else $('#checkNoAgendoInicio').val(true)
+                $("#indefinido").prop('checked', false);
+                $('#fechaTermino').val("");
+            });
+            $('#indefinido').change(function () {
+                if($('#checkIndefinido').val()=="true"){
+                    $('#checkIndefinido').val(false);
+                    $('#checkNoAgendoInicio').val(true);
+                }
+                else{
+                    $('#checkIndefinido').val(true);
+                    $('#checkNoAgendoInicio').val(false);
+                }
+                $("#noAgendo").prop('checked', false);
+                $('#fechaTermino').val("");
+            });
+            $('#noAgendoSgte').change(function () {
+                if($('#checkNoAgendoSgte').val()=="true") $('#checkNoAgendoSgte').val(false);
+                else $('#checkNoAgendoSgte').val(true);
+                $('#fechaSgteCompromiso').val("");
+            });
+            $('#fechaSgteCompromiso').change(function () {
+                $("#noAgendoSgte").prop('checked', false);
+                $('#checkNoAgendoSgte').val(false);
+            });
+            $('#fechaTermino').change(function () {
+                $("#noAgendo").prop('checked', false);
+                $("#indefinido").prop('checked', false);
+                $('#checkNoAgendoInicio').val(false)
+                $('#checkIndefinido').val(false);
+            });
+        });
+
+        $('input[type=radio][name=tipoBusqueda]').change(function() {
+            if (this.value == 'empresa') {
+                $("#valorBuscado").val("");
+                $('#nombreTipoBusqueda').text("Nombre empresa");
+            }
+            else if (this.value == 'usuario'){
+                $("#valorBuscado").val("");
+                $('#nombreTipoBusqueda').text("Nombre usuario");
+            }
+        });
+
+        $(function() {
+            $("#valorBuscado").autocomplete({
+                minLength:3,
+                source: function (request, response) {
+                    if ($('input:radio[name=tipoBusqueda]').filter(":checked").val() == "empresa") {
+                        $.getJSON("/opciones/empresasActividadExalumno", {
+                                    term: request.term
+                                },
+                                response);
+                    }else if($('input:radio[name=tipoBusqueda]').filter(":checked").val() == "usuario"){
+                        $.getJSON("/opciones/usuariosEmpresa", {
+                                    term: request.term
+                                },
+                                response);
+                    }
+                }
+            });
+        });
+
+
+        $("#formUsuarioUsmempleoEmpresa").submit(function() {
+            var $form = $(this);
+            $.ajax({
+                type: "GET",
+                data: $form.serialize(),
+                url: "/empresas/buscarUsuarioUsmempleoEmpresa",
+                success: function (response) {
+                    $('#tableUsuariosUsmempleoEmpresaASeleccionar tbody').empty();
+
+                    $.each(response, function (index, value) {
+                        var valor = value.id + '|' + value.usuarioEmpresaUsmempleo.nombreCompleto +  '|' + value.usuarioEmpresaUsmempleo.cargo +  '|' + value.empresa.razonSocial;
+
+                        var fila = '<tr>' +
+                                '<td>' + '<input type="checkbox" id="checkboxUsuario" name="checkboxUsuario" value="' + valor + '"/> '  + '</td>' +
+                                '<td>' + value.usuarioEmpresaUsmempleo.nombreCompleto + '</td>' +
+                                '<td>' + '<a href="/empresa/ '+ value.empresa.id +' "> '+ value.empresa.razonSocial +' </a>' + '</td>' +
+                                '<td>' + value.usuarioEmpresaUsmempleo.cargo + '</td>' +
+                                '<td>' + value.usuarioEmpresaUsmempleo.fono + '</td>' +
+                                '<td>' + value.usuarioEmpresaUsmempleo.email + '</td>' +
+                                '</tr>';
+
+                        $('#tableUsuariosUsmempleoEmpresaASeleccionar tbody').append(fila);
+
+                    });
+
+                }
+            });
+            return false;
+        });
+
+
+
+
+        function agregarOpcionesAUsuariosSeleccionados() {
+
+            $('input:checkbox[name=checkboxUsuario]:checked').each(function()
+            {
+                var datos = $(this).val().split("|");
+                var id = datos[0];
+                var nombreCompleto = datos[1];
+                var cargo = datos[2];
+                var nombreEmpresa = datos[3];
+
+                var numeroExistentes = $('#selectListUsuariosUsmempleoEmpresa option[value="'+ $(this).val() +'"]').length;
+
+                if ( numeroExistentes == 0 ) {
+                    $('#selectListUsuariosUsmempleoEmpresa').append('<option id="opcionListUsuariosEmpresaUsmempleo" value="' + $(this).val() +'"> ' + nombreCompleto + " - " + cargo + " - " + nombreEmpresa +'</option>');
+                    $('#selectListUsuariosUsmempleoEmpresa').prop("size", $('#selectListUsuariosUsmempleoEmpresa option').length );
+                    $('#nombreFantasiaEmpresa').append(nombreEmpresa);
+                    $('#nombreFantasiaEmpresa').val(nombreEmpresa);
+                    $('#nombreField').append(nombreEmpresa);
+                    $('#nombreField').val(nombreEmpresa);
+
+                    $('#listaUsuariosUsmempleoEmpresaParticipantes').val( $('#listaUsuariosUsmempleoEmpresaParticipantes').val() + $(this).val() + ";" );
+                }
+            });
+        }
+
+
+        function eliminarOpciones() {
+            var idAuxiliar = "";
+
+            var usuarioSeleccionadoEliminar = $( "#selectListUsuariosUsmempleoEmpresa option:selected").val();
+            console.log(usuarioSeleccionadoEliminar);
+            $('#selectListUsuariosUsmempleoEmpresa option[value="'+ usuarioSeleccionadoEliminar +'"]').remove();
+
+            $( "#selectListUsuariosUsmempleoEmpresa option").each(function()
+            {
+                console.log($(this).val());
+                idAuxiliar = idAuxiliar + $(this).val() + ";";
+            });
+
+            $('#listaUsuariosUsmempleoEmpresaParticipantes').val(idAuxiliar);
+        }
+
+
+
+        function agregarOpcionesAUsuariosSeleccionadosCasoErrorEnFormulario() {
+
+            var datosTodosUsuarios = $('#listaUsuariosUsmempleoEmpresaParticipantes').val().split(";");
+
+            $.each(datosTodosUsuarios,function( index, value ) {
+
+                if ( value.length != 0 ) {
+                    var datos = value.split("|");
+
+                    var id = datos[0];
+                    var nombreCompleto = datos[1];
+                    var cargo = datos[2];
+                    var nombreEmpresa = datos[3];
+
+
+                    $('#selectListUsuariosUsmempleoEmpresa').append('<option id="opcionListUsuariosEmpresaUsmempleo" value="' + value + '"> ' + nombreCompleto + " - " + cargo + " - " + nombreEmpresa + '</option>');
+                    $('#selectListUsuariosUsmempleoEmpresa').prop("size", $('#selectListUsuariosUsmempleoEmpresa option').length);
+                }
+            });
+        }
+
+        $('#mostrarSucursalesButton').click(function (){
+            mostrarSucursalesEmpresas();
+        });
+
+        var mostrarSucursalesEmpresas = function(){
+            var arr = $('#nombreField').val().split("- RUT") ;
+            var empresa = arr[0];
+            var selectSucursales = $('#selectSucursales');
+            selectSucursales.empty();
+            $.ajax({
+                url: '/empresa/'+empresa+'/nombres-sucursales',
+                method: 'GET',
+                success: function(response) {
+                    if(response == undefined || response == null){
+                        alert("La empresa '"+$('#nombreField').val()+"' no existe o no posee sucursales.");
+                    }else {
+                        $.each(response, function (index, value) {
+                            selectSucursales.append($('<option></option>').attr('value', value.sucursalCodigo).text(value.sucSucursal));
+                        });
+                        $('#selectSucursalesDiv').show();
+                    }
+                }
+            });
+        }
+
+        $('#selectSucursalesDiv').hide();
+
+        $(function() {
+            $("#nombreOperador").autocomplete({
+                minLength:3,
+                source: function (request, response) {
+                    $.getJSON("/opciones/usuarios", {
+                                term: request.term
+                            },
+                            response);
+                }
+            });
+        });
+
+        $(function() {
+            $("#nombreField").autocomplete({
+                minLength:3,
+                source: function (request, response) {
+                    $.getJSON("/opciones/empresas", {
+                                term: request.term
+                            },
+                            response);
+                }
+            });
+        });
+
+        $(function(){
+            $.fn.datepicker.dates['es'] = {
+                days: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+                daysShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
+                daysMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa", "Do"],
+                months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+                monthsShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+                today: "Hoy"
+            };
+            $('#fechaInicio').datepicker({
+                format: 'dd/mm/yyyy',
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                language: "es"
+            });
+            $('#fechaTermino').datepicker({
+                format: 'dd/mm/yyyy',
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                language: "es"
+            });
+            $('#fechaSgteCompromiso').datepicker({
+                format: 'dd/mm/yyyy',
+                //dateFormat: 'mm/dd/yyyy',
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                language: "es"
+            });
+        });
+
+    </script>
+
+</th:block>
+
+
+
+
+
+</body>
+</html>
+

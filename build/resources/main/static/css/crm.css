@@ -1,0 +1,62 @@
+/* AQUI DEBEN AGREGAR TODOS LOS ESTILOS QUE DEFINIRAN UDS. EN EL SISTEMA */
+
+.top-navigation {
+    margin-bottom: 0;
+}
+
+.img-perfil-usuario {
+    width:150px;
+}
+
+.img-user {
+    width:48px;
+    height: 48px;
+}
+
+/* EDITAR USUARIO */
+.rut-form {
+    padding-left: 0px;
+}
+
+.rut-form > input {
+    width: 40px;
+}
+/* FIN EDITAR USUARIO */
+
+/*ICONOS DE FLASH ATTRIBUTES*/
+
+#toast-container > .toast {
+    background-image: none !important;
+}
+
+#toast-container > .toast:before {
+    position: fixed;
+    font-family: FontAwesome;
+    font-size: 24px;
+    line-height: 18px;
+    float: left;
+    color: #FFF;
+    padding-right: 0.5em;
+    margin: auto 0.5em auto -1.5em;
+}
+#toast-container > .toast-warning:before {
+    content: "\f071";
+}
+#toast-container > .toast-error:before {
+    content: "\f00d";
+}
+#toast-container > .toast-info:before {
+    content: "\f05a";
+}
+#toast-container > .toast-success:before {
+    content: "\f00c";
+}
+
+/* FIN ICONOS DE FLASH ATTRIBUTES */
+
+.button-empty {
+    background:none!important;
+    border:none;
+    padding:0!important;
+    cursor: pointer;
+}

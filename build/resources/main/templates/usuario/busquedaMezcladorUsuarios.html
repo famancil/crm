@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='usuarios',actualSubTemplate='buscarUsuariosRepetidos'">
+<head>
+    <title>Mezclador Usuarios</title>
+
+    <!--/*/
+    <th:block layout:fragment="css">
+        <link th:href="@{/css/jQueryUI/jquery-ui-1.10.4.custom.min.css}" rel="stylesheet"/>
+    </th:block>
+    /*/-->
+
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2></h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li>Usuarios</li>
+        <li><a th:href="@{/busquedas/mezclador}">Buscar Usuarios Repetidos</a></li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>B&uacute;squeda de usuarios
+                    <small>Puede seleccionar el criterio de b&uacute;squeda con el cual buscar los Usuarios duplicados.</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+            <div class="ibox-content" style="padding-bottom: 5px;">
+
+                <form th:action="@{/busquedas/mezclador/resultados}" method="get" class="form-horizontal">
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Criterio Busqueda</label>
+                        <div class="col-sm-10">
+                            <div class="radio" >
+                                <ul>
+                                    <li><label > <input type="radio" id="criterio" name="criterio" value="email" th:checked="${criterio=='email'}"/> Email </label></li>
+                                    <li><label > <input type="radio" id="criterio" name="criterio" value="nombreYApellido" th:checked="${criterio=='nombreYApellido'}"/> Nombres y Apellidos </label></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group text-center">
+                        <input type="hidden" th:name="pagina" th:value="1"/>
+                        <button class="btn btn-primary" type="submit">Buscar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-lg-12" th:if="${usuarios != null}">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>
+                    Resultados de la b&uacute;squeda
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content">
+
+                <div class="alert alert-info alert-dismissable">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    Se han encontrado <strong th:text="${usuarios.getTotalElements()}">0</strong> resultados para tu
+                    b&uacute;squeda por
+                    <strong th:if="${criterio=='rut'}">Rut</strong>
+                    <strong th:if="${criterio=='email'}">Email</strong>
+                    <strong th:if="${criterio=='nombreYApellido'}">Nombres y Apellidos</strong>
+                </div>
+
+                <table class="table table-hover">
+                    <thead>
+                        <tr th:if="${criterio=='rut'}">
+                            <th>Rut</th>
+                            <th>Cantidad</th>
+                            <th>Mezclar</th>
+                        </tr>
+                        <tr th:if="${criterio=='email'}">
+                            <th>Email</th>
+                            <th>Cantidad</th>
+                            <th>Mezclar</th>
+                        </tr>
+                        <tr th:if="${criterio=='nombreYApellido'}">
+                            <th>Nombres</th>
+                            <th>Apellido Paterno</th>
+                            <th>Apellido Materno</th>
+                            <th>Cantidad</th>
+                            <th>Mezclar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="datosUsuario, iterStat : ${usuarios}">
+                            <td th:each="dato : ${datosUsuario}">
+                                <p th:text="${dato}" th:if="${dato!=null} and ${criterio=='rut'}"></p>
+                                <p th:text="${dato}" th:if="${dato!=null} and ${criterio=='email'}"></p>
+                                <p th:text="${dato}" th:if="${dato!=null} and ${criterio=='nombreYApellido'}"></p>
+                            </td>
+                            <td>
+                                <a class="btn btn-info btn-xs"
+                                   th:if="${criterio=='rut'} and ${datosUsuario[1] == 2}"
+                                   th:href="@{/usuario/mezclar(criterio=${criterio},valor=${datosUsuario[0]})}"> <i class="fa fa-random"></i> Mezclar </a>
+                                <a class="btn btn-info btn-xs"
+                                   th:if="${criterio=='email'} and ${datosUsuario[1] == 2}"
+                                   th:href="@{/usuario/mezclar(criterio=${criterio},valor=${datosUsuario[0]})}">
+                                    <i class="fa fa-random"></i> Mezclar </a>
+                                <a class="btn btn-primary btn-xs"
+                                   th:if="${criterio=='nombreYApellido'} and ${datosUsuario[3] == 2}"
+                                   th:href="@{/usuario/mezclar(criterio=${criterio},valor=${datosUsuario[0]}, paterno=${datosUsuario[1]}, materno=${datosUsuario[2]})}">
+                                    <i class="fa fa-random"></i> Mezclar </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="row">
+                    <div class="col-md-6 text-left">
+                        <p th:text="|Total encontrados: ${usuarios.getTotalElements()}|"></p>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <p th:text="|P&aacute;gina ${usuarios.getNumber() + 1} de ${usuarios.getTotalPages()}|"></p>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <ul class="pagination">
+                        <li class="disabled" th:if="${currentIndex == 1}"><a href="#">&lt;&lt;</a></li>
+                        <li class="disabled" th:if="${currentIndex == 1}"><a href="#">&lt;</a></li>
+                        <li th:if="${currentIndex != 1}">
+                            <a th:href="@{/busquedas/mezclador/resultados(criterio=${criterio},pagina=1)}">&lt;&lt;</a>
+                        </li>
+                        <li th:if="${currentIndex != 1}">
+                            <a th:href="@{/busquedas/mezclador/resultados(criterio=${criterio},pagina=${currentIndex-1})}">&lt;</a>
+                        </li>
+                        <li th:each="i : ${#numbers.sequence( beginIndex, endIndex)}" th:class="${i == currentIndex}? 'active'">
+                            <a th:text="${i}" th:href="@{/busquedas/mezclador/resultados(criterio=${criterio},pagina=${i})}"></a>
+                        </li>
+                        <li class="disabled" th:if="${currentIndex == usuarios.getTotalPages()}"><a href="#">&gt;</a></li>
+                        <li class="disabled" th:if="${currentIndex == usuarios.getTotalPages()}"><a href="#">&gt;&gt;</a></li>
+                        <li><a th:href="@{/busquedas/mezclador/resultados(criterio=${criterio},pagina=${currentIndex+1})}" th:if="${currentIndex != usuarios.totalPages}">&gt;</a></li>
+                        <li><a th:href="@{/busquedas/mezclador/resultados(criterio=${criterio},pagina=${usuarios.getTotalPages()})}" th:if="${currentIndex != usuarios.totalPages}">&gt;&gt;</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+
+    <script th:src="@{/js/jquery-ui-1.10.4.min.js}"></script>
+</th:block>
+
+</body>
+</html>

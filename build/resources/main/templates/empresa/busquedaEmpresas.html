@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='empresas',actualSubTemplate='buscarEmpresas'">
+<head>
+    <title>Busqueda Empresas</title>
+
+    <!--/*/
+    <th:block layout:fragment="css">
+        <link th:href="@{/css/jQueryUI/jquery-ui-1.10.4.custom.min.css}" rel="stylesheet"/>
+    </th:block>
+    /*/-->
+
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Busqueda de Empresas</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a th:href="@{/busquedas/empresas}">Empresas</a></li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Busqueda de Empresas
+                    <small>Ingrese los criterios que desee buscar y presione "Buscar".</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content">
+                <form id="formBusqueda" action="#" th:action="@{/busquedas/empresas/resultados}" method="get" class="form-horizontal">
+                    <div class="row">
+                        <div class="col-sm-4 col-sm-offset-1">
+                            <div class="form-group">
+                                <label class="control-label">Identificador</label>
+                                <div id="rutEmpresa">
+                                    <input id="rut" name="rut" class="form-control" type="text" th:value="${empresa.rutEmpresa}" placeholder="RUT Nacional"/>
+                                </div>
+                                <div id="idExtranjera">
+                                    <input id="idExt" name="idExt" class="form-control" type="text" th:value="${empresa.idEmpresaExtranjera}" placeholder="ID Empresa"/>
+                                </div>
+                                <label><input type="radio" id="nacional" name="idRadio" value="nacional" checked="true"/>RUT Nacional</label>
+                                <label><input type="radio" id="extranjera" name="idRadio" value="extranjera" />ID Extranjero</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-sm-offset-1">
+                            <div class="form-group">
+                                <label class="control-label">Pa&iacute;s</label>
+                                <select name="pais" id="pais" class="form-control">
+                                    <option th:value="${0}" th:selected="${empresa.pais == null}">Todos</option>
+                                    <option th:each="pais: ${paises}" th:selected="${empresa.pais.id == pais.id}" th:value="${pais.id}" th:text="${pais.nombre}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-4 col-sm-offset-1">
+                            <div class="form-group">
+                                <label class="control-label">Nombre</label>
+                                <input id="nombre" name="nombre" type="text" th:value="${empresa.nombreFantasiaEmpresa}" placeholder="Nombre" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-sm-offset-1">
+                            <div class="form-group">
+                                <label class="control-label">Giro</label>
+                                <input id="giro" name="giro" type="text" th:value="${empresa.giroEmpresa}" placeholder="Giro" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-4 col-sm-offset-1">
+                            <div class="form-group">
+                                <label class="control-label">Sector</label>
+                                <select id="sector" name="sector" class="form-control">
+                                    <option th:value="${-1}" th:selected="${empresa.sector == null}">Todos</option>
+                                    <option th:each="sector: ${sectores}" th:selected="${empresa.sector.codigo == sector.codigo}" th:value="${sector.codigo}" th:text="${sector.nombre}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-sm-offset-1">
+                            <div class="form-group">
+                                <label class="control-label">Nivel de Facturacion</label>
+                                <select id="facturacion" name="facturacion" class="form-control">
+                                    <option th:value="${0}" th:selected="${empresa.nivelFacturacion == null}">Todas</option>
+                                    <option th:each="facturacion: ${facturaciones}" th:selected="${empresa.nivelFacturacion.codNivelFacturacion == facturacion.codNivelFacturacion}" th:value="${facturacion.codNivelFacturacion}" th:text="${facturacion.nomNivelFacturacion}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-2 col-sm-offset-1">
+                            <div class="form-group">
+                                <label class="control-label">Headhunter</label>
+                                <select class="form-control" id="esHeadHunter" name="esHeadHunter">
+                                    <option value="0" th:selected="${esHeadHunter == null or esHeadHunter == '0'}">Todas</option>
+                                    <option value="1" th:selected="${esHeadHunter == '1'}">Sólo HeadHunters</option>
+                                    <option value="2" th:selected="${esHeadHunter == '2'}">Sólo No HeadHunters</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-3 col-sm-offset-1">
+                            <div class="form-group">
+                                <label class="control-label">Empresa Premium</label>
+                                <select class="form-control" id="empresaPremium" name="empresaPremium">
+                                    <option value="0" th:selected="${empresaPremium == null or empresaPremium == '0'}">Todas</option>
+                                    <option value="1" th:selected="${empresaPremium == '1'}">Sólo Empresas Premium</option>
+                                    <option value="2" th:selected="${empresaPremium == '2'}">Sólo Empresas No Premium</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 col-sm-offset-1">
+                            <div class="form-group">
+                                <label class="control-label">Logo</label>
+                                <select class="form-control" id="tieneLogo" name="tieneLogo">
+                                    <option value="0" th:selected="${tieneLogo == null or tieneLogo == '0'}">Todas</option>
+                                    <option value="1" th:selected="${tieneLogo == '1'}">Con Logo</option>
+                                    <option value="2" th:selected="${tieneLogo == '2'}">Sin Logo</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-4 col-sm-offset-1">
+                            <div class="form-group">
+                                <label class="control-label">Numero de empleados</label>
+                                <div class="row">
+                                    <div class="col-sm-5">
+                                        <select class="form-control" id="critNumEmpleados" name="critNumEmpleados">
+                                            <option value="0" th:selected="${critNumEmpleados == null or critNumEmpleados == '0'}">Igual a</option>
+                                            <option value="1" th:selected="${critNumEmpleados == '1'}">Menor a</option>
+                                            <option value="2" th:selected="${critNumEmpleados == '2'}">Mayor a</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-7">
+                                        <input id="numEmpleados" name="numEmpleados" th:value="${empresa.numEmpleados}" class="form-control" type="number"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-sm-offset-1">
+                            <div class="form-group">
+                                <label class="control-label">Numero de contratos anuales</label>
+                                <div class="row">
+                                    <div class="col-sm-5">
+                                        <select class="form-control" id="critNumContratAnu" name="critNumContratAnu">
+                                        <option value="0" th:selected="${critNumContratAnu == null or critNumContratAnu == '0'}">Igual a</option>
+                                        <option value="1" th:selected="${critNumContratAnu == '1'}">Menor a</option>
+                                        <option value="2" th:selected="${critNumContratAnu == '2'}">Mayor a</option>
+                                    </select>
+                                    </div>
+                                    <div class="col-sm-7">
+                                        <input id="numContratAnu" name="numContratAnu" th:value="${empresa.numContratAnu}" class="form-control" type="number"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-2 col-sm-offset-1">
+                            <div class="form-group">
+                                <label class="control-label">Cargo</label>
+                                <div class="row">
+                                    <div class="col-sm-11">
+                                        <input type="text" id="cargo" name="cargo" placeholder="Cargo" class="form-control"/>
+                                        <!--<select class="form-control" id="cargo" name="cargo">
+                                            <option value="" >Todos</option>
+                                            <option value="Gerente">Gerente</option>
+                                            <option value="RRHH"> Recursos Humanos</option>
+                                        </select>-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3 col-sm-offset-1">
+                            <div class="form-group">
+                                <label class="control-label">Operador Call Center</label>
+                                <input type="text" id="operador" name="operador" placeholder="Nombre Operador" th:value="${operador}" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 col-sm-offset-1">
+                            <div class="form-group">
+                                <label class="control-label">Tipo Compromiso</label>
+                                <div class="row">
+                                    <div class="col-sm-11">
+                                        <select size="1" id="oportunidad" class="form-control" title="" type="select" name="oportunidad" >
+                                            <option value="">Todas</option>
+                                            <option value="Donacion">Donación</option>
+                                            <option value="Auspicio">Auspicio</option>
+                                            <option value="Venta de Servicios">Venta de Servicios</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-4 col-sm-offset-1">
+                            <div id="realizado"  class="form-group"  style="display: none;" name="realizado" onchange="ChangeDropdowns(this.value)">
+                                <label>Pago Realizado?</label>
+                                <select id="listRealizado" name="listRealizado" class="form-control">
+                                    <option value="Si">Si</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-sm-offset-1">
+                            <div id="vigente"  class="form-group"  style="display: none;" name="vigente" onchange="ChangeDropdowns(this.value)">
+                                <label>Compromiso Vigente?</label>
+                                <select id="listVigente" name="listVigente" class="form-control">
+                                    <option value="Si">Si</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-2 col-sm-offset-1">
+                            <div class="form-group">
+                                <label class="control-label">Contacto con Empresa</label>
+                                <select class="form-control" id="contactoEmpresa" name="contactoEmpresa">
+                                    <option value="">Todas</option>
+                                    <option value="Contactada">Contactada</option>
+                                    <option value="No Contactada">No Contactada</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group text-center">
+                        <input type="hidden" th:name="pagina" th:value="1"/>
+                        <button onclick="submitFormBusqueda()" class="btn btn-primary" type="button">Buscar</button>
+                        <input class="btn btn-white" type="reset" value="Borrar campos" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-13" th:if="${empresas != null}">
+        <div class="ibox float-e-margins" id="resultados_busqueda">
+            <div class="ibox-title">
+                <h5>
+                    Resultados de la b&uacute;squeda
+                    <small>Para ver la ficha de una empresa haz click sobre su nombre.</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content">
+
+                <div class="alert alert-info alert-dismissable">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    Se han encontrado <strong th:text="${empresas.getTotalElements()}">0</strong> resultados para tu
+                    b&uacute;squeda.
+                </div>
+
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Logo</th>
+                        <th>Nombre</th>
+                        <th>Rut/ID</th>
+                        <th>Sucursales</th>
+                        <th>Ofertas</th>
+                        <th th:if="${cargo.compareTo('')!=0}" th:text="${cargo}"></th>
+                        <th th:if="${cargo.compareTo('')==0}">Publicadores</th>
+                        <th th:if="${empleados==null}">Usuarios</th>
+                        <th>Sector</th>
+                        <th>Nacionalidad</th>
+                        <th>Headhunter</th>
+                        <th th:if="${empleados!=null}">Empleados</th>
+                        <th>Premium</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="emp : ${empresas}">
+                        <td><a th:href="@{/empresa/{id}(id=${emp.id})}" th:if="${emp.logo==true}">
+                            <img th:src="'http://empleos.sansanos.cl/data/empresas/logos/'+*{emp.id}+'_100.jpg'" height="40" width="40"/>
+                        </a>
+                            <a th:href="@{/empresa/{id}(id=${emp.id})}" th:if="${emp.logo==false}">
+                                <img th:src="'http://empleos.sansanos.cl/resources/images/NoImagen.jpg'" height="40" width="40"/>
+                            </a>
+                        </td>
+
+                        <td th:switch="${emp.razonSocial}">
+                            <a th:case="null" th:href="@{/empresa/{id}(id=${emp.id})}" th:text="${emp.nombreFantasiaEmpresa}"></a>
+                            <a th:case="empty" th:href="@{/empresa/{id}(id=${emp.id})}" th:text="${emp.nombreFantasiaEmpresa}"></a>
+                            <a th:case="''" th:href="@{/empresa/{id}(id=${emp.id})}" th:text="${emp.nombreFantasiaEmpresa}"></a>
+                            <a th:case="' '" th:href="@{/empresa/{id}(id=${emp.id})}" th:text="${emp.nombreFantasiaEmpresa}"></a>
+                            <a th:case="*" th:href="@{/empresa/{id}(id=${emp.id})}" th:text="${emp.razonSocial}"></a>
+                        </td>
+
+                        <td>
+                            <span th:if="${emp.rutEmpresa!=null}">
+                                <span th:text="${emp.rutEmpresa}"></span>
+                            </span>
+                            <span th:if="${emp.idEmpresaExtranjera!=null}">
+                                <span th:text="${emp.idEmpresaExtranjera}"></span>
+                            </span>
+                        </td>
+
+                        <td>
+                            <a th:if="${emp.cantidadSucursales!=null}">
+                                <a th:href="@{/empresa/{idEmpresa}/sucursales(idEmpresa=${emp.id})}" th:text="${emp.cantidadSucursales}"></a>
+                            </a>
+                        </td>
+
+                        <td>
+                            <span th:if="${emp.cantidadOfertas!=null}">
+                                <span th:text="${emp.cantidadOfertas}"></span>
+                            </span>
+                        </td>
+
+                        <td>
+                            <span th:if="${emp.cantidadPublicadores!=null}">
+                                <span th:text="${emp.cantidadPublicadores}"></span>
+                            </span>
+                        </td>
+
+                        <td th:if="${empleados==null}">
+                            <span th:if="${emp.cantidadUsuarios!=null}">
+                                <span th:text="${emp.cantidadUsuarios}"></span>
+                            </span>
+                        </td>
+
+                        <td>
+                            <span th:if="${emp.sector!=null}">
+                                <span th:text="${emp.sector.nombre}"></span>
+                            </span>
+                        </td>
+
+                        <td>
+                            <span th:if="${emp.pais!=null}">
+                                <span th:text="${emp.pais.nombreNacionalidad}"></span>
+                            </span>
+                        </td>
+
+                        <td>
+                            <span th:if="${emp.headHunter==true}">
+                                <span th:text="SI"></span>
+                            </span>
+                            <span th:if="${emp.headHunter==false}">
+                                <span th:text="NO"></span>
+                            </span>
+                        </td>
+
+                        <td th:if="${empleados!=null}">
+                            <span th:each="empl : ${empleados}">
+                                <span th:if="${empl.empresa.nombreFantasiaEmpresa == emp.nombreFantasiaEmpresa}" th:text="${empl.empresa.nombreFantasiaEmpresa}"></span>
+                            </span>
+                            <span th:if="${empleados==null}">
+                                <span th:text="NO hay ni una persona"></span>
+                            </span>
+                        </td>
+
+                        <td>
+                            <form action="#" th:action="@{/empresa/{idEmpresa}/cambiarPremiumEmpresa(idEmpresa=${emp.id})}" method="post" >
+                                <input type="hidden" name="idEmpresa" th:value="${emp.id}" />
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <a th:if="${emp.premiumEmpresa==true}">
+                                <input class="button-empty" type="submit" onClick="return confirm('¿Seguro que desea cambiar empresa a NO Premium?')" th:value="'SI'"/>
+                            </a>
+                            <a th:if="${emp.premiumEmpresa==false}">
+                                <input class="button-empty" type="submit" onClick="return confirm('¿Seguro que desea cambiar empresa a Premium?')" th:value="'NO'"/>
+                            </a>
+                            </form>
+                        </td>
+                        <td>
+                            <lu><a class="btn btn-info btn-xs" th:href="@{/empresa/{id}(id=${emp.id})}"><i class="fa fa-search"></i> Ver</a></lu>
+                            <lu><a class="btn btn-primary btn-xs" th:href="@{/empresa/{id}/modificar(id=${emp.id})}"><i class="fa fa-pencil-square-o"></i> Modificar</a></lu>
+                            <a class="btn btn-success btn-xs" th:href="@{/empresa/{id}/sucursal/registrar(id=${emp.id})}"><i class="fa fa-plus"></i> Sucursal</a>
+                        </td>
+                    </tr>
+                    <tr th:if="${empresas.getTotalElements()==0}"><td colspan="12" style="color:gray" align="center">NO SE HAN ENCONTRADO RESULTADOS</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="row">
+                    <div class="col-md-6 text-left">
+                        <p th:text="|Total encontrados: ${empresas.getTotalElements()}|"></p>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <p th:if="${empresas.getTotalPages() != 0}" th:text="|P&aacute;gina ${empresas.getNumber()} de ${empresas.getTotalPages()}|"></p>
+                        <p th:if="${empresas.getTotalPages() == 0}" th:text="|P&aacute;gina 1 de 1|"></p>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <ul class="pagination">
+                        <li class="disabled" th:if="${currentIndex == 1}"><a href="#">&lt;&lt;</a></li>
+                        <li class="disabled" th:if="${currentIndex == 1}"><a href="#">&lt;</a></li>
+                        <li th:if="${currentIndex != 1}">
+                            <a th:href="@{/busquedas/empresas/resultados(rut=${rut},idExt=${idExtranjero},pais=${pais},nombre=${nombre},giro=${giro},sector=${sector},facturacion=${facturacion},esHeadHunter=${esHeadHunter},empresaPremium=${empresaPremium},tieneLogo=${tieneLogo},critNumEmpleados=${critNumEmpleados},numEmpleados=${numEmpleados},critNumContratAnu=${critNumContratAnu},numContratAnu=${numContratAnu},pagina=1,cargo=${cargo},operador=${operador},oportunidad=${oportunidad},listRealizado=${listRealizado},listVigente=${listVigente},contactoEmpresa=${contactoEmpresa})}">&lt;&lt;</a>
+                        </li>
+                        <li th:if="${currentIndex != 1}">
+                            <a th:href="@{/busquedas/empresas/resultados(rut=${rut},idExt=${idExtranjero},pais=${pais},nombre=${nombre},giro=${giro},sector=${sector},facturacion=${facturacion},esHeadHunter=${esHeadHunter},empresaPremium=${empresaPremium},tieneLogo=${tieneLogo},critNumEmpleados=${critNumEmpleados},numEmpleados=${numEmpleados},critNumContratAnu=${critNumContratAnu},numContratAnu=${numeroContratAnu},pagina=${currentIndex-1},cargo=${cargo},operador=${operador},oportunidad=${oportunidad},listRealizado=${listRealizado},listVigente=${listVigente},contactoEmpresa=${contactoEmpresa})}">&lt;</a>
+                        </li>
+                        <li th:each="i : ${#numbers.sequence( beginIndex, endIndex)}" th:class="${i == currentIndex}? 'active'">
+                            <a th:if="${i!=0}" th:text="${i}" th:href="@{/busquedas/empresas/resultados(rut=${rut},idExt=${idExtranjero},pais=${pais},nombre=${nombre},giro=${giro},sector=${sector},facturacion=${facturacion},esHeadHunter=${esHeadHunter},empresaPremium=${empresaPremium},tieneLogo=${tieneLogo},critNumEmpleados=${critNumEmpleados},numEmpleados=${numEmpleados},critNumContratAnu=${critNumContratAnu},numContratAnu=${numeroContratAnu},pagina=${i},cargo=${cargo},operador=${operador},oportunidad=${oportunidad},listRealizado=${listRealizado},listVigente=${listVigente},contactoEmpresa=${contactoEmpresa})}"></a>
+                        </li>
+                        <li class="disabled" th:if="${currentIndex == empresas.getTotalPages() || empresas.getTotalPages() == 0}"><a href="#">&gt;</a></li>
+                        <li class="disabled" th:if="${currentIndex == empresas.getTotalPages() || empresas.getTotalPages() == 0}"><a href="#">&gt;&gt;</a></li>
+                        <li><a th:href="@{/busquedas/empresas/resultados(rut=${rut},idExt=${idExtranjero},pais=${pais},nombre=${nombre},giro=${giro},sector=${sector},facturacion=${facturacion},esHeadHunter=${esHeadHunter},empresaPremium=${empresaPremium},tieneLogo=${tieneLogo},critNumEmpleados=${critNumEmpleados},numEmpleados=${numEmpleados},critNumContratAnu=${critNumContratAnu},numContratAnu=${numeroContratAnu},pagina=${currentIndex+1},cargo=${cargo},operador=${operador},oportunidad=${oportunidad},listRealizado=${listRealizado},listVigente=${listVigente},contactoEmpresa=${contactoEmpresa})}" th:if="${currentIndex != empresas.getTotalPages() and empresas.getTotalPages() != 0}">&gt;</a></li>
+                        <li><a th:href="@{/busquedas/empresas/resultados(rut=${rut},idExt=${idExtranjero},pais=${pais},nombre=${nombre},giro=${giro},sector=${sector},facturacion=${facturacion},esHeadHunter=${esHeadHunter},empresaPremium=${empresaPremium},tieneLogo=${tieneLogo},critNumEmpleados=${critNumEmpleados},numEmpleados=${numEmpleados},critNumContratAnu=${critNumContratAnu},numContratAnu=${numeroContratAnu},pagina=${empresas.getTotalPages()},cargo=${cargo},operador=${operador},oportunidad=${oportunidad},listRealizado=${listRealizado},listVigente=${listVigente},contactoEmpresa=${contactoEmpresa})}" th:if="${currentIndex != empresas.getTotalPages() and empresas.getTotalPages() != 0}">&gt;&gt;</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<th:block layout:fragment="scripts">
+
+    <script th:src="@{/js/jquery-ui-1.10.4.min.js}"></script>
+    <script th:inline="javascript">
+        $(document).ready(function () {
+            $('#idExtranjera').hide();
+
+            $('#nacional').click(function () {
+                $('#idExtranjera').hide('fast');
+                $('#rutEmpresa').show('fast');
+            });
+
+            $('#extranjera').click(function () {
+                $('#rutEmpresa').hide('fast');
+                $('#idExtranjera').show('fast');
+            });
+            $("#cargo").change(function(){
+                $("#operador").val("");
+                $("#oportunidad").val("");
+                $("#contactoEmpresa").val("");
+                $("#realizado").hide();
+                $("#vigente").hide();
+            });
+            $("#oportunidad").change(function(){
+                var valor= $("#oportunidad").val();
+                $("#operador").val("");
+                $("#cargo").val("");
+                $("#contactoEmpresa").val("");
+                if(valor!='Todas'){
+                //correspondingID = $(this).find(":selected").val()
+                //$(".style-sub-1").hide();
+                $("#realizado").show();
+                $("#vigente").show();
+                }
+                if(valor=='Todas'){
+                    //correspondingID = $(this).find(":selected").val()
+                    //$(".style-sub-1").hide();
+                    $("#realizado").hide();
+                    $("#vigente").hide();
+                }
+            });
+
+            $("#contactoEmpresa").change(function(){
+                $("#operador").val("");
+                $("#oportunidad").val("");
+                $("#cargo").val("");
+                $("#realizado").hide();
+                $("#vigente").hide();
+            });
+
+            $('html, body').animate({
+                scrollTop: $("#resultados_busqueda").offset().top
+            }, 1000);
+
+        });
+
+        $(document).keypress(function(e) {
+            if(e.which == 13) {
+                submitFormBusqueda();
+            }
+        });
+
+        $(function() {
+            $("#operador").autocomplete({
+                minLength:3,
+                source: function (request, response) {
+                    $.getJSON("/opciones/usuarios", {
+                                term: request.term
+                            },
+                            response);
+                    $("#cargo").val("");
+                    $("#oportunidad").val("");
+                    $("#contactoEmpresa").val("");
+                    $("#realizado").hide();
+                    $("#vigente").hide();
+                }
+            });
+        });
+
+        function submitFormBusqueda(){
+            var nombre = $("#nombre").val();
+            $("#nombre").val(encodeURI($("#nombre").val()));
+            $("#formBusqueda").submit();
+            $("#nombre").val(nombre);
+        }
+    </script>
+
+
+</th:block>
+
+</body>
+</html>

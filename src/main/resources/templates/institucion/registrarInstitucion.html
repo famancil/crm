@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='instituciones',actualSubTemplate='registrarInstitucion'">
+<head>
+    <meta charset="UTF-8" />
+    <title>Registrar Institución</title>
+
+    <!--/*/
+    <th:block layout:fragment="css">
+        <link th:href="@{/css/jQueryUI/jquery-ui-1.10.4.custom.min.css}" rel="stylesheet"/>
+    </th:block>
+    /*/-->
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Registrar Institucion</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a th:href="@{/institucion}">Instituciones</a></li>
+        <li><a th:href="@{/institucion/registrar}">Registrar</a></li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Registrar Institución
+                    <small>Para guardar presione "Guardar Cambios". Si desea volver sin realizar cambios presione "Cancelar"</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content">
+                <form th:action="@{/institucion/registrar}" th:object="${institucion}" method="POST">
+
+                    <div class="alert alert-danger" th:if="${#fields.hasErrors('*') or errorNombreInstitucion!=null}">
+                        <strong>Atenci&oacute;n: </strong> Debes solucionar los errores marcados en rojo antes de proceder con el registro de la institución.
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group" th:class="${#fields.hasErrors('nomInstitucion')}? 'has-error'">
+                                <label class="control-label">Nombre</label>
+                                <input type="text" id="nombreInstitucion" th:field="*{nomInstitucion}" class="form-control"  placeholder="Si ya se encuentra registrada aparecer&aacute; en el listado" />
+                                <label class="error" th:if="${#fields.hasErrors('nomInstitucion')}" th:text="${#fields.errors('*{nomInstitucion}')}"></label>
+                                <label class="error" th:if="${errorNombreInstitucion}" th:text="${errorNombreInstitucion}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <div class="form-group" th:class="${#fields.hasErrors('direccion')}? 'has-error'">
+                                <label class="control-label">Direcci&oacute;n</label>
+                                <input type="text" th:field="*{direccion}" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('direccion')}" th:text="${#fields.errors('*{direccion}')}"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('pais.nombre')}? 'has-error'">
+                                <label class="control-label">Pais</label>
+                                <select th:field="*{pais.id}" class="form-control">
+                                    <option th:each="p: ${paises}" th:value="${p.id}" th:text="${p.nombre}"></option>
+                                </select>
+                                <label class="error" th:if="${#fields.hasErrors('pais.nombre')}" th:text="${#fields.errors('*{pais.nombre}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('telefono')}? 'has-error'">
+                                <label class="control-label">Tel&eacute;fono</label>
+                                <input id="particular" type="text" th:field="*{telefono}" class="form-control"/>
+                                <span class="help-block m-b-none">Agregar código de área de la localidad</span>
+                                <label class="error" th:if="${#fields.hasErrors('telefono')}" th:text="${#fields.errors('*{telefono}')}"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label">Tipo Vigencia:</label>
+                                <select th:field="*{vigencia.codVigencia}" class="form-control">
+                                    <option th:each="tv: ${tiposVigencia}" th:value="${tv.codVigencia}" th:text="${tv.nomVigencia}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                    <div class="form-group text-center">
+                        <button class="btn btn-primary" type="submit">Registrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+    <script th:src="@{/js/jquery-ui-1.10.4.min.js}"></script>
+
+    <script th:inline="javascript" type="text/javascript">
+        /*<![CDATA[*/
+        $(function() {
+            $("#nombreInstitucion").autocomplete({
+                minLength:3,
+                source: function (request, response) {
+                    $.getJSON("/opciones/instituciones", {
+                                term: encodeURI(request.term)
+                            },
+                            response);
+                }
+            });
+        });
+
+        $(function() {
+            $("#particular").autocomplete({
+                minLength:6,
+                source: function (request, response) {
+                    var aux = $("#particular").val();
+                    if(aux.length<=8 && aux.length>0) {
+                        if(aux.indexOf("+56")==-1) {
+                            aux = aux.charAt(0) + aux.charAt(1) + ' ' + aux.charAt(2) + aux.charAt(3)+
+                                    aux.charAt(4) + aux.charAt(5)+ aux.charAt(6) + aux.charAt(7)+aux.charAt(8);
+                            $("#particular").val("+56" + " " + aux);
+                        }
+                    }
+                }
+            });
+        });
+
+        /*]]>*/
+    </script>
+</th:block>
+
+</body>
+</html>

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='empresas',actualSubTemplate='registrarAporteEmpresa'">
+<head>
+    <title>Registrar Aporte de Empresa</title>
+    <!--/*/
+   <th:block layout:fragment="css">
+       <link th:href="@{/css/plugins/datapicker/datepicker3.css}" rel="stylesheet"/>
+   </th:block>
+   /*/-->
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Registrar Aporte de Empresa</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a th:href="@{#}">Empresas</a></li>
+        <li><a th:href="@{/empresas/registrar-aporte/{idEmpresa}(idEmpresa=${empresa.id})}">Registrar Aporte</a></li>
+    </ol>
+</div>
+
+
+
+<div layout:fragment="content">
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Registre el Aporte de la Empresa
+                    <small>Para ingresar el aporte de la empresa presione "Guardar Aporte de Empresa".</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+
+            <div class="ibox-content" >
+
+                <form id="formGuardarUsuariosEmpresaUsmempleo" th:action="@{/empresas/registrarAporte}" th:object="${aporte}" method="POST" >
+
+                    <div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
+                        <strong>Atenci&oacute;n: </strong> debes solucionar los errores marcados en rojo antes de
+                        proceder con el registro del compromiso con la empresa.
+                    </div>
+                    <div class="alert alert-danger" th:if="${empresaError!=null}">
+                        <strong>Atenci&oacute;n: </strong> Empresa vacia, favor ingresar.
+                    </div>
+
+                    <div class="alert alert-danger" th:if="${sucursalError!=null}">
+                        <strong>Atenci&oacute;n: </strong> Sucursal Invalida o Vacia, favor revisar.
+                    </div>
+
+                    <div class="alert alert-danger" th:if="${usuarioError!=null}">
+                        <strong>Atenci&oacute;n: </strong> El usuario operador ingresado no existe.
+                    </div>
+
+                    <!--<div class="row">
+
+                        <div class="col-sm-5">
+                            <div class="form-group">
+                                <label class="control-label">Nombre Operador a Cargo(*)</label>
+                                <input type="text" id="nombreOperador" name="nombreOperador" placeholder="Nombre Operador" th:value="${nombreOperador}" class="form-control"/>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>-->
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label">Nombre Empresa (*)</label>
+                                <input th:if="${empresa!=null}" th:value="${empresa.razonSocial}" type="text" id="nombreEmpresa" name="nombreEmpresa" placeholder="Nombre Empresa" class="form-control"/>
+                                <!--<input th:if="${empresa==null}" type="text" id="nombreEmpresa" name="nombreEmpresa" placeholder="Nombre Empresa" class="form-control"/>-->
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">   <!--<div class="col-sm-2">
+                            <div class="form-group">
+                                <label class="control-label" style="color:white">boton</label>
+                                <button type="button" id="mostrarSucursalesButton" class="btn btn-primary">Buscar Sucursales</button>
+                            </div>
+                        </div>-->
+                        <div class="col-sm-5">
+                            <div id="selectSucursalesDiv" class="form-group" >
+                                <label class="control-label">Sucursal</label>
+                                <select id="selectSucursales" name="codSucursal" th:field="*{sucursalEmpresa.sucursalCodigo}"  class="form-control">
+                                    <option th:each="suc: ${sucursales}" th:value="${suc.sucursalCodigo}" th:text="${suc.sucSucursal}" ></option>
+                                </select>
+
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div id="selectCompromisosDiv" class="form-group">
+                                <label class="control-label">Compromiso Asociado (*) </label>
+                                <!--<input type="text" id="compromiso" class="form-control" th:value="${compromiso.id}" th:text="${compromiso.tipoCompromiso.nomCompromiso+' - ' +compromiso.fechaInicio}" />-->
+                                <select id="codOportunidad" name="codOportunidad" class="form-control" th:field="*{compromisoEmpresa.id}">
+                                    <option th:each="to: ${compromiso}" th:value="${to.id}" th:text="${to.tipoCompromiso.nomCompromiso + ' - ' +to.fechaInicio}" ></option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="hr-line-dashed"></div>
+
+
+                    <div class="row">
+
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="control-label">Forma de Pago (*) </label>
+                                <select id="codFormaPago" name="codFormaPago" class="form-control" th:field="*{tipoFormaPago.codFormaPago}">
+                                    <option th:each="tfp: ${tipoFormaPagos}" th:value="${tfp.codFormaPago}" th:text="${tfp.nomFormaPago}" ></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="control-label">Estado del Aporte (*) </label>
+                                <select id="codEstado" name="codEstado" class="form-control" th:field="*{tipoEstadoPago.codEstadoPago}">
+                                    <option th:each="tep: ${tipoEstadoPagos}" th:value="${tep.codEstadoPago}" th:text="${tep.nomEstadoPago}" ></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="control-label">Comprobante del Aporte (*) </label>
+                                <select id="codComprobante" name="codComprobante" class="form-control" th:field="*{tipoComprobante.codComprobante}">
+                                    <option th:each="tc: ${tipoComprobantes}" th:value="${tc.codComprobante}" th:text="${tc.nomComprobante}" ></option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('montoPagado')}? 'has-error'">
+                                <label class="control-label">Monto del Aporte (*)</label>
+                                <input type="number" class="form-control" th:field="*{montoPagado}" required="true"/>
+                                <label class="error" th:if="${#fields.hasErrors('montoPagado')}" th:text="${#fields.errors('*{montoPagado}')}"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('fecha')}? 'has-error'">
+                                <label class="control-label">Fecha Aporte (*)</label>
+                                <input type="text" id="fechaAporte" name="fechaAporte" class="form-control" th:field="*{fecha}" placeholder="DD/MM/AAAA" required="true" />
+                                <label class="error" th:if="${#fields.hasErrors('fecha')}" th:text="${#fields.errors('*{fecha}')}"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('fechaPago')}? 'has-error'">
+                                <label class="control-label">Fecha de Pago Correspondiente</label>
+                                <input type="text" id="fechaPago" class="form-control" th:field="*{fechaPago}" placeholder="DD/MM/AAAA"/>
+                                <label class="error" th:if="${#fields.hasErrors('fechaPago')}" th:text="${#fields.errors('*{fechaPago}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+
+                        <div class="col-sm-10">
+                            <div class="form-group"  th:class="${#fields.hasErrors('descripcion')}? 'has-error'">
+                                <label class="col-sm-2 control-label">Descripción del Aporte </label>
+                                <div class="col-sm-10">
+                                    <textarea id="descripcion" name="descripcion" rows="4" cols="100" class="form-control" th:field="*{descripcion}"></textarea>
+                                <label class="error" th:if="${#fields.hasErrors('descripcion')}" th:text="${#fields.errors('*{descripcion}')}"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group text-center">
+                       <input id="idEmpresa" type="hidden" name="idEmpresa" th:value="${empresa.id}"/>
+                       <!-- <input type="hidden" name="listaUsuariosUsmempleoEmpresaParticipantes" id="listaUsuariosUsmempleoEmpresaParticipantes" th:value="${usuariosUsmempleoEmpresaParticipantes}"/>-->
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                        <input type="submit" class="btn btn-primary"  value="Guardar Aporte Con Empresa"/>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+    <script th:src="@{/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
+    <script th:inline="javascript">
+
+        $(document).ready(function() {
+            //agregarOpcionesAUsuariosSeleccionadosCasoErrorEnFormulario();
+        });
+
+        /*$('input[type=radio][name=tipoBusqueda]').change(function() {
+            if (this.value == 'empresa') {
+                $("#valorBuscado").val("");
+                $('#nombreTipoBusqueda').text("Nombre empresa");
+            }
+            else if (this.value == 'usuario'){
+                $("#valorBuscado").val("");
+                $('#nombreTipoBusqueda').text("Nombre usuario");
+            }
+        });
+
+        $(function() {
+            $("#valorBuscado").autocomplete({
+                minLength:3,
+                source: function (request, response) {
+                    if ($('input:radio[name=tipoBusqueda]').filter(":checked").val() == "empresa") {
+                        $.getJSON("/opciones/empresasActividadExalumno", {
+                                    term: request.term
+                                },
+                                response);
+                    }else if($('input:radio[name=tipoBusqueda]').filter(":checked").val() == "usuario"){
+                        $.getJSON("/opciones/usuariosEmpresa", {
+                                    term: request.term
+                                },
+                                response);
+                    }
+                }
+            });
+        });
+
+
+        $("#formUsuarioUsmempleoEmpresa").submit(function() {
+            var $form = $(this);
+            $.ajax({
+                type: "GET",
+                data: $form.serialize(),
+                url: "/empresas/buscarUsuarioUsmempleoEmpresa",
+                success: function (response) {
+                    $('#tableUsuariosUsmempleoEmpresaASeleccionar tbody').empty();
+
+                    $.each(response, function (index, value) {
+                        var valor = value.id + '|' + value.usuarioEmpresaUsmempleo.nombreCompleto +  '|' + value.usuarioEmpresaUsmempleo.cargo +  '|' + value.empresa.razonSocial;
+
+                        var fila = '<tr>' +
+                                '<td>' + '<input type="checkbox" id="checkboxUsuario" name="checkboxUsuario" value="' + valor + '"/> '  + '</td>' +
+                                '<td>' + value.usuarioEmpresaUsmempleo.nombreCompleto + '</td>' +
+                                '<td>' + '<a href="/empresa/ '+ value.empresa.id +' "> '+ value.empresa.razonSocial +' </a>' + '</td>' +
+                                '<td>' + value.usuarioEmpresaUsmempleo.cargo + '</td>' +
+                                '<td>' + value.usuarioEmpresaUsmempleo.fono + '</td>' +
+                                '<td>' + value.usuarioEmpresaUsmempleo.email + '</td>' +
+                                '</tr>';
+
+                        $('#tableUsuariosUsmempleoEmpresaASeleccionar tbody').append(fila);
+
+                    });
+
+                }
+            });
+            return false;
+        });*/
+
+
+
+
+        /*function agregarOpcionesAUsuariosSeleccionados() {
+
+            $('input:checkbox[name=checkboxUsuario]:checked').each(function()
+            {
+                var datos = $(this).val().split("|");
+                var id = datos[0];
+                var nombreCompleto = datos[1];
+                var cargo = datos[2];
+                var nombreEmpresa = datos[3];
+
+                var numeroExistentes = $('#selectListUsuariosUsmempleoEmpresa option[value="'+ $(this).val() +'"]').length;
+
+                if ( numeroExistentes == 0 ) {
+                    $('#selectListUsuariosUsmempleoEmpresa').append('<option id="opcionListUsuariosEmpresaUsmempleo" value="' + $(this).val() +'"> ' + nombreCompleto + " - " + cargo + " - " + nombreEmpresa +'</option>');
+                    $('#selectListUsuariosUsmempleoEmpresa').prop("size", $('#selectListUsuariosUsmempleoEmpresa option').length );
+                    $('#nombreFantasiaEmpresa').append(nombreEmpresa);
+                    $('#nombreFantasiaEmpresa').val(nombreEmpresa);
+                    $('#nombreField').append(nombreEmpresa);
+                    $('#nombreField').val(nombreEmpresa);
+
+                    $('#listaUsuariosUsmempleoEmpresaParticipantes').val( $('#listaUsuariosUsmempleoEmpresaParticipantes').val() + $(this).val() + ";" );
+                }
+            });
+        }*/
+
+
+        /*function eliminarOpciones() {
+            var idAuxiliar = "";
+
+            var usuarioSeleccionadoEliminar = $( "#selectListUsuariosUsmempleoEmpresa option:selected").val();
+            console.log(usuarioSeleccionadoEliminar);
+            $('#selectListUsuariosUsmempleoEmpresa option[value="'+ usuarioSeleccionadoEliminar +'"]').remove();
+
+            $( "#selectListUsuariosUsmempleoEmpresa option").each(function()
+            {
+                console.log($(this).val());
+                idAuxiliar = idAuxiliar + $(this).val() + ";";
+            });
+
+            $('#listaUsuariosUsmempleoEmpresaParticipantes').val(idAuxiliar);
+        }*/
+
+
+
+        /*function agregarOpcionesAUsuariosSeleccionadosCasoErrorEnFormulario() {
+
+            var datosTodosUsuarios = $('#listaUsuariosUsmempleoEmpresaParticipantes').val().split(";");
+
+
+            $.each(datosTodosUsuarios,function( index, value ) {
+
+                if ( value.length != 0 ) {
+                    var datos = value.split("|");
+
+                    var id = datos[0];
+                    var nombreCompleto = datos[1];
+                    var cargo = datos[2];
+                    var nombreEmpresa = datos[3];
+
+
+                    $('#selectListUsuariosUsmempleoEmpresa').append('<option id="opcionListUsuariosEmpresaUsmempleo" value="' + value + '"> ' + nombreCompleto + " - " + cargo + " - " + nombreEmpresa + '</option>');
+                    $('#selectListUsuariosUsmempleoEmpresa').prop("size", $('#selectListUsuariosUsmempleoEmpresa option').length);
+                }
+            });
+        }*/
+
+        /*$('#mostrarSucursalesButton').click(function (){
+            mostrarSucursalesEmpresas();
+            mostrarCompromisosEmpresas();
+        });
+
+        var mostrarSucursalesEmpresas = function(){
+            var empresa = $('#nombreEmpresa').val();
+            //var empresa = arr[0];
+            var selectSucursales = $('#selectSucursales');
+            selectSucursales.empty();
+            $.ajax({
+                url: '/empresa/'+empresa+'/nombres-sucursales',
+                method: 'GET',
+                success: function(response) {
+                    console.log(response);
+                    if(response == undefined || response == null){
+                        alert("La empresa '"+$('#nombreEmpresa').val()+"' no existe o no posee sucursales.");
+                    }else {
+                        $.each(response, function (index, value) {
+                            selectSucursales.append($('<option></option>').attr('value', value.sucursalCodigo).text(value.sucSucursal));
+                        });
+                        $('#selectSucursalesDiv').show();
+                    }
+                }
+            });
+        };
+
+        var mostrarCompromisosEmpresas = function(){
+            $('#selectCompromisosDiv').show();
+            /*var empresa = $('#nombreField').val()
+            //var empresa = arr[0];
+            var codOportunidad = $('#codOportunidad');
+            codOportunidad.empty();
+            $.ajax({
+                url: '/empresa/'+empresa+'/compromisos',
+                method: 'GET',
+                success: function(response) {
+                    console.log(response);
+                    if(response == undefined || response == null){
+                        alert("La empresa '"+$('#nombreField').val()+"' no existe o no posee compromisos.");
+                    }else {
+                        $.each(response, function (index, value) {
+                            codOportunidad.append($('<option></option>').attr('value', value.compromiso).text(value.compromiso.comentario));
+                        });
+                        $('#selectCompromisosDiv').show();
+                    }
+                }
+            });
+        }*/
+
+        //$('#selectSucursalesDiv').hide();
+        //$('#selectCompromisosDiv').hide();
+
+        /*$(function() {
+            $("#nombreOperador").autocomplete({
+                minLength:3,
+                source: function (request, response) {
+                    $.getJSON("/opciones/usuarios", {
+                                term: request.term
+                            },
+                            response);
+                }
+            });
+        });
+
+        $(function() {
+            $("#nombreEmpresa").autocomplete({
+                minLength:3,
+                source: function (request, response) {
+                    $.getJSON("/opciones/empresas", {
+                                term: request.term
+                            },
+                            response);
+                }
+            });
+        });*/
+
+        $(function(){
+            $.fn.datepicker.dates['es'] = {
+                days: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+                daysShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
+                daysMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa", "Do"],
+                months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+                monthsShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+                today: "Hoy"
+            };
+            $('#fechaAporte').datepicker({
+                format: 'dd/mm/yyyy',
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                language: "es"
+            });
+            $('#fechaPago').datepicker({
+                format: 'dd/mm/yyyy',
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                language: "es"
+            });
+        });
+
+    </script>
+
+</th:block>
+
+
+
+
+
+</body>
+</html>

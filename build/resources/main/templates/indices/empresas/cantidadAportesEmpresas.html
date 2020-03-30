@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='indices',actualSubTemplate='empresas' ,actualSubSubTemplate='cantidadAporteEmpresas'">
+<head>
+    <title>Cantidad de Aportes Por Empresa</title>
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Cantidad de Aportes Por Empresa</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a href="#">Indices</a></li>
+        <li><a th:href="@{/indices/empresas}">Empresas</a></li>
+        <li><a th:href="@{/indices/empresas/cantidadAportesEmpresas}">Cantidad de Aportes Por Empresa</a></li>
+    </ol>
+</div>
+
+
+
+<div layout:fragment="content">
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Cantidad de Aportes Por Empresa</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content" >
+
+                <form th:action="@{/indices/empresas/buscarCantidadAportesEmpresas}" method="POST" >
+
+                    <div class="row">
+                        <div class="col-sm-6" >
+                            <div class="form-group" >
+                                <label class="control-label">Pa&iacute;s:</label>
+                                <select id="pais" class="form-control" onchange="mostrarOpcionesInstituciones()">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6" >
+                            <div class="form-group" >
+                                <label class="control-label">Instituci&oacute;n:</label>
+                                <select name="codInstitucion" id="codInstitucion" class="form-control">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="control-label">Tipo de Compromiso:</label>
+                                <select name="tipoCompromiso" id="tipoCompromiso" class="form-control">
+                                    <option value="0" th:selected="${tipoCompromiso}==0">Todos</option>
+                                    <option value="1" th:selected="${tipoCompromiso}==1">Donación</option>
+                                    <option value="2" th:selected="${tipoCompromiso}==2">Auspicio</option>
+                                    <option value="3" th:selected="${tipoCompromiso}==3">Venta de Servicios</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label>Vigencia del Compromiso:</label>
+                                <select name="tipoVigencia" id="tipoVigencia" class="form-control" >
+                                    <option value="1" th:selected="${tipoVigencia}==1">Vigente</option>
+                                    <option value="2" th:selected="${tipoVigencia}==2">No Vigente</option>
+                                    <option value="0" th:selected="${tipoVigencia}==0">Todos</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="control-label">Cantidad de Empresas a Mostrar</label>
+                                <select name="cantidadMostrar" id="cantidadMostrar" class="form-control" >
+                                    <option value="5" th:selected="${cantidadMostrar} == 5">5</option>
+                                    <option value="10" th:selected="${cantidadMostrar} == 10">10</option>
+                                    <option value="15" th:selected="${cantidadMostrar} == 15">15</option>
+                                    <option value="20" th:selected="${cantidadMostrar} == 20">20</option>
+                                    <option value="25" th:selected="${cantidadMostrar} == 25">25</option>
+                                    <option value="50" th:selected="${cantidadMostrar} == 50">50</option>
+                                    <option value="100" th:selected="${cantidadMostrar} == 100">100</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group text-center">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button class="btn btn-primary" type="submit">Buscar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-lg-12" th:if="${cantidadAportesEmpresas != null}" id="resultados-indice">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>
+                    Resultados del indice
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content">
+                <div class="alert alert-info alert-dismissable" th:if="${cantidadAportesEmpresas.size()} != 0">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    Se han encontrado los siguientes resultados para tu b&uacute;squeda del Compromiso
+                    <strong th:if="${tipoCompromiso}==0" > Todos</strong>
+                    <strong th:if="${tipoCompromiso}==1 " > Donaci&oacute;n</strong>
+                    <strong th:if="${tipoCompromiso}==2 " > Auspicio</strong>
+                    <strong th:if="${tipoCompromiso}==3 " > Venta de Servicios</strong>
+                </div>
+                <div class="alert alert-info alert-dismissable" th:if="${cantidadAportesEmpresas.size()} == 0">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    No se han encontrado resultados para tu b&uacute;squeda
+                </div>
+
+                <table class="table table-striped table-bordered table-hover" th:if="${cantidadAportesEmpresas.size()} != 0" >
+                    <thead>
+                    <tr>
+                        <th>EMPRESA</th>
+                        <th>2016</th>
+                        <th>2015</th>
+                        <th>2014</th>
+                        <th>2013</th>
+                        <th>2012</th>
+                        <th>2011</th>
+                        <th>TOTAL</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="empresa: ${cantidadAportesEmpresas}">
+                        <!-- Lista por empresa -->
+                        <td>
+                            <a th:text="${empresa[0].nombreFantasiaEmpresa}" th:href="@{/empresa/{id}(id=${empresa[0].id})}"></a>
+                        </td>
+
+                        <td th:text="${empresa[1]}"></td>
+                        <td th:text="${empresa[2]}"></td>
+                        <td th:text="${empresa[3]}"></td>
+                        <td th:text="${empresa[4]}"></td>
+                        <td th:text="${empresa[5]}"></td>
+                        <td th:text="${empresa[6]}"></td>
+                        <td th:text="${empresa[7]}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<th:block layout:fragment="scripts">
+
+    <script th:src="@{/js/jquery-ui-1.10.4.min.js}"></script>
+    <script th:inline="javascript">
+        $(document).ready(function() {
+            mostrarOpcionesPaises();
+
+            $('html, body').animate({
+                scrollTop: $("#resultados-indice").offset().top
+            }, 1000);
+
+            //mostrarGrafico();
+        });
+
+        function mostrarOpcionesPaises(){
+            $.ajax({
+                type: "GET",
+                url: '/geo/paises',
+                success: function (response) {
+                    $.each(response, function(index, value){
+                        if (value.id == 56 ) {
+                            $('#pais').append($("<option></option>").attr("value", value.id).attr("selected", "selected").text(value.nombre));
+                        }
+                        else {
+                            $('#pais').append($("<option></option>").attr("value", value.id).text(value.nombre));
+                        }
+                    });
+
+                    mostrarOpcionesInstituciones();
+                }
+            });
+        }
+
+        function mostrarOpcionesInstituciones() {
+            $.ajax({
+                type: "GET",
+                url: '/opciones/pais/'+$('#pais').val()+'/instituciones',
+                success: function (response) {
+                    $('#codInstitucion').empty();
+
+                    $.each(response, function(index, value){
+                        if (value.codInstitucion == 25 ) {
+                            $('#codInstitucion').append($("<option></option>").attr("value", value.codInstitucion).attr("selected", "selected").text(value.nomInstitucion));
+                        }
+                        else {
+                            $('#codInstitucion').append($("<option></option>").attr("value", value.codInstitucion).text(value.nomInstitucion));
+                        }
+                    });
+
+                    mostrarOpcionesCarrerasAsociadasAInstitucion();
+                }
+            });
+        }
+
+       /* function mostrarGrafico() {
+            datos = [[${personasConTrabajoPorRubroJSON}]];
+            datos = JSON.parse(datos);
+            datos = datos.reverse();
+
+            rubros = [];
+            cantidades = [];
+
+            $.each(datos, function(indice, dato) {
+                if (indice != 0) {
+                    rubros.push(dato[0]);
+                    cantidades.push(dato[1]);
+                }
+            });
+
+            // bar chart data
+            var barData = {
+                labels: rubros,
+                datasets: [
+                    {
+                        fillColor: "rgba(151,187,205,0.2)",
+                        strokeColor: "rgba(151,187,205,0.6)",
+                        highlightFill: "rgba(151,187,205,.8)",
+                        highlightStroke: "rgba(151,187,205,1)",
+                        data: cantidades
+                    }
+                ]
+            }
+
+            // get bar chart canvas
+            var income = document.getElementById("income").getContext("2d");
+
+            // draw bar chart
+            new Chart(income).HorizontalBar(barData);
+        }*/
+
+    </script>
+
+</th:block>
+
+
+</body>
+</html>

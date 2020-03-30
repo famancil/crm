@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='carrerasInstitucion', actualSubTemplate='registrarCarrerasInstitucion'">
+<head>
+    <title>Asignar Carreras a una Institucion</title>
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2> Asignar Carreras a una Instituci&oacute;n </h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li>Carreras Institucion</li>
+        <li>Asignar Carreras a Institucion</li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Asignar Carreras a una Instituci&oacute;n
+                    <small>Ingrese los campos a continuaci&oacute;n para asignar una Carrera a una Instituci&oacute;n.</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content" >
+
+                <form th:action="@{/carreraInstitucion/registrar}" th:object="${carreraInstitucion}" method="POST">
+
+                    <div class="row">
+                        <div class="col-sm-4" >
+                            <div class="form-group" >
+                                <label class="control-label">Pa&iacute;s:</label>
+                                <select name="pais" id="pais" class="form-control" onchange="mostrarOpcionesInstituciones()">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-8" >
+                            <div class="form-group" >
+                                <label class="control-label">Instituci&oacute;n:</label>
+                                <select name="codInstitucion" id="codInstitucion" class="form-control" th:field="*{codInstitucion}" onchange="mostrarOpcionesCarrerasAsociadasAInstitucion();mostrarOpcionesCarrerasNoAsociadasAInstitucion()">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+
+                    <div class="row">
+                        <div class="col-sm-12" >
+                            <div class="form-group" >
+                                <label class='control-label'>Carreras Pertenecientes a la Institucion</label>
+
+                                <table class="table table-bordered" id="carrerasInstitucionTable">
+                                    <thead>
+                                        <tr>
+                                            <th>NOMBRE CARRERA</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:if="${carrerasInstitucion.size()} == 0" >
+                                            <td>No se encontraron Carreras Asociadas a la Institucion</td>
+                                        </tr>
+                                        <tr th:each="carreraInstitucion: ${carrerasInstitucion}" >
+
+                                            <td th:text="${carreraInstitucion.carrera.nombreCarrera}">
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-12" >
+                            <div class="form-group" >
+                                <label   class='control-label'>Carrera:</label>
+                                <small>Solo son mostradas aquellas carreras que la institucion no tiene previamente registradas.</small>
+                                <select name="codCarrera" id="codCarrera" th:field="*{codCarrera}" class="form-control" >
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6" >
+                            <div class="form-group">
+                                <label class="control-label">Tipo Vigencia:</label>
+                                <select  class="form-control" th:field="*{tipoVigencia.codVigencia}">
+                                    <option th:each="tv: ${tiposVigencia}" th:value="${tv.codVigencia}" th:text="${tv.nomVigencia}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6" >
+                            <div class="form-group">
+                                <label class="control-label">Habilitado Oferta Laboral:</label>
+                                <input class="form-control" type="checkbox" th:field="*{habilitadoOfertaLaboral}"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6" >
+                            <div class="form-group">
+                                <label class="control-label">Link Malla:</label>
+                                <input type="text" name="linkMalla" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6" >
+                            <div class="form-group">
+                                <label class="control-label">Sitio Oficial:</label>
+                                <input type="text" name="sitioOficial"  class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <input type="hidden" name="paginaPrevia" id="paginaPrevia" th:value="${paginaPrevia}"/>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group text-center">
+                        <button class="btn btn-primary" type="submit">Asignar</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<th:block layout:fragment="scripts">
+
+    <script th:inline="javascript">
+        $(document).ready(function() {
+            $.ajax({
+                type: "GET",
+                url: '/geo/paises',
+                success: function (response) {
+                    // 0 valor por defecto en el caso que no exista codPais
+                    var codPais = /*[[ ${codPais}  ]]*/ 56;
+
+                    $.each(response, function(index, value){
+                        if (value.id == codPais ) {
+                            $('#pais').append($("<option></option>").attr("value", value.id).attr("selected", "selected").text(value.nombre));
+                        }
+                        else {
+                            $('#pais').append($("<option></option>").attr("value", value.id).text(value.nombre));
+                        }
+                    });
+
+                    mostrarOpcionesInstituciones();
+                }
+            });
+        });
+
+        function mostrarOpcionesInstituciones() {
+            $.ajax({
+                type: "GET",
+                url: '/opciones/pais/'+$('#pais').val()+'/instituciones',
+                success: function (response) {
+                    $('#codInstitucion').empty();
+
+                    // 0 valor por defecto en el caso que no exista codCarrera
+                    var codInstitucion = /*[[ ${codInstitucion}  ]]*/ 0;
+
+                    $.each(response, function(index, value){
+                        if (value.codInstitucion == codInstitucion ) {
+                            $('#codInstitucion').append($("<option></option>").attr("value", value.codInstitucion).attr("selected", "selected").text(value.nomInstitucion));
+                        }
+                        else {
+                            $('#codInstitucion').append($("<option></option>").attr("value", value.codInstitucion).text(value.nomInstitucion));
+                        }
+                    });
+
+                    mostrarOpcionesCarrerasAsociadasAInstitucion();
+                    mostrarOpcionesCarrerasNoAsociadasAInstitucion();
+                }
+            });
+        }
+
+        function mostrarOpcionesCarrerasNoAsociadasAInstitucion() {
+            $.ajax({
+                type: "GET",
+                url: '/opciones/carreras/noAsociadasAInstitucion/'+$('#codInstitucion').val(),
+                success: function (response) {
+                    $('#codCarrera').empty();
+
+                    // 0 valor por defecto en el caso que no exista codCarrera
+                    var codCarrera = /*[[ ${codCarrera}  ]]*/ 0;
+
+                    $.each(response, function(index, value){
+                        if (value.codCarrera == codCarrera ) {
+                            $('#codCarrera').append($("<option></option>").attr("value", value.codCarrera).attr("selected", "selected").text(value.nombreCarrera));
+                        }
+                        else {
+                            $('#codCarrera').append($("<option></option>").attr("value", value.codCarrera).text(value.nombreCarrera));
+                        }
+                    });
+                }
+            });
+        }
+
+
+        function mostrarOpcionesCarrerasAsociadasAInstitucion() {
+            $.ajax({
+                type: "GET",
+                data: '',
+                url: '/opciones/institucion/'+$('#codInstitucion').val()+'/carreras',
+                success: function (response) {
+                    $('#carrerasInstitucionTable tbody').empty();
+
+                    if (response.length == 0) {
+                        var fila = 'No se encontraron Carreras Asociadas a la Institucion';
+
+                        $('#carrerasInstitucionTable tbody').append(fila);
+                    }
+                    else {
+                        $.each(response, function (index, value) {
+                            var fila = '<tr>' +
+                                    '<td>' + value.carrera.nombreCarrera + '</td>' +
+                                    '</tr>';
+
+                            $('#carrerasInstitucionTable tbody').append(fila);
+
+                        });
+                    }
+                }
+            });
+        }
+
+
+    </script>
+
+</th:block>
+
+</body>
+</html>

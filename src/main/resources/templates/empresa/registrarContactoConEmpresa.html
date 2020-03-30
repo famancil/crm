@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main"
+      th:with="actualTemplate='empresas',actualSubTemplate='registrarContactoConEmpresa'">
+<head>
+    <title>Registrar Contacto Con Empresa</title>
+    <!--/*/
+    <th:block layout:fragment="css">
+        <link th:href="@{/css/plugins/datapicker/datepicker3.css}" rel="stylesheet"/>
+    </th:block>
+    /*/-->
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Registrar Contacto Con Empresa</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a th:href="@{#}">Empresas</a></li>
+        <li><a th:href="@{/empresas/registrar-contacto}">Registrar Contacto</a></li>
+    </ol>
+</div>
+
+
+
+<div layout:fragment="content">
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Busqueda de Usuarios</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content" >
+
+                <form id="formUsuarioUsmempleoEmpresa" >
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label">Tipo Busqueda</label>
+                                <div class="radio">
+                                    <div class="radio">
+                                        <label > <input type="radio" id="tipoBusqueda" name="tipoBusqueda" value="empresa"  checked="true"/> Empresa </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label > <input type="radio" id="tipoBusqueda" name="tipoBusqueda" value="usuario" /> Usuarios </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group" >
+                                <label id="nombreTipoBusqueda" class="control-label">Nombre empresa</label>
+                                <input type="text" name="valorBuscado" id="valorBuscado" class="form-control" />
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group text-center">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button class="btn btn-primary" type="submit">Buscar Usuarios</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Resutlados de la busqueda -->
+    <div class="col-lg-12"  >
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>
+                    Resultados de la busqueda
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+            <div class="ibox-content" >
+<!--
+                <div class="alert alert-info alert-dismissable">
+                    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                    Se han encontrado <strong th:text="${usuarioUsmempleoEmpresa.size()}">0</strong> resultados para tu
+                    b&uacute;squeda.
+                </div>
+                -->
+
+                <form id="formUsuariosUsmempleoEmpresaASeleccionar" class="form-horizontal" >
+
+                    <table class="table table-hover" name="tableUsuariosUsmempleoEmpresaASeleccionar" id="tableUsuariosUsmempleoEmpresaASeleccionar">
+                        <thead>
+                        <tr>
+                            <th>AGREGAR</th>
+                            <th>NOMBRE</th>
+                            <th>EMPRESA</th>
+                            <th>CARGO</th>
+                            <th>FONO</th>
+                            <th>EMAIL</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+
+                    <div class="form-group text-center">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <input type="button" onclick="agregarOpcionesAUsuariosSeleccionados()" class="btn btn-primary" value="Agregar Seleccionados"/>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Registre el Contacto con la Empresa
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+
+
+            <div class="ibox-content" >
+
+                <form id="formGuardarUsuariosEmpresaUsmempleo" th:action="@{/empresas/registrarContacto}" th:object="${contactoHistoricoEmpresa}" method="POST" >
+
+                    <div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
+                        <strong>Atenci&oacute;n: </strong> debes solucionar los errores marcados en rojo antes de
+                        proceder con el registro del contacto con la empresa.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" >
+                                <label class="control-label">Nombre Usuario Encargado</label>
+                                <input type="text" id="nombreUsuarioEncargado" name="nombreUsuarioEncargado" th:value="${nombreUsuarioEncargado}" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label">Usuarios Participantes Seleccionados</label>
+                                <select id="selectListUsuariosUsmempleoEmpresa" name="selectListUsuariosUsmempleoEmpresa" class="form-control" >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <input type="button" onclick="eliminarOpciones()" class="btn btn-primary"  value="Eliminar Seleccionados"/>
+                                <span class="help-block m-b-none">Para eliminar usuarios de la lista, seleccionar uno y preciosar el bot&oacute;n <strong>Eliminar Seleccionados</strong>.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label">Tipo Contacto </label>
+                                <select  id="codContacto" name="codContacto"  class="form-control" th:field="*{tipoContacto.codContacto}">
+                                    <option th:each="tc: ${tipoContactos}" th:value="${tc.codContacto}" th:text="${tc.nomContacto}" ></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label">Tipo Oportunidad </label>
+                                <select id="codOportunidad" name="codOportunidad" class="form-control" th:field="*{tipoOportunidad.codOportunidad}">
+                                    <option th:each="to: ${tipoOportunidades}" th:value="${to.codOportunidad}" th:text="${to.nomOportunidad}" ></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label">Estado</label>
+                                <select id="codEstado" name="codEstado"  class="form-control" th:field="*{tipoEstado.codEstado}">
+                                    <option th:each="te: ${tipoEstados}" th:value="${te.codEstado}" th:text="${te.nomEstado}" ></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label">Nivel de Interes</label>
+                                <select id="codNivelInteres" name="codNivelInteres"  class="form-control" th:field="*{tipoNivelInteres.codNivelInteres}">
+                                    <!--<option th:selected="${tipoNivelInteres == null}" th:value="0">Sin Información</option>-->
+                                    <option th:each="ti: ${tipoNivelInteres}" th:value="${ti.codNivelInteres}" th:text="${ti.nomNivelInteres}" ></option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group"  th:class="${#fields.hasErrors('fechaContacto')}? 'has-error'">
+                                <label class="control-label">Fecha Contacto (*)</label>
+                                <input type='text' id="fechaContacto" name="fechaContacto" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('fechaContacto')}" th:text="${#fields.errors('*{fechaContacto}')}"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label">Fecha Proximo Contacto</label>
+                                <input type='text' id="fechaProxContacto" name="fechaProxContacto" class="form-control"/>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="form-group" th:class="${#fields.hasErrors('asunto')}? 'has-error'">
+                            <label class="col-sm-2 control-label">Asunto (*)</label>
+                            <div class="col-sm-10">
+                                <input type='text' id="asunto" name="asunto" class="form-control" />
+                                <label class="error" th:if="${#fields.hasErrors('asunto')}" th:text="${#fields.errors('*{asunto}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group" th:class="${#fields.hasErrors('acuerdos')}? 'has-error'">
+                            <label class="col-sm-2 control-label">Acuerdos (*)</label>
+                            <div class="col-sm-10">
+                                <textarea id="acuerdos" name="acuerdos" rows="4" cols="50" class="form-control"></textarea>
+                                <label class="error" th:if="${#fields.hasErrors('acuerdos')}" th:text="${#fields.errors('*{acuerdos}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group text-center">
+                        <input type="hidden" name="listaUsuariosUsmempleoEmpresaParticipantes" id="listaUsuariosUsmempleoEmpresaParticipantes" th:value="${usuariosUsmempleoEmpresaParticipantes}"/>
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                        <input type="submit" class="btn btn-primary"  value="Guardar Contacto Con Empresa"/>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+    <script th:src="@{/js/plugins/datapicker/bootstrap-datepicker.js}"></script>
+    <script th:inline="javascript">
+
+        $(document).ready(function() {
+            agregarOpcionesAUsuariosSeleccionadosCasoErrorEnFormulario();
+        });
+
+        $('input[type=radio][name=tipoBusqueda]').change(function() {
+            if (this.value == 'empresa') {
+                $("#valorBuscado").val("");
+                $('#nombreTipoBusqueda').text("Nombre empresa");
+            }
+            else if (this.value == 'usuario'){
+                $("#valorBuscado").val("");
+                $('#nombreTipoBusqueda').text("Nombre usuario");
+            }
+        });
+
+        $(function() {
+            $("#valorBuscado").autocomplete({
+                minLength:3,
+                source: function (request, response) {
+                    if ($('input:radio[name=tipoBusqueda]').filter(":checked").val() == "empresa") {
+                        $.getJSON("/opciones/empresasActividadExalumno", {
+                                    term: request.term
+                                },
+                                response);
+                    }else if($('input:radio[name=tipoBusqueda]').filter(":checked").val() == "usuario"){
+                        $.getJSON("/opciones/usuariosEmpresa", {
+                                    term: request.term
+                                },
+                                response);
+                    }
+                }
+            });
+        });
+
+        $(function() {
+            $("#nombreUsuarioEncargado").autocomplete({
+                minLength:3,
+                source: function (request, response) {
+                    $.getJSON("/opciones/usuarios", {
+                        term: request.term
+                    }, response);
+
+                }
+            });
+        });
+
+        $("#formUsuarioUsmempleoEmpresa").submit(function() {
+            var $form = $(this);
+            $.ajax({
+                type: "GET",
+                data: $form.serialize(),
+                url: "/empresas/buscarUsuarioUsmempleoEmpresa",
+                success: function (response) {
+                    $('#tableUsuariosUsmempleoEmpresaASeleccionar tbody').empty();
+
+                    $.each(response, function (index, value) {
+                        var valor = value.id + '|' + value.usuarioEmpresaUsmempleo.nombreCompleto +  '|' + value.usuarioEmpresaUsmempleo.cargo +  '|' + value.empresa.razonSocial;
+
+                        var fila = '<tr>' +
+                                        '<td>' + '<input type="checkbox" id="checkboxUsuario" name="checkboxUsuario" value="' + valor + '"/> '  + '</td>' +
+                                        '<td>' + value.usuarioEmpresaUsmempleo.nombreCompleto + '</td>' +
+                                        '<td>' + value.empresa.razonSocial + '</td>' +
+                                        '<td>' + value.usuarioEmpresaUsmempleo.cargo + '</td>' +
+                                        '<td>' + value.usuarioEmpresaUsmempleo.fono + '</td>' +
+                                        '<td>' + value.usuarioEmpresaUsmempleo.email + '</td>' +
+                                    '</tr>';
+
+                        $('#tableUsuariosUsmempleoEmpresaASeleccionar tbody').append(fila);
+
+                    });
+
+                }
+            });
+            return false;
+        });
+
+
+
+
+        function agregarOpcionesAUsuariosSeleccionados() {
+
+            $('input:checkbox[name=checkboxUsuario]:checked').each(function()
+            {
+                var datos = $(this).val().split("|");
+                var id = datos[0];
+                var nombreCompleto = datos[1];
+                var cargo = datos[2];
+                var nombreEmpresa = datos[3];
+
+                var numeroExistentes = $('#selectListUsuariosUsmempleoEmpresa option[value="'+ $(this).val() +'"]').length;
+
+                if ( numeroExistentes == 0 ) {
+                    $('#selectListUsuariosUsmempleoEmpresa').append('<option id="opcionListUsuariosEmpresaUsmempleo" value="' + $(this).val() +'"> ' + nombreCompleto + " - " + cargo + " - " + nombreEmpresa +'</option>');
+                    $('#selectListUsuariosUsmempleoEmpresa').prop("size", $('#selectListUsuariosUsmempleoEmpresa option').length );
+
+                    $('#listaUsuariosUsmempleoEmpresaParticipantes').val( $('#listaUsuariosUsmempleoEmpresaParticipantes').val() + $(this).val() + ";" );
+                }
+            });
+        }
+
+
+        function eliminarOpciones() {
+            var idAuxiliar = "";
+
+            var usuarioSeleccionadoEliminar = $( "#selectListUsuariosUsmempleoEmpresa option:selected").val();
+            console.log(usuarioSeleccionadoEliminar);
+            $('#selectListUsuariosUsmempleoEmpresa option[value="'+ usuarioSeleccionadoEliminar +'"]').remove();
+
+            $( "#selectListUsuariosUsmempleoEmpresa option").each(function()
+            {
+                console.log($(this).val());
+                idAuxiliar = idAuxiliar + $(this).val() + ";";
+            });
+
+            $('#listaUsuariosUsmempleoEmpresaParticipantes').val(idAuxiliar);
+        }
+
+
+
+        function agregarOpcionesAUsuariosSeleccionadosCasoErrorEnFormulario() {
+
+            var datosTodosUsuarios = $('#listaUsuariosUsmempleoEmpresaParticipantes').val().split(";");
+
+            $.each(datosTodosUsuarios,function( index, value ) {
+
+                if ( value.length != 0 ) {
+                    var datos = value.split("|");
+
+                    var id = datos[0];
+                    var nombreCompleto = datos[1];
+                    var cargo = datos[2];
+                    var nombreEmpresa = datos[3];
+
+
+                    $('#selectListUsuariosUsmempleoEmpresa').append('<option id="opcionListUsuariosEmpresaUsmempleo" value="' + value + '"> ' + nombreCompleto + " - " + cargo + " - " + nombreEmpresa + '</option>');
+                    $('#selectListUsuariosUsmempleoEmpresa').prop("size", $('#selectListUsuariosUsmempleoEmpresa option').length);
+                }
+            });
+        }
+
+        $(function(){
+            $.fn.datepicker.dates['es'] = {
+                days: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+                daysShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
+                daysMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa", "Do"],
+                months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+                monthsShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+                today: "Hoy"
+            };
+            $('#fechaContacto').datepicker({
+                format: 'dd/mm/yyyy',
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                language: "es"
+            });
+            $('#fechaProxContacto').datepicker({
+                format: 'dd/mm/yyyy',
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                language: "es"
+            });
+        });
+
+    </script>
+
+</th:block>
+
+
+
+
+
+</body>
+</html>
+

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main">
+<head>
+    <title>Ingresar Sucursal</title>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+    <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+    <script th:inline="javascript" type="text/javascript">
+        $(document).ready(function(){
+            $('#selectRegiones').prop('disabled', 'disabled');
+            $('#selectProvincias').prop('disabled', 'disabled');
+            $('#selectComunas').prop('disabled', 'disabled');
+            $.ajax({
+                type: "GET",
+                url: '/geo/paises',
+                success: function (response) {
+                    $.each(response, function(index, value){
+                        $('.paises').append($("<option></option>").attr("value", value.id).text(value.nombre));
+                    });
+                }
+            });
+
+            $(".paises").change(function(){
+                if($(this).val() == 56) {
+                    $('#selectRegiones').prop('disabled', false);
+                    $('#selectProvincias').prop('disabled', false);
+                    $('#selectComunas').prop('disabled', false);
+                    $.ajax({
+                        type: "GET",
+                        url: '/geo/regiones',
+                        success: function (response) {
+                            $('.regiones').empty();
+                            $.each(response, function(index, value){
+                                $('.regiones').append($("<option></option>").attr("value", value.id).text(value.nombre))
+                                        .trigger("change");
+                            });
+                        }
+                    });
+                }else{
+                    $('#selectRegiones').val('');
+                    $('#selectProvincias').val('');
+                    $('#selectComunas').val('');
+                    $('#selectRegiones').prop('disabled', 'disabled');
+                    $('#selectProvincias').prop('disabled', 'disabled');
+                    $('#selectComunas').prop('disabled', 'disabled');
+                }
+            });
+
+            var provincias = [];
+            $(".regiones").change(function(){
+                $.ajax({
+                    type: "GET",
+                    url: '/geo/region/'+$(this).val()+'/provincias',
+                    success: function (response) {
+                        provincias = response;
+                        $('.provincias').empty();
+                        $.each(response, function(index, value){
+                            $('.provincias').append($("<option></option>").attr("value", value.id).text(value.nombre))
+                                    .trigger("change");
+                        });
+                    }
+                });
+            });
+
+            $(".provincias").change(function(){
+                var self = this;
+                $.each(provincias, function(index, value){
+                    if (value.id == $(self).val()) {
+                        $('.comunas').empty();
+                        $.each(value.comunas, function(index, value){
+                            $('.comunas').append($("<option></option>").attr("value", value.codigo).text(value.nombre));
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+
+<div layout:fragment="title">
+    <h2>Ingresar Sucursal</h2>
+    <ol class="breadcrumb">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li>Empresas</li>
+        <li>
+            <span th:switch="${sucursal.empresa.razonSocial}">
+                <span th:case="null">Sin Información</span>
+                <span th:case="*" th:text="${sucursal.empresa.razonSocial}"></span>
+            </span>
+        </li>
+        <li>Sucursales</li>
+        <li><strong>Ingresar datos de Sucursal</strong></li>
+    </ol>
+</div>
+
+<div layout:fragment="content">
+
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Ingresar Datos de Sucursal
+                    <small>Para ingresar la sucursal presione "Guardar".</small>
+                </h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </div>
+            </div>
+            <div class="ibox-content">
+
+                <form id="empform" th:action="@{/empresa/sucursal/registrar/}" th:object="${sucursal}" method="post">
+
+                    <div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
+                        <strong>Atenci&oacute;n: </strong> debes solucionar los errores marcados en rojo antes de
+                        proceder con la actualizaci&oacute;n del perfil de la sucursal.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('sucSucursal')}? 'has-error'">
+                                <label class="control-label">Nombre Sucursal</label>
+                                <input type="text" th:field="*{sucSucursal}" placeholder="Nombre sucursal" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('sucSucursal')}" th:text="${#fields.errors('*{sucSucursal}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group" th:class="${#fields.hasErrors('sucDireccion')}? 'has-error'">
+                                <label class="control-label">Direccion</label>
+                                <input type="text" th:field="*{sucDireccion}" placeholder="Direccion" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('sucDireccion')}" th:text="${#fields.errors('*{sucDireccion}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('sucEmail')}? 'has-error'">
+                                <label class="control-label">E-mail</label>
+                                <input type="text" th:field="*{sucEmail}" placeholder="E-mail" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('sucEmail')}" th:text="${#fields.errors('*{sucEmail}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('sucFono')}? 'has-error'">
+                                <label class="control-label">Fono</label>
+                                <input id="particular" type="text" th:field="*{sucFono}" placeholder="Fono" class="form-control"/>
+                                <span class="help-block m-b-none">Agregar código de área de la localidad</span>
+                                <label class="error" th:if="${#fields.hasErrors('sucFono')}" th:text="${#fields.errors('*{sucFono}')}"></label>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group" th:class="${#fields.hasErrors('sucFax')}? 'has-error'">
+                                <label class="control-label">Fax</label>
+                                <input type="text" th:field="*{sucFax}" placeholder="Fax" class="form-control"/>
+                                <label class="error" th:if="${#fields.hasErrors('sucFax')}" th:text="${#fields.errors('*{sucFax}')}"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class='col-lg-3' >
+                            <div class="form-group">
+                                <label class="control-label">Pa&iacute;s:</label>
+                                <select id="selectPaises" th:field="*{pais.id}" class="form-control paises">
+                                    <option value="0" selected="selected">Todos</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class='form-group' style="margin-bottom:10px;" >
+                            <div id ="region">
+                                <div class='col-lg-3' >
+                                    <div class="form-group">
+                                        <label class="control-label">Regi&oacute;n*:</label>
+                                        <select id="selectRegiones" name="region.id" class="form-control regiones"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="provincia">
+                                <div class='col-lg-3' >
+                                    <div class="form-group">
+                                        <label class="control-label">Provincia:</label>
+                                        <select id="selectProvincias" class="form-control provincias" name="provincia.id"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="comuna">
+                                <div class='col-lg-3'>
+                                    <div class="form-group">
+                                        <label class="control-label">Comuna:</label>
+                                        <select id="selectComunas" th:field="*{comuna.codigo}" class="form-control comunas"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="control-label">Vigencia</label>
+                                <select th:field="*{tipoVigencia.codVigencia}" class="form-control">
+                                    <option th:each="v: ${vigencias}"
+                                            th:value="${v.codVigencia}"
+                                            th:text="${v.nomVigencia}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <input type="hidden" th:name="idEmpresa" th:value="${sucursal.empresa.id}"/>
+                        <a th:href="@{/empresa/{id}(id=${sucursal.empresa.id})}" class="btn btn-white">Cancelar</a>
+                        <button class="btn btn-primary" type="submit">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<th:block layout:fragment="scripts">
+<script th:inline="javascript" type="text/javascript">
+    /*<![CDATA[*/
+    $(function() {
+        $("#particular").autocomplete({
+            minLength:6,
+            source: function (request, response) {
+                var aux = $("#particular").val();
+                if(aux.length<=8 && aux.length>0) {
+                    if(aux.indexOf("+56")==-1) {
+                        aux = aux.charAt(0) + aux.charAt(1) + ' ' + aux.charAt(2) + aux.charAt(3)+
+                                aux.charAt(4) + aux.charAt(5)+ aux.charAt(6) + aux.charAt(7)+aux.charAt(8);
+                        $("#particular").val("+56" + " " + aux);
+                    }
+                }
+            }
+        });
+    });
+    /*]]>*/
+</script>
+</th:block>
+
+</body>
+</html>
